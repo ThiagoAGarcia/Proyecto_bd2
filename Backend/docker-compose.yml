@@ -1,0 +1,15 @@
+services:
+  api:
+    image: mcr.microsoft.com/dotnet/sdk:10.0
+    container_name: api
+    working_dir: /src
+    volumes:
+      - ./src/api:/src
+    ports:
+      - '5001:5001'
+    env_file:
+      - .env
+    environment:
+      ASPNETCORE_HTTP_PORTS: '5001'
+      DOTNET_USE_POLLING_FILE_WATCHER: '1'
+    command: dotnet watch run --urls http://0.0.0.0:5001
