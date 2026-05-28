@@ -5,11 +5,13 @@ services:
     working_dir: /src
     volumes:
       - ./src/api:/src
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
     ports:
       - '5001:5001'
     env_file:
       - .env
     environment:
       ASPNETCORE_HTTP_PORTS: '5001'
+      ASPNETCORE_ENVIRONMENT: Development
       DOTNET_USE_POLLING_FILE_WATCHER: '1'
     command: dotnet watch run --urls http://0.0.0.0:5001

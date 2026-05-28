@@ -1,17 +1,34 @@
-using Microsoft.EntityFrameworkCore;
-
 using api.Data;
 using api.Endpoints;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 var builder = WebApplication.CreateBuilder(args);
+
+string key = "/o/VObMvm>.fa@80p:9P.b?/Ox.Mxk7mP+|£'3&$,+||cook";
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer();
+builder.Services.AddAuthorization();
+
+
 var app = builder.Build();
 
-app.MapGet("/", () => "API funcionando");
+app.UseAuthentication();
+app.UseAuthorization();
+
+
+
+
+
+app.MapGet("/", () => "API funcionando").RequireAuthorization();
 
 app.MapGet("/db-check", async (AppDbContext db) =>
 {
@@ -31,7 +48,6 @@ app.MapGet("/db-check", async (AppDbContext db) =>
         );
     }
 });
-
 
 // Perfil endpoints
 app.MapPerfilEndpoints();
