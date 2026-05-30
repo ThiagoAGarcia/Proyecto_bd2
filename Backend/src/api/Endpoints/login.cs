@@ -31,6 +31,21 @@ public static class LoginEndpoints
                 return Results.Unauthorized();
             }
 
+            var typeUser = "";
+            if (await db.Usuarios.FindAsync(login.MailPerfil) != null)
+            {
+                typeUser = "Usuario";
+            } else if (await db.Administradors.FindAsync(login.MailPerfil) != null)
+            {
+                typeUser = "Administrador";
+            } else if (await db.Funcionarios.FindAsync(login.MailPerfil) != null)
+            {
+                typeUser = "Funcionario";
+            } else
+            {
+                return Results.Problem("No se pudo determinar el tipo de usuario");
+            }
+
             var key = config["Jwt:Key"];
             Console.WriteLine($"JWT KEY CONFIG: {key}");
             if (string.IsNullOrWhiteSpace(key))
@@ -57,11 +72,12 @@ public static class LoginEndpoints
 
             var token = tokenHandler.CreateToken(tokenDes);
             var jwt = tokenHandler.WriteToken(token);
-
+            
             return Results.Ok(new
             {
                 message = "Login correcto",
-                token = jwt
+                token = jwt,
+                role = typeUser
             });
         });
 
