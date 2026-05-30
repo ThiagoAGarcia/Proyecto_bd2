@@ -5,9 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
-string key = "/o/VObMvm>.fa@80p:9P.b?/Ox.Mxk7mP+|£'3&$,+||cook";
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
@@ -35,7 +35,8 @@ app.MapGet("/db-check", async (AppDbContext db) =>
     try
     {
         var canConnect = await db.Database.CanConnectAsync();
-
+        
+            
         return canConnect
             ? Results.Ok("Conexion a BD correcta")
             : Results.Problem("No se pudo conectar a la BD");
@@ -51,5 +52,8 @@ app.MapGet("/db-check", async (AppDbContext db) =>
 
 // Perfil endpoints
 app.MapPerfilEndpoints();
+
+// login endpoints
+app.MapLoginEndpoints();
 
 app.Run();

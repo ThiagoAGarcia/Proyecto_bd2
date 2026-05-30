@@ -137,3 +137,4 @@
 /src/bin/Debug/net8.0/Microsoft.IdentityModel.Tokens.dll
 /src/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll
 /src/bin/Debug/net8.0/appsettings.Development.json
+/src/bin/Debug/net8.0/BCrypt-Net-Next.dll
