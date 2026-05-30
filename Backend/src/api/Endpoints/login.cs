@@ -93,5 +93,20 @@ public static class LoginEndpoints
 
             return Results.Created($"/login/{login.MailPerfil}", login);
         });
+
+        app.MapDelete("/login/{mail}", async (string mail, AppDbContext db) =>
+        {
+            var login = await db.Logins.FindAsync(mail);
+
+            if (login is null)
+            {
+                return Results.NotFound();
+            }
+
+            db.Logins.Remove(login);
+            await db.SaveChangesAsync();
+
+            return Results.NoContent();
+        });
     }
 }
