@@ -11,7 +11,7 @@ public static class PerfilEndpoints
         // GET /perfiles
         // Obtiene todos los perfiles guardados en la base de datos.
         app.MapGet("/perfiles", async (AppDbContext db) =>
-            await db.Perfils.ToListAsync()).RequireAuthorization();
+            await db.Perfils.ToListAsync()).RequireAuthorization("SoloAdministrador");
 
         // GET /perfiles/{mail}
         // Busca y obtiene un perfil específico usando su mail como clave primaria.
@@ -22,7 +22,7 @@ public static class PerfilEndpoints
             return perfil is null
                 ? Results.NotFound()
                 : Results.Ok(perfil);
-        });
+        }).RequireAuthorization("SoloUsuario");
 
         // POST /perfiles
         // Crea un nuevo perfil en la base de datos.

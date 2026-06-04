@@ -15,7 +15,7 @@ public static class LoginEndpoints
     {
         // POST /loginCheck
         // Chequear login en la base de datos.
-        app.MapPost("/loginCheck", async (Login login, AppDbContext db, IConfiguration config) =>
+        app.MapPost("/loginCheck", async (Login login, AppDbContext db, IConfiguration config, HttpResponse response) =>
         {
             var existingLogin = await db.Logins.FindAsync(login.MailPerfil);
 
@@ -32,22 +32,26 @@ public static class LoginEndpoints
             }
 
             var typeUser = "";
+
             if (await db.Usuarios.FindAsync(login.MailPerfil) != null)
             {
                 typeUser = "Usuario";
-            } else if (await db.Administradors.FindAsync(login.MailPerfil) != null)
+            }
+            else if (await db.Administradors.FindAsync(login.MailPerfil) != null)
             {
                 typeUser = "Administrador";
-            } else if (await db.Funcionarios.FindAsync(login.MailPerfil) != null)
+            }
+            else if (await db.Funcionarios.FindAsync(login.MailPerfil) != null)
             {
                 typeUser = "Funcionario";
-            } else
+            }
+            else
             {
                 return Results.Problem("No se pudo determinar el tipo de usuario");
             }
 
             var key = config["Jwt:Key"];
-            Console.WriteLine($"JWT KEY CONFIG: {key}");
+
             if (string.IsNullOrWhiteSpace(key))
             {
                 return Results.Problem("No está configurada la clave JWT");
@@ -61,9 +65,10 @@ public static class LoginEndpoints
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name, existingLogin.MailPerfil),
-                    new Claim(ClaimTypes.Email, existingLogin.MailPerfil)
+                    new Claim(ClaimTypes.Email, existingLogin.MailPerfil),
+                    new Claim(ClaimTypes.Role, typeUser)
                 }),
-                Expires = DateTime.UtcNow.AddMonths(1),
+                Expires = DateTime.UtcNow.AddMinutes(15),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(byteKey),
                     SecurityAlgorithms.HmacSha256Signature
@@ -72,11 +77,18 @@ public static class LoginEndpoints
 
             var token = tokenHandler.CreateToken(tokenDes);
             var jwt = tokenHandler.WriteToken(token);
-            
+
+            response.Cookies.Append("access_token", jwt, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None,
+                Expires = DateTimeOffset.UtcNow.AddMinutes(15)
+            });
+
             return Results.Ok(new
             {
                 message = "Login correcto",
-                token = jwt,
                 role = typeUser
             });
         });
@@ -92,6 +104,20 @@ public static class LoginEndpoints
             await db.SaveChangesAsync();
 
             return Results.Created($"/login/{login.MailPerfil}", login);
+        });
+        app.MapPost("/logout", (HttpResponse response) =>
+        {
+            response.Cookies.Delete("access_token", new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.None
+            });
+
+            return Results.Ok(new
+            {
+                message = "Sesión cerrada correctamente"
+            });
         });
 
         app.MapDelete("/login/{mail}", async (string mail, AppDbContext db) =>
