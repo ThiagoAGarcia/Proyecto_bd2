@@ -1,0 +1,53 @@
+# Git and Docker metadata
+.git/
+.gitignore
+.dockerignore
+Dockerfile*
+docker-compose*.yml
+# Build output
+bin/
+obj/
+Debug/
+Release/
+artifacts/
+# IDE/editor
+.vs/
+.vscode/
+.idea/
+# Local config and secrets
+appsettings.Local.json
+appsettings.Development.local.json
+appsettings.Production.local.json
+secrets.json
+.env
+.env.*
+*.pfx
+*.p12
+*.pem
+*.key
+*.crt
+# Logs and test output
+*.log
+logs/
+TestResults/
+coverage/
+coverage.*/
+*.coverage
+*.coveragexml
+*.trx
+# NuGet/package cache
+packages/
+.nuget/
+*.nupkg
+*.snupkg
+# Docker/local runtime data
+docker-data/
+mysql-data/
+db-data/
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+# Codex workspace scratch/output folders
+work/
+outputs/

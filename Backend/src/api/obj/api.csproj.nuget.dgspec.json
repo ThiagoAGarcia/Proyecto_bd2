@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/src/api.csproj": {}
+    "C:\\Users\\Thiag\\Documents\\GitHub\\Proyecto_bd2\\Backend\\src\\api\\api.csproj": {}
   },
   "projects": {
-    "/src/api.csproj": {
+    "C:\\Users\\Thiag\\Documents\\GitHub\\Proyecto_bd2\\Backend\\src\\api\\api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/src/api.csproj",
+        "projectUniqueName": "C:\\Users\\Thiag\\Documents\\GitHub\\Proyecto_bd2\\Backend\\src\\api\\api.csproj",
         "projectName": "api",
-        "projectPath": "/src/api.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/src/obj/",
+        "projectPath": "C:\\Users\\Thiag\\Documents\\GitHub\\Proyecto_bd2\\Backend\\src\\api\\api.csproj",
+        "packagesPath": "C:\\Users\\Thiag\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Thiag\\Documents\\GitHub\\Proyecto_bd2\\Backend\\src\\api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Thiag\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -92,11 +92,15 @@
               "version": "[8.0.27, 8.0.27]"
             },
             {
-              "name": "Microsoft.NETCore.App.Host.linux-x64",
+              "name": "Microsoft.NETCore.App.Host.win-x64",
               "version": "[8.0.27, 8.0.27]"
             },
             {
               "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.27, 8.0.27]"
+            },
+            {
+              "name": "Microsoft.WindowsDesktop.App.Ref",
               "version": "[8.0.27, 8.0.27]"
             }
           ],
@@ -108,7 +112,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.300/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
