@@ -1,5 +1,6 @@
 using api.Data;
 using api.Models;
+using api.Methods;
 using BCrypt.Net;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -50,41 +51,7 @@ public static class LoginEndpoints
                 return Results.Problem("No se pudo determinar el tipo de usuario");
             }
 
-            var key = config["Jwt:Key"];
-
-            if (string.IsNullOrWhiteSpace(key))
-            {
-                return Results.Problem("No está configurada la clave JWT");
-            }
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var byteKey = Encoding.UTF8.GetBytes(key);
-
-            var tokenDes = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-                {
-                    new Claim(ClaimTypes.Name, existingLogin.MailPerfil),
-                    new Claim(ClaimTypes.Email, existingLogin.MailPerfil),
-                    new Claim(ClaimTypes.Role, typeUser)
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(15),
-                SigningCredentials = new SigningCredentials(
-                    new SymmetricSecurityKey(byteKey),
-                    SecurityAlgorithms.HmacSha256Signature
-                )
-            };
-
-            var token = tokenHandler.CreateToken(tokenDes);
-            var jwt = tokenHandler.WriteToken(token);
-
-            response.Cookies.Append("access_token", jwt, new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None,
-                Expires = DateTimeOffset.UtcNow.AddMinutes(15)
-            });
+            Token.SetToken(config, response, existingLogin, typeUser);
 
             return Results.Ok(new
             {
@@ -97,9 +64,9 @@ public static class LoginEndpoints
         // Crea un nuevo login en la base de datos.
         app.MapPost("/login", async (Login login, AppDbContext db) =>
         {
-            var password = BCrypt.Net.BCrypt.HashPassword(login.Password); 
+            var password = BCrypt.Net.BCrypt.HashPassword(login.Password);
 
-            Login loginHashed = new(){ MailPerfil = login.MailPerfil, Password = password };
+            Login loginHashed = new() { MailPerfil = login.MailPerfil, Password = password };
             db.Logins.Add(loginHashed);
             await db.SaveChangesAsync();
 
@@ -107,12 +74,7 @@ public static class LoginEndpoints
         });
         app.MapPost("/logout", (HttpResponse response) =>
         {
-            response.Cookies.Delete("access_token", new CookieOptions
-            {
-                HttpOnly = true,
-                Secure = true,
-                SameSite = SameSiteMode.None
-            });
+            Token.ClearToken(response);
 
             return Results.Ok(new
             {
@@ -120,20 +82,23 @@ public static class LoginEndpoints
             });
         });
 
-        app.MapDelete("/login/{mail}", async (string mail, AppDbContext db) =>
+        app.MapDelete("/login/{mail}", async (string mail, AppDbContext db, HttpResponse response, HttpContext context) =>
         {
             var login = await db.Logins.FindAsync(mail);
-            
+            if (Token.GetMailUser(context) != mail)
+            {
+                return Results.Unauthorized();
+            }
 
             if (login is null)
             {
                 return Results.NotFound();
             }
-
+            Token.ClearToken(response);
             db.Logins.Remove(login);
             await db.SaveChangesAsync();
 
             return Results.NoContent();
-        });
+        }).RequireAuthorization("soloUsuario");
     }
 }
