@@ -8,9 +8,11 @@
 > dotnet tool install --global dotnet-ef
 
 > runnear docker:
-> docker compose up --build
+> docker compose up --watch
 
-> frameworks que necesitamos
+**NOTE**
+
+> frameworks que usamos
 > dotnet add package Microsoft.EntityFrameworkCore
 > dotnet add package Microsoft.EntityFrameworkCore.SqlServer
 > dotnet add package Microsoft.EntityFrameworkCore.Design
