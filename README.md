@@ -18,6 +18,7 @@
 > dotnet add package Microsoft.EntityFrameworkCore.Design
 > dotnet add package Microsoft.EntityFrameworkCore.Tools
 > dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+> dotnet add package BCrypt.Net-Next
 
 **NOTE**
 
