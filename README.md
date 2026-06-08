@@ -2,7 +2,7 @@
 
 **IMPORTANT**
 
-> create .env en la carpeta Backend
+> crear .env en la carpeta Backend
 > cambiar datos por los suyos
 > poner dentro : ConnectionStrings\_\_DefaultConnection=Server=host.docker.internal;Port=3306;Database=proyectoBD2;User=root;Password=root;
 > dotnet tool install --global dotnet-ef
@@ -21,11 +21,11 @@
 
 **NOTE**
 
-> crear clases con las tablas de la BD:
+> crear clases con las tablas de la BD (solo ejecutar si hay actualizaciones):
 > dotnet ef dbcontext scaffold "Server=localhost;Port=3306;Database=ProyectoBD2;User=root;Password=root;" Pomelo.EntityFrameworkCore.MySql -o Models -c AppDbContext --context-dir Data --force
 
-**IMPORTANT**
+**NOTE**
 
-> borrar la imagen:
+> borrar la imagen (solo si es necesario):
 > docker compose down
 > docker compose down --rmi local
