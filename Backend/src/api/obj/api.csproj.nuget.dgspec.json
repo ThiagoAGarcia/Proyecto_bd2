@@ -10,7 +10,7 @@
         "projectUniqueName": "/tmp/workspace/ThiagoAGarcia/Proyecto_bd2/Backend/src/api/api.csproj",
         "projectName": "api",
         "projectPath": "/tmp/workspace/ThiagoAGarcia/Proyecto_bd2/Backend/src/api/api.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
+        "packagesPath": "/tmp/codeql-scratch-38695d6e2ced6ff5/dbs/csharp/working/packages",
         "outputPath": "/tmp/workspace/ThiagoAGarcia/Proyecto_bd2/Backend/src/api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -86,6 +86,20 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.27, 8.0.27]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Host.linux-x64",
+              "version": "[8.0.27, 8.0.27]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.27, 8.0.27]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
