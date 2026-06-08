@@ -62,12 +62,12 @@ public static class PerfilEndpoints
         app.MapDelete("/perfil/{mail}", async (string mail, AppDbContext db) =>
         {
             var perfil = await db.Perfils.FindAsync(mail);
-
+            
             if (perfil is null)
             {
                 return Results.NotFound();
             }
-
+            
             db.Perfils.Remove(perfil);
             await db.SaveChangesAsync();
 

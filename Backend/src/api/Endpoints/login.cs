@@ -123,6 +123,7 @@ public static class LoginEndpoints
         app.MapDelete("/login/{mail}", async (string mail, AppDbContext db) =>
         {
             var login = await db.Logins.FindAsync(mail);
+            
 
             if (login is null)
             {

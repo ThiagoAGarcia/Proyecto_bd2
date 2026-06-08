@@ -10,6 +10,19 @@ services:
       - '5001:5001'
     env_file:
       - .env
+
+    build: .
+    develop:
+      watch:
+        - action: sync
+          path: ./src/api
+          target: /src/api
+          ignore:
+            - bin/
+            - obj/
+        - action: rebuild
+          path: ./src/api/api.csproj
+
     environment:
       ASPNETCORE_HTTP_PORTS: '5001'
       ASPNETCORE_ENVIRONMENT: Development
