@@ -14,9 +14,9 @@ public static class LoginEndpoints
 {
     public static void MapLoginEndpoints(this WebApplication app)
     {
-        // POST /loginCheck
+        // POST /checkLogin
         // Chequear login en la base de datos.
-        app.MapPost("/loginCheck", async (Login login, AppDbContext db, IConfiguration config, HttpResponse response) =>
+        var checkLoginHandler = async (Login login, AppDbContext db, IConfiguration config, HttpResponse response) =>
         {
             var existingLogin = await db.Logins.FindAsync(login.MailPerfil);
 
@@ -58,7 +58,10 @@ public static class LoginEndpoints
                 message = "Login correcto",
                 role = typeUser
             });
-        });
+        };
+
+        app.MapPost("/checkLogin", checkLoginHandler);
+        app.MapPost("/loginCheck", checkLoginHandler);
 
         // POST /login
         // Crea un nuevo login en la base de datos.
