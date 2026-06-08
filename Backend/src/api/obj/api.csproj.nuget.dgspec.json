@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/src/api.csproj": {}
+    "/tmp/workspace/ThiagoAGarcia/Proyecto_bd2/Backend/src/api/api.csproj": {}
   },
   "projects": {
-    "/src/api.csproj": {
+    "/tmp/workspace/ThiagoAGarcia/Proyecto_bd2/Backend/src/api/api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/src/api.csproj",
+        "projectUniqueName": "/tmp/workspace/ThiagoAGarcia/Proyecto_bd2/Backend/src/api/api.csproj",
         "projectName": "api",
-        "projectPath": "/src/api.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/src/obj/",
+        "projectPath": "/tmp/workspace/ThiagoAGarcia/Proyecto_bd2/Backend/src/api/api.csproj",
+        "packagesPath": "/home/runner/.nuget/packages/",
+        "outputPath": "/tmp/workspace/ThiagoAGarcia/Proyecto_bd2/Backend/src/api/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
+          "/home/runner/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -86,20 +86,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.27, 8.0.27]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.linux-x64",
-              "version": "[8.0.27, 8.0.27]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.27, 8.0.27]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
