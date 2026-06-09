@@ -1,19 +1,13 @@
 namespace api.Methods;
 
-using api.Data;
-using api.Models;
-
-
-using BCrypt.Net;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
-
 public static class Token
 {
-    public static IResult SetToken(IConfiguration config, HttpResponse response, Login existingLogin, string typeUser)
+    public static IResult SetToken(IConfiguration config, HttpResponse response, string mail, string typeUser)
     {
         var key = config["Jwt:Key"];
 
@@ -29,9 +23,9 @@ public static class Token
         {
             Subject = new ClaimsIdentity(new Claim[]
             {
-                    new Claim(ClaimTypes.Name, existingLogin.MailPerfil),
-                    new Claim(ClaimTypes.Email, existingLogin.MailPerfil),
-                    new Claim(ClaimTypes.Role, typeUser)
+                new Claim(ClaimTypes.Name, mail),
+                new Claim(ClaimTypes.Email, mail),
+                new Claim(ClaimTypes.Role, typeUser)
             }),
             Expires = DateTime.UtcNow.AddMinutes(15),
             SigningCredentials = new SigningCredentials(
@@ -50,8 +44,10 @@ public static class Token
             SameSite = SameSiteMode.None,
             Expires = DateTimeOffset.UtcNow.AddMinutes(15)
         });
+
         return Results.Ok();
     }
+
     public static string? GetMailUser(HttpContext context)
     {
         var mail = context.User.FindFirst(ClaimTypes.Email)?.Value;
@@ -63,6 +59,7 @@ public static class Token
 
         return mail;
     }
+
     public static void ClearToken(HttpResponse response)
     {
         response.Cookies.Delete("access_token", new CookieOptions

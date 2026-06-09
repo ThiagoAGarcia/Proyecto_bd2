@@ -1,18 +1,18 @@
-using api.Data;
 using api.Endpoints;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MySqlConnector;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new Exception("No esta configurada la connection string DefaultConnection");
+}
 
-// CORS para React
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactPolicy", policy =>
@@ -28,7 +28,7 @@ var jwtKey = builder.Configuration["Jwt:Key"];
 
 if (string.IsNullOrWhiteSpace(jwtKey))
 {
-    throw new Exception("No está configurada la clave JWT");
+    throw new Exception("No esta configurada la clave JWT");
 }
 
 var byteKey = Encoding.UTF8.GetBytes(jwtKey);
@@ -82,13 +82,19 @@ app.UseAuthorization();
 
 app.MapGet("/", () => "API funcionando").RequireAuthorization();
 
-app.MapGet("/db-check", async (AppDbContext db) =>
+app.MapGet("/db-check", async (IConfiguration config) =>
 {
     try
     {
-        var canConnect = await db.Database.CanConnectAsync();
+        await using var connection = new MySqlConnection(config.GetConnectionString("DefaultConnection"));
+        await connection.OpenAsync();
 
-        return canConnect
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT 1;";
+
+        var result = await command.ExecuteScalarAsync();
+
+        return Convert.ToInt32(result) == 1
             ? Results.Ok("Conexion a BD correcta")
             : Results.Problem("No se pudo conectar a la BD");
     }

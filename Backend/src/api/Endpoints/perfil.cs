@@ -1,77 +1,163 @@
-using api.Data;
-using api.Models;
-using Microsoft.EntityFrameworkCore;
-
+using MySqlConnector;
+using api.DTOs;
 namespace api.Endpoints;
+
 
 public static class PerfilEndpoints
 {
     public static void MapPerfilEndpoints(this WebApplication app)
     {
-        // GET /perfiles
-        // Obtiene todos los perfiles guardados en la base de datos.
-        app.MapGet("/perfiles", async (AppDbContext db) =>
-            await db.Perfils.ToListAsync()).RequireAuthorization("SoloAdministrador");
-
-        // GET /perfiles/{mail}
-        // Busca y obtiene un perfil específico usando su mail como clave primaria.
-        app.MapGet("/perfiles/{mail}", async (string mail, AppDbContext db) =>
+        app.MapGet("/perfiles", async (IConfiguration config) =>
         {
-            var perfil = await db.Perfils.FindAsync(mail);
+            var perfiles = new List<PerfilResponse>();
+            var connectionString = config.GetConnectionString("DefaultConnection");
 
-            return perfil is null
-                ? Results.NotFound()
-                : Results.Ok(perfil);
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT `Mail`, `PaisDocumento`, `TipoDocumento`, `NumeroDocumento`,
+                       `DireccionLocalidad`, `DireccionNumero`, `DireccionCodigoPostal`
+                FROM `Perfil`;
+                """;
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                perfiles.Add(MapPerfil(reader));
+            }
+
+            return Results.Ok(perfiles);
+        }).RequireAuthorization("SoloAdministrador");
+
+        app.MapGet("/perfiles/{mail}", async (string mail, IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT `Mail`, `PaisDocumento`, `TipoDocumento`, `NumeroDocumento`,
+                       `DireccionLocalidad`, `DireccionNumero`, `DireccionCodigoPostal`
+                FROM `Perfil`
+                WHERE `Mail` = @mail
+                LIMIT 1;
+                """;
+            command.Parameters.AddWithValue("@mail", mail);
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            if (!await reader.ReadAsync())
+            {
+                return Results.NotFound();
+            }
+
+            return Results.Ok(MapPerfil(reader));
         }).RequireAuthorization("SoloUsuario");
 
-        // POST /perfiles
-        // Crea un nuevo perfil en la base de datos.
-        app.MapPost("/perfil", async (Perfil perfil, AppDbContext db) =>
+        app.MapPost("/perfil", async (PerfilRequest request, IConfiguration config) =>
         {
-            db.Perfils.Add(perfil);
-            await db.SaveChangesAsync();
+            var connectionString = config.GetConnectionString("DefaultConnection");
 
-            return Results.Created($"/perfiles/{perfil.Mail}", perfil);
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                INSERT INTO `Perfil`
+                    (`Mail`, `PaisDocumento`, `TipoDocumento`, `NumeroDocumento`,
+                     `DireccionLocalidad`, `DireccionNumero`, `DireccionCodigoPostal`)
+                VALUES
+                    (@mail, @paisDocumento, @tipoDocumento, @numeroDocumento,
+                     @direccionLocalidad, @direccionNumero, @direccionCodigoPostal);
+                """;
+            AddPerfilParameters(command, request);
+
+            await command.ExecuteNonQueryAsync();
+
+            return Results.Created($"/perfiles/{request.Mail}", request);
         });
 
-        // PUT /perfiles/{mail}
-        // Actualiza los datos de un perfil existente usando su mail como identificador.
-        app.MapPut("/perfil/{mail}", async (string mail, Perfil input, AppDbContext db) =>
+        app.MapPut("/perfil/{mail}", async (string mail, PerfilUpdateRequest request, IConfiguration config) =>
         {
-            var perfil = await db.Perfils.FindAsync(mail);
+            var connectionString = config.GetConnectionString("DefaultConnection");
 
-            if (perfil is null)
-            {
-                return Results.NotFound();
-            }
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            perfil.PaisDocumento = input.PaisDocumento;
-            perfil.TipoDocumento = input.TipoDocumento;
-            perfil.NumeroDocumento = input.NumeroDocumento;
-            perfil.DireccionLocalidad = input.DireccionLocalidad;
-            perfil.DireccionNumero = input.DireccionNumero;
-            perfil.DireccionCodigoPostal = input.DireccionCodigoPostal;
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                UPDATE `Perfil`
+                SET `PaisDocumento` = @paisDocumento,
+                    `TipoDocumento` = @tipoDocumento,
+                    `NumeroDocumento` = @numeroDocumento,
+                    `DireccionLocalidad` = @direccionLocalidad,
+                    `DireccionNumero` = @direccionNumero,
+                    `DireccionCodigoPostal` = @direccionCodigoPostal
+                WHERE `Mail` = @mail;
+                """;
+            command.Parameters.AddWithValue("@mail", mail);
+            command.Parameters.AddWithValue("@paisDocumento", request.PaisDocumento);
+            command.Parameters.AddWithValue("@tipoDocumento", request.TipoDocumento);
+            command.Parameters.AddWithValue("@numeroDocumento", request.NumeroDocumento);
+            command.Parameters.AddWithValue("@direccionLocalidad", request.DireccionLocalidad);
+            command.Parameters.AddWithValue("@direccionNumero", request.DireccionNumero);
+            command.Parameters.AddWithValue("@direccionCodigoPostal", request.DireccionCodigoPostal);
 
-            await db.SaveChangesAsync();
+            var affectedRows = await command.ExecuteNonQueryAsync();
 
-            return Results.NoContent();
+            return affectedRows == 0
+                ? Results.NotFound()
+                : Results.NoContent();
         });
 
-        // DELETE /perfiles/{mail}
-        // Elimina un perfil existente usando su mail como identificador.
-        app.MapDelete("/perfil/{mail}", async (string mail, AppDbContext db) =>
+        app.MapDelete("/perfil/{mail}", async (string mail, IConfiguration config) =>
         {
-            var perfil = await db.Perfils.FindAsync(mail);
-            
-            if (perfil is null)
-            {
-                return Results.NotFound();
-            }
-            
-            db.Perfils.Remove(perfil);
-            await db.SaveChangesAsync();
+            var connectionString = config.GetConnectionString("DefaultConnection");
 
-            return Results.NoContent();
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                DELETE FROM `Perfil`
+                WHERE `Mail` = @mail;
+                """;
+            command.Parameters.AddWithValue("@mail", mail);
+
+            var affectedRows = await command.ExecuteNonQueryAsync();
+
+            return affectedRows == 0
+                ? Results.NotFound()
+                : Results.NoContent();
         });
+    }
+
+    private static PerfilResponse MapPerfil(MySqlDataReader reader)
+    {
+        return new PerfilResponse(
+            reader.GetString("Mail"),
+            reader.GetString("PaisDocumento"),
+            reader.GetString("TipoDocumento"),
+            reader.GetInt32("NumeroDocumento"),
+            reader.GetString("DireccionLocalidad"),
+            reader.GetInt32("DireccionNumero"),
+            reader.GetInt32("DireccionCodigoPostal")
+        );
+    }
+
+    private static void AddPerfilParameters(MySqlCommand command, PerfilRequest request)
+    {
+        command.Parameters.AddWithValue("@mail", request.Mail);
+        command.Parameters.AddWithValue("@paisDocumento", request.PaisDocumento);
+        command.Parameters.AddWithValue("@tipoDocumento", request.TipoDocumento);
+        command.Parameters.AddWithValue("@numeroDocumento", request.NumeroDocumento);
+        command.Parameters.AddWithValue("@direccionLocalidad", request.DireccionLocalidad);
+        command.Parameters.AddWithValue("@direccionNumero", request.DireccionNumero);
+        command.Parameters.AddWithValue("@direccionCodigoPostal", request.DireccionCodigoPostal);
     }
 }

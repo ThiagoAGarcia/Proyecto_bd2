@@ -1,12 +1,6 @@
-using api.Data;
-using api.Models;
 using api.Methods;
-using BCrypt.Net;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-
+using MySqlConnector;
+using api.DTOs;
 
 namespace api.Endpoints;
 
@@ -14,44 +8,35 @@ public static class LoginEndpoints
 {
     public static void MapLoginEndpoints(this WebApplication app)
     {
-        // POST /loginCheck
-        // Chequear login en la base de datos.
-        app.MapPost("/loginCheck", async (Login login, AppDbContext db, IConfiguration config, HttpResponse response) =>
+        app.MapPost("/loginCheck", async (LoginRequest request, IConfiguration config, HttpResponse response) =>
         {
-            var existingLogin = await db.Logins.FindAsync(login.MailPerfil);
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            var existingLogin = await GetLogin(connection, request.MailPerfil);
 
             if (existingLogin is null)
             {
                 return Results.NotFound("Login no encontrado");
             }
 
-            bool isCorrect = BCrypt.Net.BCrypt.Verify(login.Password, existingLogin.Password);
+            var isCorrect = BCrypt.Net.BCrypt.Verify(request.Password, existingLogin.Password);
 
             if (!isCorrect)
             {
                 return Results.Unauthorized();
             }
 
-            var typeUser = "";
+            var typeUser = await GetUserType(connection, request.MailPerfil);
 
-            if (await db.Usuarios.FindAsync(login.MailPerfil) != null)
-            {
-                typeUser = "Usuario";
-            }
-            else if (await db.Administradors.FindAsync(login.MailPerfil) != null)
-            {
-                typeUser = "Administrador";
-            }
-            else if (await db.Funcionarios.FindAsync(login.MailPerfil) != null)
-            {
-                typeUser = "Funcionario";
-            }
-            else
+            if (typeUser is null)
             {
                 return Results.Problem("No se pudo determinar el tipo de usuario");
             }
 
-            Token.SetToken(config, response, existingLogin, typeUser);
+            Token.SetToken(config, response, existingLogin.MailPerfil, typeUser);
 
             return Results.Ok(new
             {
@@ -60,45 +45,129 @@ public static class LoginEndpoints
             });
         });
 
-        // POST /login
-        // Crea un nuevo login en la base de datos.
-        app.MapPost("/login", async (Login login, AppDbContext db) =>
+        app.MapPost("/login", async (LoginRequest request, IConfiguration config) =>
         {
-            var password = BCrypt.Net.BCrypt.HashPassword(login.Password);
+            var connectionString = config.GetConnectionString("DefaultConnection");
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-            Login loginHashed = new() { MailPerfil = login.MailPerfil, Password = password };
-            db.Logins.Add(loginHashed);
-            await db.SaveChangesAsync();
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
 
-            return Results.Created($"/login/{login.MailPerfil}", login);
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                INSERT INTO `Login` (`MailPerfil`, `Password`)
+                VALUES (@mail, @password);
+                """;
+            command.Parameters.AddWithValue("@mail", request.MailPerfil);
+            command.Parameters.AddWithValue("@password", hashedPassword);
+
+            await command.ExecuteNonQueryAsync();
+
+            return Results.Created($"/login/{request.MailPerfil}", new
+            {
+                request.MailPerfil
+            });
         });
+
         app.MapPost("/logout", (HttpResponse response) =>
         {
             Token.ClearToken(response);
 
             return Results.Ok(new
             {
-                message = "Sesión cerrada correctamente"
+                message = "Sesion cerrada correctamente"
             });
         });
 
-        app.MapDelete("/login/{mail}", async (string mail, AppDbContext db, HttpResponse response, HttpContext context) =>
+        app.MapDelete("/login/{mail}", async (string mail, IConfiguration config, HttpResponse response, HttpContext context) =>
         {
-            var login = await db.Logins.FindAsync(mail);
             if (Token.GetMailUser(context) != mail)
             {
                 return Results.Unauthorized();
             }
 
-            if (login is null)
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                DELETE FROM `Login`
+                WHERE `MailPerfil` = @mail;
+                """;
+            command.Parameters.AddWithValue("@mail", mail);
+
+            var affectedRows = await command.ExecuteNonQueryAsync();
+
+            if (affectedRows == 0)
             {
                 return Results.NotFound();
             }
+
             Token.ClearToken(response);
-            db.Logins.Remove(login);
-            await db.SaveChangesAsync();
 
             return Results.NoContent();
-        }).RequireAuthorization("soloUsuario");
+        }).RequireAuthorization("SoloUsuario");
+    }
+
+    private static async Task<LoginRow?> GetLogin(MySqlConnection connection, string mail)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT `MailPerfil`, `Password`
+            FROM `Login`
+            WHERE `MailPerfil` = @mail
+            LIMIT 1;
+            """;
+        command.Parameters.AddWithValue("@mail", mail);
+
+        await using var reader = await command.ExecuteReaderAsync();
+
+        if (!await reader.ReadAsync())
+        {
+            return null;
+        }
+
+        return new LoginRow(
+            reader.GetString("MailPerfil"),
+            reader.GetString("Password")
+        );
+    }
+
+    private static async Task<string?> GetUserType(MySqlConnection connection, string mail)
+    {
+        if (await ExistsByMail(connection, "Usuario", mail))
+        {
+            return "Usuario";
+        }
+
+        if (await ExistsByMail(connection, "Administrador", mail))
+        {
+            return "Administrador";
+        }
+
+        if (await ExistsByMail(connection, "Funcionario", mail))
+        {
+            return "Funcionario";
+        }
+
+        return null;
+    }
+
+    private static async Task<bool> ExistsByMail(MySqlConnection connection, string tableName, string mail)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = $"""
+            SELECT 1
+            FROM `{tableName}`
+            WHERE `MailPerfil` = @mail
+            LIMIT 1;
+            """;
+        command.Parameters.AddWithValue("@mail", mail);
+
+        var result = await command.ExecuteScalarAsync();
+        return result is not null;
     }
 }
+
