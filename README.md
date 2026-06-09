@@ -1,24 +1,27 @@
 # Proyecto_bd2
 
-**IMPORTANT**
+## Importante
 
-> crear .env en la carpeta Backend
-> cambiar datos por los suyos
-> poner dentro : ConnectionStrings\_\_DefaultConnection=Server=host.docker.internal;Port=3306;Database=proyectoBD2;User=root;Password=root;
-> dotnet tool install --global dotnet-ef
+Crear un archivo `.env` dentro de la carpeta `Backend`.
 
-> runnear docker:
-> docker compose up --watch
+Cambiar los datos por los de tu entorno local.
 
-**NOTE**
+Contenido del archivo `.env`:
 
-> frameworks que usamos
-> dotnet add package MySqlConnector
-> dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
-> dotnet add package BCrypt.Net-Next
+```env
+ConnectionStrings__DefaultConnection=Server=host.docker.internal;Port=3306;Database=proyectoBD2;User=root;Password=root;
+Instalar Entity Framework CLI:
 
-**NOTE**
+dotnet tool install --global dotnet-ef
+Ejecutar con Docker
+docker compose up --watch
+Paquetes usados
+dotnet add package MySqlConnector
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
+dotnet add package BCrypt.Net-Next
+Borrar imagen/contenedores
+Solo si es necesario:
 
-> borrar la imagen (solo si es necesario):
-> docker compose down
-> docker compose down --rmi local
+docker compose down
+docker compose down --rmi local
+```
