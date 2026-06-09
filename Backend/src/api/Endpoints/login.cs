@@ -81,10 +81,7 @@ public static class LoginEndpoints
 
         app.MapDelete("/login/{mail}", async (string mail, IConfiguration config, HttpResponse response, HttpContext context) =>
         {
-            if (Token.GetMailUser(context) != mail)
-            {
-                return Results.Unauthorized();
-            }
+            
 
             var connectionString = config.GetConnectionString("DefaultConnection");
 
@@ -108,7 +105,7 @@ public static class LoginEndpoints
             Token.ClearToken(response);
 
             return Results.NoContent();
-        }).RequireAuthorization("SoloUsuario");
+        });
     }
 
     private static async Task<LoginRow?> GetLogin(MySqlConnection connection, string mail)
