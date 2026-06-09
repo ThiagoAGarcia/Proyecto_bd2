@@ -13,10 +13,7 @@
 **NOTE**
 
 > frameworks que usamos
-> dotnet add package Microsoft.EntityFrameworkCore
-> dotnet add package Microsoft.EntityFrameworkCore.SqlServer
-> dotnet add package Microsoft.EntityFrameworkCore.Design
-> dotnet add package Microsoft.EntityFrameworkCore.Tools
+> dotnet add package MySqlConnector
 > dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
 > dotnet add package BCrypt.Net-Next
 
