@@ -8,14 +8,26 @@ public static class LoginEndpoints
 {
     public static void MapLoginEndpoints(this WebApplication app)
     {
-        app.MapPost("/loginCheck", async (LoginRequest request, IConfiguration config, HttpResponse response) =>
+        app.MapPost("/loginCheck", async (LoginRequest request, IConfiguration config, HttpResponse response, HttpContext context) =>
         {
+            var mail = Normalizar.NormalizarMethod(request.MailPerfil);
+
             var connectionString = config.GetConnectionString("DefaultConnection");
 
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
-            var existingLogin = await GetLogin(connection, request.MailPerfil);
+            var existingLogin = await GetLogin(connection, mail);
+
+            var userVerified = await User.CheckUserVerificado(mail, config, context);
+
+            if (!userVerified)
+            {
+                return Results.Json(new
+                {
+                    message = "Usuario no verificado"
+                }, statusCode: StatusCodes.Status401Unauthorized);
+            }
 
             if (existingLogin is null)
             {
@@ -29,14 +41,14 @@ public static class LoginEndpoints
                 return Results.Unauthorized();
             }
 
-            var typeUser = await GetUserType(connection, request.MailPerfil);
+            var typeUser = await GetUserType(connection, mail);
 
             if (typeUser is null)
             {
                 return Results.Problem("No se pudo determinar el tipo de usuario");
             }
 
-            Token.SetToken(config, response, existingLogin.MailPerfil, typeUser);
+            Token.SetToken(config, response, Normalizar.NormalizarMethod(existingLogin.MailPerfil), typeUser);
 
             return Results.Ok(new
             {
@@ -47,6 +59,8 @@ public static class LoginEndpoints
 
         app.MapPost("/login", async (LoginRequest request, IConfiguration config) =>
         {
+            var mail = Normalizar.NormalizarMethod(request.MailPerfil);
+
             var connectionString = config.GetConnectionString("DefaultConnection");
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
@@ -58,14 +72,15 @@ public static class LoginEndpoints
                 INSERT INTO `Login` (`MailPerfil`, `Password`)
                 VALUES (@mail, @password);
                 """;
-            command.Parameters.AddWithValue("@mail", request.MailPerfil);
+
+            command.Parameters.AddWithValue("@mail", mail);
             command.Parameters.AddWithValue("@password", hashedPassword);
 
             await command.ExecuteNonQueryAsync();
 
-            return Results.Created($"/login/{request.MailPerfil}", new
+            return Results.Created($"/login/{mail}", new
             {
-                request.MailPerfil
+                MailPerfil = mail
             });
         });
 
@@ -81,7 +96,10 @@ public static class LoginEndpoints
 
         app.MapDelete("/login/{mail}", async (string mail, IConfiguration config, HttpResponse response, HttpContext context) =>
         {
-            if (Token.GetMailUser(context) != mail)
+            mail = Normalizar.NormalizarMethod(mail);
+            var tokenMail = Normalizar.NormalizarMethod(Token.GetMailUser(context));
+
+            if (tokenMail != mail)
             {
                 return Results.Unauthorized();
             }
@@ -96,6 +114,7 @@ public static class LoginEndpoints
                 DELETE FROM `Login`
                 WHERE `MailPerfil` = @mail;
                 """;
+
             command.Parameters.AddWithValue("@mail", mail);
 
             var affectedRows = await command.ExecuteNonQueryAsync();
@@ -113,6 +132,8 @@ public static class LoginEndpoints
 
     private static async Task<LoginRow?> GetLogin(MySqlConnection connection, string mail)
     {
+        mail = Normalizar.NormalizarMethod(mail);
+
         await using var command = connection.CreateCommand();
         command.CommandText = """
             SELECT `MailPerfil`, `Password`
@@ -120,6 +141,7 @@ public static class LoginEndpoints
             WHERE `MailPerfil` = @mail
             LIMIT 1;
             """;
+
         command.Parameters.AddWithValue("@mail", mail);
 
         await using var reader = await command.ExecuteReaderAsync();
@@ -130,13 +152,15 @@ public static class LoginEndpoints
         }
 
         return new LoginRow(
-            reader.GetString("MailPerfil"),
+            Normalizar.NormalizarMethod(reader.GetString("MailPerfil")),
             reader.GetString("Password")
         );
     }
 
     private static async Task<string?> GetUserType(MySqlConnection connection, string mail)
     {
+        mail = Normalizar.NormalizarMethod(mail);
+
         if (await ExistsByMail(connection, "Usuario", mail))
         {
             return "Usuario";
@@ -157,6 +181,8 @@ public static class LoginEndpoints
 
     private static async Task<bool> ExistsByMail(MySqlConnection connection, string tableName, string mail)
     {
+        mail = Normalizar.NormalizarMethod(mail);
+
         await using var command = connection.CreateCommand();
         command.CommandText = $"""
             SELECT 1
@@ -164,10 +190,10 @@ public static class LoginEndpoints
             WHERE `MailPerfil` = @mail
             LIMIT 1;
             """;
+
         command.Parameters.AddWithValue("@mail", mail);
 
         var result = await command.ExecuteScalarAsync();
         return result is not null;
     }
 }
-
