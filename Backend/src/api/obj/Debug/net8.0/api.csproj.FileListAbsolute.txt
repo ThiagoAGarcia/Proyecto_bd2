@@ -51,3 +51,8 @@
 /src/bin/Debug/net8.0/System.IdentityModel.Tokens.Jwt.dll
 /src/bin/Debug/net8.0/appsettings.Development.json
 /src/bin/Debug/net8.0/BCrypt-Net-Next.dll
+/src/bin/Debug/net8.0/BouncyCastle.Cryptography.dll
+/src/bin/Debug/net8.0/MailKit.dll
+/src/bin/Debug/net8.0/MimeKit.dll
+/src/bin/Debug/net8.0/System.Security.Cryptography.Pkcs.dll
+/src/bin/Debug/net8.0/runtimes/win/lib/net8.0/System.Security.Cryptography.Pkcs.dll

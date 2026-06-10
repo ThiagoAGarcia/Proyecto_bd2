@@ -1,50 +1,73 @@
-namespace api.Methods;
-
-using System.Net.Http.Headers;
-using System.Text;
+using MailKit.Net.Smtp;
+using MailKit.Security;
+using MimeKit;
 using MySqlConnector;
+
+namespace api.Methods;
 
 public static class Mail
 {
     public static async Task<bool> EnviarMail(
-    IConfiguration config,
-    string destinatario,
-    string asunto,
-    string texto,
-    string html)
+        IConfiguration config,
+        string destinatario,
+        string asunto,
+        string texto,
+        string html)
     {
-        var apiKey = config["Mailgun:ApiKey"];
-        var domain = config["Mailgun:Domain"];
-        var from = config["Mailgun:From"];
+        try
+        {
+            var email = config["Gmail:Email"];
+            var password = config["Gmail:Password"];
 
-        using var client = new HttpClient();
+            var message = new MimeMessage();
 
-        var authToken = Convert.ToBase64String(
-            Encoding.ASCII.GetBytes($"api:{apiKey}")
-        );
+            message.From.Add(
+                new MailboxAddress("Mundial UCU 2026", email)
+            );
 
-        client.DefaultRequestHeaders.Authorization =
-            new System.Net.Http.Headers.AuthenticationHeaderValue("Basic", authToken);
+            message.To.Add(
+                MailboxAddress.Parse(destinatario)
+            );
 
-        using var content = new MultipartFormDataContent
-    {
-        { new StringContent(from!), "from" },
-        { new StringContent(destinatario), "to" },
-        { new StringContent(asunto), "subject" },
-        { new StringContent(texto), "text" },
-        { new StringContent(html), "html" }
-    };
+            message.Subject = asunto;
 
-        var response = await client.PostAsync(
-            $"https://api.mailgun.net/v3/{domain}/messages",
-            content
-        );
+            var bodyBuilder = new BodyBuilder
+            {
+                TextBody = texto,
+                HtmlBody = html
+            };
 
-        return response.IsSuccessStatusCode;
+            message.Body = bodyBuilder.ToMessageBody();
+
+            using var client = new SmtpClient();
+
+            await client.ConnectAsync(
+                "smtp.gmail.com",
+                587,
+                SecureSocketOptions.StartTls
+            );
+
+            await client.AuthenticateAsync(
+                email,
+                password
+            );
+
+            await client.SendAsync(message);
+
+            await client.DisconnectAsync(true);
+
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error enviando mail: {ex.Message}");
+            return false;
+        }
     }
+
     public static async Task<string?> CrearTokenVerificacion(
-    MySqlConnection connection,
-    string mail)
+        MySqlConnection connection,
+        string mail)
     {
         var tokenVerificacion = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
             .Replace("/", "")
@@ -72,36 +95,3 @@ public static class Mail
         return tokenVerificacion;
     }
 }
-
-// var enviado = await Mail.EnviarMail(
-//     config,
-//     "thiagoandresgg@gmail.com",
-//     "Verificar cuenta",
-//     "Haz click en el enlace para verificar tu cuenta: https://localhost:5001/verificar",
-//     """
-//     <html>
-//         <body>
-//             <h2>Verificar cuenta</h2>
-//             <p>Haz click en el boton para verificar tu cuenta.</p>
-
-//             <a href="https://localhost:5001/verificar"
-//                style="
-//                    display:inline-block;
-//                    padding:12px 20px;
-//                    background-color:#2563eb;
-//                    color:white;
-//                    text-decoration:none;
-//                    border-radius:6px;
-//                    font-weight:bold;
-//                ">
-//                 Verificar cuenta
-//             </a>
-//         </body>
-//     </html>
-//     """
-// );
-
-//             if (!enviado)
-//             {
-//                 return Results.Problem("No se pudo enviar el mail");
-//             }
