@@ -1,6 +1,6 @@
 import { IoEye, IoEyeOff } from 'react-icons/io5'
 import { useEffect, useState } from 'react'
-import LoginService from '../../services/introductionService/postLogin.jsx'
+import LoginService from '../../services/LoginService/postLoginCheck.jsx'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -48,7 +48,7 @@ function Login() {
             )
             return
         }
-        
+
         try {
             setIsLoading(true)
 
@@ -58,7 +58,7 @@ function Login() {
             console.log(mailPerfil)
             console.log(password)
 
-            if (logged?.message) {
+            if (logged?.access_token) {
                 localStorage.setItem('token', logged.access_token)
                 localStorage.setItem('role', JSON.stringify(logged.role))
                 localStorage.setItem('roles', JSON.stringify(logged.roles))

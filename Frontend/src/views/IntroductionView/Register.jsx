@@ -1,13 +1,15 @@
 import { IoEye, IoEyeOff, IoAddCircleOutline, IoTrashOutline } from 'react-icons/io5'
 import { useEffect, useState } from 'react'
-import postRegister from '../../services/introductionService/postPerfil.jsx'
+import postPerfil from '../../services/PerfilService/postPerfil.jsx'
+import postUsuario from '../../services/UsuarioService/postUsuario.jsx'
+import postLogin from '../../services/LoginService/postLogin.jsx'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Oval } from 'react-loader-spinner'
 import { useNavigate } from 'react-router-dom'
 import logo from './../../assets/FifaUCULogo.png'
 
-const TIPOS_DOCUMENTO = ['ci', 'Pasaporte', 'DNI', 'Otro']
+const TIPOS_DOCUMENTO = ['ci', 'dni', 'cpf', 'rut', 'cc', 'curp', 'ssn', 'sin']
 
 function Register() {
   useEffect(() => {
@@ -102,16 +104,31 @@ function Register() {
       direccionCalle: form.direccionCalle,
       direccionNumero: parseInt(form.direccionNumero),
       direccionCodigoPostal: parseInt(form.direccionCodigoPostal),
+      
+    }
+    const BODYUsuario = {
+      mailPerfil: form.mail,
+    }
+
+    const BODYLogin = {
+      mailPerfil: form.mail,
+      password: form.password,
+    }
+
+    const BODYTelefono = {
       telefonos: telefonosValidos,
     }
 
     try {
       setIsLoading(true)
-      const register = await postRegister(BODY)
-      if (register?.success) {
+      const registerPerfil = await postPerfil(BODY)
+      if (registerPerfil?.success) {
+        const registerUsuario = await postUsuario(BODYUsuario);
+        const registerLogin = await postLogin(BODYLogin);
+
         navigate('/')
       } else {
-        toast.error(register?.description || 'Error al registrar', {
+        toast.error(registerPerfil?.description || 'Error al registrar', {
           position: 'bottom-left',
           autoClose: 3000,
         })

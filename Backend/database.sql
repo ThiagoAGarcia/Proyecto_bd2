@@ -6,14 +6,34 @@ USE proyectoBD2;
 
 CREATE TABLE Perfil(
     mail VARCHAR(200) PRIMARY KEY,
-    paisDocumento VARCHAR(32) NOT NULL,
-    tipoDocumento ENUM('ci', 'cpf', 'dni', 'rut') NOT NULL,
-    numeroDocumento VARCHAR(100) NOT NULL,
-    direccionPais VARCHAR(32) NOT NULL,
+    paisDocumento ENUM(
+      'uruguay',
+      'argentina',
+      'brasil',
+      'chile',
+      'paraguay',
+      'peru',
+      'colombia',
+      'mexico',
+      'españa',
+      'estados_unidos',
+      'canada'
+    ) NOT NULL,
+    tipoDocumento ENUM(
+      'ci',
+      'dni',
+      'cpf',
+      'rut',
+      'cc',
+      'curp',
+      'ssn',
+      'sin'
+    ) NOT NULL,
+    numeroDocumento VARCHAR(32) NOT NULL UNIQUE,
     direccionLocalidad VARCHAR(32) NOT NULL,
-    direccionCalle VARCHAR(32) NOT NULL,
     direccionNumero INT NOT NULL,
-    direccionCodigoPostal INT NOT NULL
+    direccionCodigoPostal INT NOT NULL,
+    unique(numeroDocumento, tipoDocumento)
 );
 
 CREATE TABLE Telefono (
@@ -117,8 +137,8 @@ CREATE TABLE EsAsignado(
 
 CREATE TABLE Usuario(
     mailPerfil VARCHAR(200) PRIMARY KEY ,
-    fechaRegistro DATE NOT NULL,
-    estadoVerificado ENUM('verificado', 'No verificado') DEFAULT ('No verificado'),
+    fechaRegistro DATE NOT NULL DEFAULT(CURRENT_DATE),
+    estadoVerificado ENUM('verificado', 'noVerificado') NOT NULL DEFAULT('noVerificado'),
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail)
 );
 

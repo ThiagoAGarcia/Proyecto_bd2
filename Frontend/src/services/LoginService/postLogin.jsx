@@ -1,5 +1,5 @@
 const API = "http://localhost:5001";
-const PATH = "/loginCheck"
+const PATH = "/login"
 
 export default async function postLoginService(BODY) {
     try {
