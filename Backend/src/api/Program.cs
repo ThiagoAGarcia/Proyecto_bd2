@@ -112,5 +112,6 @@ app.MapLoginEndpoints();
 app.MapUsuarioEndpoints();
 app.MapAdministradorEndpoints();
 app.MapFuncionarioEndpoints();
+app.MapVerificarMailEndpoints();
 
 app.Run();

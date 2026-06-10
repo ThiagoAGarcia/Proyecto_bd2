@@ -93,6 +93,65 @@ public static class LoginEndpoints
                 });
             }
 
+            var tokenVerificacion = Convert.ToBase64String(Guid.NewGuid().ToByteArray())
+                .Replace("/", "")
+                .Replace("+", "")
+                .Replace("=", "");
+
+            var fechaVencimiento = DateTime.UtcNow.AddMinutes(15);
+
+            await using var commandToken = connection.CreateCommand();
+            commandToken.CommandText = """
+            INSERT INTO `VerificacionMail` (`MailPerfil`, `Token`, `FechaVencimiento`, `Usado`)
+            VALUES (@mail, @token, @fechaVencimiento, FALSE)
+            ON DUPLICATE KEY UPDATE
+                `Token` = @token,
+                `FechaVencimiento` = @fechaVencimiento,
+                `Usado` = FALSE;
+            """;
+
+            commandToken.Parameters.AddWithValue("@mail", mail);
+            commandToken.Parameters.AddWithValue("@token", tokenVerificacion);
+            commandToken.Parameters.AddWithValue("@fechaVencimiento", fechaVencimiento);
+
+            await commandToken.ExecuteNonQueryAsync();
+
+            var urlVerificacion = $"http://localhost:5001/verificar-email?token={tokenVerificacion}";
+
+            var enviado = await Mail.EnviarMail(
+                config,
+                mail,
+                "Verificar cuenta",
+                $"Haz click en el enlace para verificar tu cuenta: {urlVerificacion}",
+                $"""
+                <html>
+                    <body>
+                        <h2>Verificar cuenta</h2>
+                        <p>Haz click en el boton para verificar tu cuenta.</p>
+                        <p>Este enlace vence en 15 minutos.</p>
+
+                        <a href="{urlVerificacion}"
+                        style="
+                            display:inline-block;
+                            padding:12px 20px;
+                            background-color:#2563eb;
+                            color:white;
+                            text-decoration:none;
+                            border-radius:6px;
+                            font-weight:bold;
+                        ">
+                            Verificar cuenta
+                        </a>
+                    </body>
+                </html>
+                """
+            );
+
+            if (!enviado)
+            {
+                return Results.Problem("No se pudo enviar el mail");
+            }
+
             return Results.Created($"/login/{mail}", new
             {
                 MailPerfil = mail
