@@ -1,6 +1,7 @@
 namespace api.DTOs;
 
 public sealed record AdministradorRequest(
-    string MailPerfil
+    string MailPerfil,
+    string NombrePais
 );
 
