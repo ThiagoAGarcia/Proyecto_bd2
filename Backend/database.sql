@@ -207,3 +207,11 @@ CREATE TABLE Etapa(
     identificadorGrupo INT NOT NULL,
     FOREIGN KEY (identificadorGrupo) REFERENCES Grupo(identificador)
 );
+
+CREATE TABLE VerificacionMail(
+    mailPerfil VARCHAR(200) PRIMARY KEY,
+    token VARCHAR(200) NOT NULL UNIQUE,
+    fechaVencimiento DATETIME NOT NULL,
+    usado BOOLEAN NOT NULL DEFAULT FALSE,
+    FOREIGN KEY (mailPerfil) REFERENCES Usuario(mailPerfil)
+);
