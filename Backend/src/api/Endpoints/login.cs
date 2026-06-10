@@ -19,15 +19,7 @@ public static class LoginEndpoints
 
             var existingLogin = await GetLogin(connection, mail);
 
-            var userVerified = await User.CheckUserVerificado(mail, config, context);
 
-            if (!userVerified)
-            {
-                return Results.Json(new
-                {
-                    message = "Usuario no verificado"
-                }, statusCode: StatusCodes.Status401Unauthorized);
-            }
 
             if (existingLogin is null)
             {
@@ -46,6 +38,16 @@ public static class LoginEndpoints
             if (typeUser is null)
             {
                 return Results.Problem("No se pudo determinar el tipo de usuario");
+            }
+
+            var userVerified = await User.CheckUserVerificado(mail, config, context);
+
+            if (typeUser == "Usuario" && !userVerified)
+            {
+                return Results.Json(new
+                {
+                    message = "Usuario no verificado"
+                }, statusCode: StatusCodes.Status401Unauthorized);
             }
 
             Token.SetToken(config, response, Normalizar.NormalizarMethod(existingLogin.MailPerfil), typeUser);
@@ -279,6 +281,48 @@ public static class LoginEndpoints
             }
 
             return Results.Created($"/login/{mail}", new
+            {
+                MailPerfil = mail
+            });
+        });
+
+        app.MapPost("/loginOtherUsers", async (LoginRequest request, IConfiguration config) =>
+        {
+            var mail = Normalizar.NormalizarMethod(request.MailPerfil);
+
+            var connectionString = config.GetConnectionString("DefaultConnection");
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                INSERT INTO `Login` (`MailPerfil`, `Password`)
+                VALUES (@mail, @password);
+                """;
+
+            command.Parameters.AddWithValue("@mail", mail);
+            command.Parameters.AddWithValue("@password", hashedPassword);
+
+
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (MySqlException ex) when (ex.Number == 1062)
+            {
+                var message = ex.Message.Contains("PRIMARY")
+                    ? "Correo ya usado"
+                    : "Error de clave duplicada";
+
+                return Results.Conflict(new
+                {
+                    message
+                });
+            }
+
+            return Results.Created($"/LoginOtherUsers/{mail}", new
             {
                 MailPerfil = mail
             });

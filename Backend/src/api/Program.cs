@@ -113,5 +113,7 @@ app.MapUsuarioEndpoints();
 app.MapAdministradorEndpoints();
 app.MapFuncionarioEndpoints();
 app.MapVerificarMailEndpoints();
+app.MapEstadioEndpoints();
+app.MapJurisdiccionEndpoints();
 
 app.Run();

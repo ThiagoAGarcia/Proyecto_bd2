@@ -15,7 +15,7 @@ CREATE TABLE Perfil(
       'peru',
       'colombia',
       'mexico',
-      'españa',
+      'espaÃ±a',
       'estados_unidos',
       'canada'
     ) NOT NULL,
@@ -50,24 +50,27 @@ CREATE TABLE Login (
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail)
 );
 
-CREATE TABLE Equipo(
+CREATE TABLE Pais(
     nombre VARCHAR(20) PRIMARY KEY,
     continente VARCHAR(30) NOT NULL
 );
 
-CREATE TABLE Pais(
-    nombre VARCHAR(20) PRIMARY KEY
+CREATE TABLE Jurisdiccion(
+    nombre VARCHAR(20) PRIMARY KEY,
+    continente ENUM('america del sur', 'america del norte', 'europa', 'africa', 'asia', 'oceania') NOT NULL
 );
+
 
 CREATE TABLE Estadio (
     identificador INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(32) NOT NULL,
-    nombrePais VARCHAR(20) NOT NULL,
+    imagen VARCHAR(300),
+    nombre VARCHAR(32) NOT NULL UNIQUE, #NO SE SI VA EL UNIQUE CREO QUE SI
+    nombreJurisdiccion VARCHAR(20) NOT NULL,
     direccionLocalidad VARCHAR(200) NOT NULL,
     direccionCalle VARCHAR(20) NOT NULL,
     direccionNumero INT NOT NULL,
     direccionCodigoPostal INT NOT NULL,
-    FOREIGN KEY (nombrePais) REFERENCES Pais(nombre)
+    FOREIGN KEY (nombreJurisdiccion) REFERENCES Jurisdiccion(nombre)
 );
 
 CREATE TABLE Sector (
@@ -83,12 +86,12 @@ CREATE TABLE Sector (
 CREATE TABLE Partido (
     identificador INT AUTO_INCREMENT PRIMARY KEY,
     fase VARCHAR(30) NOT NULL,
-    EquipoLocal VARCHAR(32) NOT NULL,
-    EquipoVisitante VARCHAR(32) NOT NULL,
+    paisLocal VARCHAR(32) NOT NULL,
+    paisVisitante VARCHAR(32) NOT NULL,
     identificadorEstadio INT NOT NULL,
     fechaHora DATETIME NOT NULL,
-    FOREIGN KEY (EquipoLocal) REFERENCES Equipo(nombre),
-    FOREIGN KEY (EquipoVisitante) REFERENCES Equipo(nombre),
+    FOREIGN KEY (paisLocal) REFERENCES Pais(nombre),
+    FOREIGN KEY (paisVisitante) REFERENCES Pais(nombre),
     FOREIGN KEY (identificadorEstadio) REFERENCES Estadio(identificador)
 );
 
@@ -123,7 +126,7 @@ CREATE TABLE DispositivoFuncionario(
 
 CREATE TABLE Administrador(
     mailPerfil VARCHAR(200) PRIMARY KEY,
-    fechaAsignacionCargo DATE NOT NULL,
+    fechaAsignacionCargo DATE NOT NULL DEFAULT(CURRENT_DATE),
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail)
 );
 
@@ -196,11 +199,11 @@ CREATE TABLE Grupo (
 );
 
 CREATE TABLE Pertenece(
-    nombreEquipo VARCHAR(30),
+    nombrePais VARCHAR(30),
     identificadorGrupo INT,
-    FOREIGN KEY (nombreEquipo) REFERENCES Equipo(nombre),
+    FOREIGN KEY (nombrePais) REFERENCES Pais(nombre),
     FOREIGN KEY (identificadorGrupo) REFERENCES Grupo(identificador),
-    PRIMARY KEY (nombreEquipo, identificadorGrupo)
+    PRIMARY KEY (nombrePais, identificadorGrupo)
 );
 
 CREATE TABLE Etapa(
