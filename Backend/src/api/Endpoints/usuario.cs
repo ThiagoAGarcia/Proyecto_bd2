@@ -55,7 +55,22 @@ public static class UsuarioEndpoints
 
             command.Parameters.AddWithValue("@mail", mail);
 
-            await command.ExecuteNonQueryAsync();
+
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (MySqlException ex) when (ex.Number == 1062)
+            {
+                var message = ex.Message.Contains("PRIMARY")
+                    ? "Correo ya usado"
+                    : "Clave duplicada";
+
+                return Results.Conflict(new
+                {
+                    message
+                });
+            }
 
             return Results.Created($"/usuario/{mail}", new
             {

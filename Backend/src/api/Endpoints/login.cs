@@ -76,7 +76,22 @@ public static class LoginEndpoints
             command.Parameters.AddWithValue("@mail", mail);
             command.Parameters.AddWithValue("@password", hashedPassword);
 
-            await command.ExecuteNonQueryAsync();
+
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (MySqlException ex) when (ex.Number == 1062)
+            {
+                var message = ex.Message.Contains("PRIMARY")
+                    ? "Correo ya usado"
+                    : "Error de clave duplicada";
+
+                return Results.Conflict(new
+                {
+                    message
+                });
+            }
 
             return Results.Created($"/login/{mail}", new
             {

@@ -23,7 +23,9 @@ public static class PerfilEndpoints
                 FROM `Perfil`;
                 """;
 
+
             await using var reader = await command.ExecuteReaderAsync();
+
 
             while (await reader.ReadAsync())
             {
@@ -87,7 +89,21 @@ public static class PerfilEndpoints
 
             AddPerfilParameters(command, request);
 
-            await command.ExecuteNonQueryAsync();
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (MySqlException ex) when (ex.Number == 1062)
+            {
+                var message = ex.Message.Contains("PRIMARY")
+                    ? "Correo ya usado"
+                    : "Numero de documento ya usado";
+
+                return Results.Conflict(new
+                {
+                    message
+                });
+            }
 
             return Results.Created($"/perfiles/{Normalizar.NormalizarMethod(request.Mail)}", request);
         });

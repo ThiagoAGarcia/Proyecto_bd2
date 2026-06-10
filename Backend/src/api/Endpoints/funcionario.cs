@@ -26,7 +26,21 @@ public static class FuncionarioEndpoints
             command.Parameters.AddWithValue("@mail", mail);
             command.Parameters.AddWithValue("@numeroLegajo", request.NumeroLegajo);
 
-            await command.ExecuteNonQueryAsync();
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (MySqlException ex) when (ex.Number == 1062)
+            {
+                var message = ex.Message.Contains("PRIMARY")
+                    ? "Correo ya usado"
+                    : "Clave duplicada";
+
+                return Results.Conflict(new
+                {
+                    message
+                });
+            }
 
             return Results.Created($"/funcionario/{mail}", new
             {
