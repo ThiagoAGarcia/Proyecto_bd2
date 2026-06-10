@@ -18,7 +18,7 @@ public static class PerfilEndpoints
 
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                SELECT `Mail`, `PaisDocumento`, `TipoDocumento`, `NumeroDocumento`,
+                SELECT `Mail`, `PaisDocumento`, `TipoDocumento`, `NumeroDocumento`, `DireccionPais`, `DireccionCalle`,
                        `DireccionLocalidad`, `DireccionNumero`, `DireccionCodigoPostal`
                 FROM `Perfil`;
                 """;
@@ -47,7 +47,7 @@ public static class PerfilEndpoints
             await using var command = connection.CreateCommand();
             command.CommandText = """
                 SELECT `Mail`, `PaisDocumento`, `TipoDocumento`, `NumeroDocumento`,
-                       `DireccionLocalidad`, `DireccionNumero`, `DireccionCodigoPostal`
+                       `DireccionPais`, `DireccionCalle`, `DireccionLocalidad`, `DireccionNumero`, `DireccionCodigoPostal`
                 FROM `Perfil`
                 WHERE `Mail` = @mail
                 LIMIT 1;
@@ -72,6 +72,8 @@ public static class PerfilEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
+            
+
             if (!Documento.ValidarDocumento(request.PaisDocumento, request.TipoDocumento, request.NumeroDocumento))
             {
                 return Results.BadRequest("El documento no es válido");
@@ -80,11 +82,11 @@ public static class PerfilEndpoints
             await using var command = connection.CreateCommand();
             command.CommandText = """
                 INSERT INTO `Perfil`
-                    (`Mail`, `PaisDocumento`, `TipoDocumento`, `NumeroDocumento`,
+                    (`Mail`, `PaisDocumento`, `TipoDocumento`, `NumeroDocumento`, `DireccionPais`, `DireccionCalle`,
                      `DireccionLocalidad`, `DireccionNumero`, `DireccionCodigoPostal`)
                 VALUES
                     (@mail, @paisDocumento, @tipoDocumento, @numeroDocumento,
-                     @direccionLocalidad, @direccionNumero, @direccionCodigoPostal);
+                     @direccionPais, @direccionCalle, @direccionLocalidad, @direccionNumero, @direccionCodigoPostal);
                 """;
 
             AddPerfilParameters(command, request);
@@ -123,6 +125,8 @@ public static class PerfilEndpoints
                 SET `PaisDocumento` = @paisDocumento,
                     `TipoDocumento` = @tipoDocumento,
                     `NumeroDocumento` = @numeroDocumento,
+                    `DireccionPais` = @direccionPais,
+                    `DireccionCalle` = @direccionCalle,
                     `DireccionLocalidad` = @direccionLocalidad,
                     `DireccionNumero` = @direccionNumero,
                     `DireccionCodigoPostal` = @direccionCodigoPostal
@@ -133,6 +137,8 @@ public static class PerfilEndpoints
             command.Parameters.AddWithValue("@paisDocumento", Normalizar.NormalizarMethod(request.PaisDocumento));
             command.Parameters.AddWithValue("@tipoDocumento", Normalizar.NormalizarMethod(request.TipoDocumento));
             command.Parameters.AddWithValue("@numeroDocumento", Normalizar.NormalizarMethod(request.NumeroDocumento));
+            command.Parameters.AddWithValue("@direccionPais", Normalizar.NormalizarMethod(request.DireccionPais));
+            command.Parameters.AddWithValue("@direccionCalle", Normalizar.NormalizarMethod(request.DireccionCalle));
             command.Parameters.AddWithValue("@direccionLocalidad", Normalizar.NormalizarMethod(request.DireccionLocalidad));
             command.Parameters.AddWithValue("@direccionNumero", request.DireccionNumero);
             command.Parameters.AddWithValue("@direccionCodigoPostal", request.DireccionCodigoPostal);
@@ -176,6 +182,8 @@ public static class PerfilEndpoints
             Normalizar.NormalizarMethod(reader.GetString("PaisDocumento")),
             Normalizar.NormalizarMethod(reader.GetString("TipoDocumento")),
             Normalizar.NormalizarMethod(reader.GetString("NumeroDocumento")),
+            Normalizar.NormalizarMethod(reader.GetString("DireccionPais")),
+            Normalizar.NormalizarMethod(reader.GetString("DireccionCalle")),
             Normalizar.NormalizarMethod(reader.GetString("DireccionLocalidad")),
             reader.GetInt32("DireccionNumero"),
             reader.GetInt32("DireccionCodigoPostal")
@@ -188,6 +196,8 @@ public static class PerfilEndpoints
         command.Parameters.AddWithValue("@paisDocumento", Normalizar.NormalizarMethod(request.PaisDocumento));
         command.Parameters.AddWithValue("@tipoDocumento", Normalizar.NormalizarMethod(request.TipoDocumento));
         command.Parameters.AddWithValue("@numeroDocumento", Normalizar.NormalizarMethod(request.NumeroDocumento));
+        command.Parameters.AddWithValue("@direccionPais", Normalizar.NormalizarMethod(request.DireccionPais));
+        command.Parameters.AddWithValue("@direccionCalle", Normalizar.NormalizarMethod(request.DireccionCalle));
         command.Parameters.AddWithValue("@direccionLocalidad", Normalizar.NormalizarMethod(request.DireccionLocalidad));
         command.Parameters.AddWithValue("@direccionNumero", request.DireccionNumero);
         command.Parameters.AddWithValue("@direccionCodigoPostal", request.DireccionCodigoPostal);

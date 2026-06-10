@@ -1,13 +1,13 @@
 import { IoEye, IoEyeOff, IoAddCircleOutline, IoTrashOutline } from 'react-icons/io5'
 import { useEffect, useState } from 'react'
-import postRegister from '../../services/introductionService/postRegister.jsx'
+import postRegister from '../../services/introductionService/postPerfil.jsx'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { Oval } from 'react-loader-spinner'
 import { useNavigate } from 'react-router-dom'
 import logo from './../../assets/FifaUCULogo.png'
 
-const TIPOS_DOCUMENTO = ['Cédula', 'Pasaporte', 'DNI', 'Otro']
+const TIPOS_DOCUMENTO = ['ci', 'Pasaporte', 'DNI', 'Otro']
 
 function Register() {
   useEffect(() => {
@@ -94,16 +94,14 @@ function Register() {
 
     const BODY = {
       mail: form.mail,
-      paisDocumento: form.paisDocumento,
+      paisDocumento: form.paisDocumento, 
       tipoDocumento: form.tipoDocumento,
       numeroDocumento: form.numeroDocumento,
       direccionPais: form.direccionPais,
       direccionLocalidad: form.direccionLocalidad,
       direccionCalle: form.direccionCalle,
-      direccionNumero: form.direccionNumero,
-      direccionCodigoPostal: form.direccionCodigoPostal,
-      password: form.password,
-      confirmPassword: form.confirmPassword,
+      direccionNumero: parseInt(form.direccionNumero),
+      direccionCodigoPostal: parseInt(form.direccionCodigoPostal),
       telefonos: telefonosValidos,
     }
 
@@ -131,8 +129,6 @@ function Register() {
 
   return (
     <>
-      <ToastContainer />
-
       {isLoading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <Oval
@@ -357,12 +353,11 @@ function Register() {
               type="button"
               onClick={agregarTelefono}
               disabled={isLoading}
-              className="flex items-center gap-1.5 text-sm text-cyan-700 font-medium hover:text-cyan-900 transition-colors w-fit mb-4">
+              className="cursor-pointer flex items-center gap-1.5 text-sm text-cyan-700 font-medium hover:text-cyan-900 transition-colors w-fit mb-4">
               <IoAddCircleOutline size={18} />
               Agregar teléfono
             </button>
 
-            {/* ── SUBMIT ── */}
             <button
               type="submit"
               disabled={isLoading}
@@ -385,7 +380,6 @@ function Register() {
   )
 }
 
-/* ── Helpers de UI ── */
 
 function SectionLabel({ children }) {
   return (

@@ -145,7 +145,7 @@ function Login() {
                         <section className="relative w-full text-left">
                             <label htmlFor="passwordInput">Contraseña</label>
                             <i
-                                className="absolute top-9 right-5 cursor-pointer"
+                                className="absolute top-9 right-5 cursor-pointer text-gray-500"
                                 onClick={() => !isLoading && setVerPwd(!verPwd)}>
                                 {verPwd ? <IoEyeOff size={20} /> : <IoEye size={20} />}
                             </i>
@@ -153,7 +153,7 @@ function Login() {
                                 type={verPwd ? 'password' : 'text'}
                                 id="passwordInput"
                                 className="w-full border-b border-gray-400 mb-6 p-2 rounded-sm focus:outline-none"
-                                placeholder="12345678"
+                                placeholder="ej. 12345678"
                                 disabled={isLoading}
                             />
                         </section>
@@ -161,7 +161,7 @@ function Login() {
                         <section className="w-full flex justify-center items-center">
                             <button
                                 type="submit"
-                                className="w-full font-semibold h-auto bg-cyan-700 rounded-full p-2 text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                                className="w-full font-semibold h-auto bg-cyan-700 hover:bg-cyan-800 transition-colors rounded-full p-2 text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                                 disabled={isLoading}>
                                 {isLoading ? 'Ingresando...' : 'INICIAR SESIÓN'}
                             </button>

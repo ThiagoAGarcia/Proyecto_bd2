@@ -7,9 +7,11 @@ USE proyectoBD2;
 CREATE TABLE Perfil(
     mail VARCHAR(200) PRIMARY KEY,
     paisDocumento VARCHAR(32) NOT NULL,
-    tipoDocumento VARCHAR(32) NOT NULL,
-    numeroDocumento INT NOT NULL UNIQUE,
+    tipoDocumento ENUM('ci', 'cpf', 'dni', 'rut') NOT NULL,
+    numeroDocumento VARCHAR(100) NOT NULL,
+    direccionPais VARCHAR(32) NOT NULL,
     direccionLocalidad VARCHAR(32) NOT NULL,
+    direccionCalle VARCHAR(32) NOT NULL,
     direccionNumero INT NOT NULL,
     direccionCodigoPostal INT NOT NULL
 );
@@ -116,7 +118,7 @@ CREATE TABLE EsAsignado(
 CREATE TABLE Usuario(
     mailPerfil VARCHAR(200) PRIMARY KEY ,
     fechaRegistro DATE NOT NULL,
-    estadoVerificado ENUM('verificado', 'No verificado') NOT NULL,
+    estadoVerificado ENUM('verificado', 'No verificado') DEFAULT ('No verificado'),
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail)
 );
 
@@ -185,9 +187,3 @@ CREATE TABLE Etapa(
     identificadorGrupo INT NOT NULL,
     FOREIGN KEY (identificadorGrupo) REFERENCES Grupo(identificador)
 );
-
-INSERT INTO Perfil(mail, paisDocumento, tipoDocumento, numeroDocumento, direccionLocalidad, direccionNumero, direccionCodigoPostal) VALUES
-('agos@gmail.com', 'Argentina', 'DNI', 12345678, 'Buenos Aires', 123, 1000)
-
-INSERT INTO Usuario(mailPerfil, fechaRegistro, estadoVerificado) VALUES
-('agos@gmail.com', '2024-01-01', 'verificado');
