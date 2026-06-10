@@ -215,7 +215,7 @@ public static class LoginEndpoints
                                 </div>
 
                                 <p style="
-                                    font-size:15px;
+                                    font-size:16px;
                                     color:#6b7280;
                                 ">
                                     Este enlace expirará en <strong>15 minutos</strong>.
