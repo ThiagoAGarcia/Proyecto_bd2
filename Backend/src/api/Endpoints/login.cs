@@ -124,25 +124,151 @@ public static class LoginEndpoints
                 "Verificar cuenta",
                 $"Haz click en el enlace para verificar tu cuenta: {urlVerificacion}",
                 $"""
-                <html>
-                    <body>
-                        <h2>Verificar cuenta</h2>
-                        <p>Haz click en el boton para verificar tu cuenta.</p>
-                        <p>Este enlace vence en 15 minutos.</p>
-
-                        <a href="{urlVerificacion}"
-                        style="
-                            display:inline-block;
-                            padding:12px 20px;
-                            background-color:#2563eb;
-                            color:white;
-                            text-decoration:none;
-                            border-radius:6px;
-                            font-weight:bold;
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Verificación de cuenta</title>
+                </head>
+                <body style="
+                    margin:0;
+                    padding:0;
+                    background-color:#f3f4f6;
+                    font-family:Arial, Helvetica, sans-serif;
+                ">
+                    <div style="
+                        width:100%;
+                        padding:40px 0;
+                    ">
+                        <div style="
+                            max-width:600px;
+                            margin:0 auto;
+                            background:white;
+                            border-radius:16px;
+                            overflow:hidden;
+                            box-shadow:0 8px 24px rgba(0,0,0,0.1);
                         ">
-                            Verificar cuenta
-                        </a>
-                    </body>
+
+                            <div style="
+                                background:linear-gradient(135deg,#2563eb,#1d4ed8);
+                                color:white;
+                                text-align:center;
+                                padding:40px 20px;
+                            ">
+                                <h1 style="
+                                    margin:0;
+                                    font-size:32px;
+                                ">
+                                    Mundial UCU 2026
+                                </h1>
+
+                                <p style="
+                                    margin-top:10px;
+                                    font-size:18px;
+                                    opacity:0.9;
+                                ">
+                                    Bienvenido a la plataforma oficial
+                                </p>
+                            </div>
+
+                            <div style="
+                                padding:40px;
+                                color:#374151;
+                            ">
+                                <h2 style="
+                                    margin-top:0;
+                                    color:#111827;
+                                ">
+                                    Verificación de cuenta
+                                </h2>
+
+                                <p style="
+                                    font-size:16px;
+                                    line-height:1.7;
+                                ">
+                                    Gracias por registrarte en <strong>Mundial UCU 2026</strong>.
+                                    Para activar tu cuenta y comenzar a utilizar todas las funcionalidades
+                                    de la plataforma, debes verificar tu dirección de correo electrónico.
+                                </p>
+
+                                <p style="
+                                    font-size:16px;
+                                    line-height:1.7;
+                                ">
+                                    Haz clic en el siguiente botón para completar la verificación:
+                                </p>
+
+                                <div style="text-align:center; margin:40px 0;">
+                                    <a href="{urlVerificacion}"
+                                    style="
+                                            background:#2563eb;
+                                            color:white;
+                                            text-decoration:none;
+                                            padding:16px 32px;
+                                            border-radius:10px;
+                                            font-size:18px;
+                                            font-weight:bold;
+                                            display:inline-block;
+                                    ">
+                                        ✓ Verificar mi cuenta
+                                    </a>
+                                </div>
+
+                                <p style="
+                                    font-size:15px;
+                                    color:#6b7280;
+                                ">
+                                    Este enlace expirará en <strong>15 minutos</strong>.
+                                </p>
+
+                                <p style="
+                                    font-size:15px;
+                                    color:#6b7280;
+                                ">
+                                    Si el botón no funciona, puedes copiar y pegar el siguiente enlace en tu navegador:
+                                </p>
+
+                                <div style="
+                                    background:#f9fafb;
+                                    border:1px solid #e5e7eb;
+                                    padding:15px;
+                                    border-radius:8px;
+                                    word-break:break-all;
+                                    font-size:14px;
+                                    color:#2563eb;
+                                ">
+                                    {urlVerificacion}
+                                </div>
+
+                                <hr style="
+                                    margin:35px 0;
+                                    border:none;
+                                    border-top:1px solid #e5e7eb;
+                                ">
+
+                                <p style="
+                                    font-size:14px;
+                                    color:#9ca3af;
+                                    text-align:center;
+                                ">
+                                    Si no creaste una cuenta en Mundial UCU 2026,
+                                    puedes ignorar este correo de forma segura.
+                                </p>
+                            </div>
+
+                            <div style="
+                                background:#f9fafb;
+                                padding:20px;
+                                text-align:center;
+                                color:#6b7280;
+                                font-size:13px;
+                            ">
+                                © 2026 Mundial UCU · Todos los derechos reservados
+                            </div>
+
+                        </div>
+                    </div>
+                </body>
                 </html>
                 """
             );
