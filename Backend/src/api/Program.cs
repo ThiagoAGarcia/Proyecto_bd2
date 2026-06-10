@@ -109,5 +109,8 @@ app.MapGet("/db-check", async (IConfiguration config) =>
 
 app.MapPerfilEndpoints();
 app.MapLoginEndpoints();
+app.MapUsuarioEndpoints();
+app.MapAdministradorEndpoints();
+app.MapFuncionarioEndpoints();
 
 app.Run();

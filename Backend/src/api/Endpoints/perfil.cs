@@ -1,7 +1,8 @@
 using MySqlConnector;
 using api.DTOs;
-namespace api.Endpoints;
+using api.Methods;
 
+namespace api.Endpoints;
 
 public static class PerfilEndpoints
 {
@@ -22,7 +23,9 @@ public static class PerfilEndpoints
                 FROM `Perfil`;
                 """;
 
+
             await using var reader = await command.ExecuteReaderAsync();
+
 
             while (await reader.ReadAsync())
             {
@@ -34,6 +37,8 @@ public static class PerfilEndpoints
 
         app.MapGet("/perfiles/{mail}", async (string mail, IConfiguration config) =>
         {
+            mail = Normalizar.NormalizarMethod(mail);
+
             var connectionString = config.GetConnectionString("DefaultConnection");
 
             await using var connection = new MySqlConnection(connectionString);
@@ -47,6 +52,7 @@ public static class PerfilEndpoints
                 WHERE `Mail` = @mail
                 LIMIT 1;
                 """;
+
             command.Parameters.AddWithValue("@mail", mail);
 
             await using var reader = await command.ExecuteReaderAsync();
@@ -66,6 +72,11 @@ public static class PerfilEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
+            if (!Documento.ValidarDocumento(request.PaisDocumento, request.TipoDocumento, request.NumeroDocumento))
+            {
+                return Results.BadRequest("El documento no es válido");
+            }
+
             await using var command = connection.CreateCommand();
             command.CommandText = """
                 INSERT INTO `Perfil`
@@ -75,15 +86,32 @@ public static class PerfilEndpoints
                     (@mail, @paisDocumento, @tipoDocumento, @numeroDocumento,
                      @direccionLocalidad, @direccionNumero, @direccionCodigoPostal);
                 """;
+
             AddPerfilParameters(command, request);
 
-            await command.ExecuteNonQueryAsync();
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (MySqlException ex) when (ex.Number == 1062)
+            {
+                var message = ex.Message.Contains("PRIMARY")
+                    ? "Correo ya usado"
+                    : "Numero de documento ya usado";
 
-            return Results.Created($"/perfiles/{request.Mail}", request);
+                return Results.Conflict(new
+                {
+                    message
+                });
+            }
+
+            return Results.Created($"/perfiles/{Normalizar.NormalizarMethod(request.Mail)}", request);
         });
 
         app.MapPut("/perfil/{mail}", async (string mail, PerfilUpdateRequest request, IConfiguration config) =>
         {
+            mail = Normalizar.NormalizarMethod(mail);
+
             var connectionString = config.GetConnectionString("DefaultConnection");
 
             await using var connection = new MySqlConnection(connectionString);
@@ -100,11 +128,12 @@ public static class PerfilEndpoints
                     `DireccionCodigoPostal` = @direccionCodigoPostal
                 WHERE `Mail` = @mail;
                 """;
+
             command.Parameters.AddWithValue("@mail", mail);
-            command.Parameters.AddWithValue("@paisDocumento", request.PaisDocumento);
-            command.Parameters.AddWithValue("@tipoDocumento", request.TipoDocumento);
-            command.Parameters.AddWithValue("@numeroDocumento", request.NumeroDocumento);
-            command.Parameters.AddWithValue("@direccionLocalidad", request.DireccionLocalidad);
+            command.Parameters.AddWithValue("@paisDocumento", Normalizar.NormalizarMethod(request.PaisDocumento));
+            command.Parameters.AddWithValue("@tipoDocumento", Normalizar.NormalizarMethod(request.TipoDocumento));
+            command.Parameters.AddWithValue("@numeroDocumento", Normalizar.NormalizarMethod(request.NumeroDocumento));
+            command.Parameters.AddWithValue("@direccionLocalidad", Normalizar.NormalizarMethod(request.DireccionLocalidad));
             command.Parameters.AddWithValue("@direccionNumero", request.DireccionNumero);
             command.Parameters.AddWithValue("@direccionCodigoPostal", request.DireccionCodigoPostal);
 
@@ -117,6 +146,8 @@ public static class PerfilEndpoints
 
         app.MapDelete("/perfil/{mail}", async (string mail, IConfiguration config) =>
         {
+            mail = Normalizar.NormalizarMethod(mail);
+
             var connectionString = config.GetConnectionString("DefaultConnection");
 
             await using var connection = new MySqlConnection(connectionString);
@@ -127,6 +158,7 @@ public static class PerfilEndpoints
                 DELETE FROM `Perfil`
                 WHERE `Mail` = @mail;
                 """;
+
             command.Parameters.AddWithValue("@mail", mail);
 
             var affectedRows = await command.ExecuteNonQueryAsync();
@@ -140,11 +172,11 @@ public static class PerfilEndpoints
     private static PerfilResponse MapPerfil(MySqlDataReader reader)
     {
         return new PerfilResponse(
-            reader.GetString("Mail"),
-            reader.GetString("PaisDocumento"),
-            reader.GetString("TipoDocumento"),
-            reader.GetInt32("NumeroDocumento"),
-            reader.GetString("DireccionLocalidad"),
+            Normalizar.NormalizarMethod(reader.GetString("Mail")),
+            Normalizar.NormalizarMethod(reader.GetString("PaisDocumento")),
+            Normalizar.NormalizarMethod(reader.GetString("TipoDocumento")),
+            Normalizar.NormalizarMethod(reader.GetString("NumeroDocumento")),
+            Normalizar.NormalizarMethod(reader.GetString("DireccionLocalidad")),
             reader.GetInt32("DireccionNumero"),
             reader.GetInt32("DireccionCodigoPostal")
         );
@@ -152,12 +184,13 @@ public static class PerfilEndpoints
 
     private static void AddPerfilParameters(MySqlCommand command, PerfilRequest request)
     {
-        command.Parameters.AddWithValue("@mail", request.Mail);
-        command.Parameters.AddWithValue("@paisDocumento", request.PaisDocumento);
-        command.Parameters.AddWithValue("@tipoDocumento", request.TipoDocumento);
-        command.Parameters.AddWithValue("@numeroDocumento", request.NumeroDocumento);
-        command.Parameters.AddWithValue("@direccionLocalidad", request.DireccionLocalidad);
+        command.Parameters.AddWithValue("@mail", Normalizar.NormalizarMethod(request.Mail));
+        command.Parameters.AddWithValue("@paisDocumento", Normalizar.NormalizarMethod(request.PaisDocumento));
+        command.Parameters.AddWithValue("@tipoDocumento", Normalizar.NormalizarMethod(request.TipoDocumento));
+        command.Parameters.AddWithValue("@numeroDocumento", Normalizar.NormalizarMethod(request.NumeroDocumento));
+        command.Parameters.AddWithValue("@direccionLocalidad", Normalizar.NormalizarMethod(request.DireccionLocalidad));
         command.Parameters.AddWithValue("@direccionNumero", request.DireccionNumero);
         command.Parameters.AddWithValue("@direccionCodigoPostal", request.DireccionCodigoPostal);
     }
+
 }
