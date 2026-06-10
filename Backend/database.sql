@@ -6,12 +6,34 @@ USE proyectoBD2;
 
 CREATE TABLE Perfil(
     mail VARCHAR(200) PRIMARY KEY,
-    paisDocumento VARCHAR(32) NOT NULL,
-    tipoDocumento VARCHAR(32) NOT NULL,
-    numeroDocumento INT NOT NULL UNIQUE,
+    paisDocumento ENUM(
+      'uruguay',
+      'argentina',
+      'brasil',
+      'chile',
+      'paraguay',
+      'peru',
+      'colombia',
+      'mexico',
+      'españa',
+      'estados_unidos',
+      'canada'
+    ) NOT NULL,
+    tipoDocumento ENUM(
+      'ci',
+      'dni',
+      'cpf',
+      'rut',
+      'cc',
+      'curp',
+      'ssn',
+      'sin'
+    ) NOT NULL,
+    numeroDocumento VARCHAR(32) NOT NULL UNIQUE,
     direccionLocalidad VARCHAR(32) NOT NULL,
     direccionNumero INT NOT NULL,
-    direccionCodigoPostal INT NOT NULL
+    direccionCodigoPostal INT NOT NULL,
+    unique(numeroDocumento, tipoDocumento)
 );
 
 CREATE TABLE Telefono (
@@ -26,26 +48,24 @@ CREATE TABLE Login (
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail)
 );
 
+CREATE TABLE Equipo(
+    nombre VARCHAR(20) PRIMARY KEY,
+    continente VARCHAR(30) NOT NULL
+);
+
 CREATE TABLE Pais(
-    nombre VARCHAR(20) PRIMARY KEY,
-    continente VARCHAR(30) NOT NULL
+    nombre VARCHAR(20) PRIMARY KEY
 );
-
-CREATE TABLE Jurisdiccion(
-    nombre VARCHAR(20) PRIMARY KEY,
-    continente VARCHAR(30) NOT NULL
-);
-
 
 CREATE TABLE Estadio (
     identificador INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(32) NOT NULL UNIQUE, #NO SE SI VA EL UNIQUE CREO QUE SI
-    nombreJurisdiccion VARCHAR(20) NOT NULL,
+    nombre VARCHAR(32) NOT NULL,
+    nombrePais VARCHAR(20) NOT NULL,
     direccionLocalidad VARCHAR(200) NOT NULL,
     direccionCalle VARCHAR(20) NOT NULL,
     direccionNumero INT NOT NULL,
     direccionCodigoPostal INT NOT NULL,
-    FOREIGN KEY (nombreJurisdiccion) REFERENCES Jurisdiccion(nombre)
+    FOREIGN KEY (nombrePais) REFERENCES Pais(nombre)
 );
 
 CREATE TABLE Sector (
@@ -61,12 +81,12 @@ CREATE TABLE Sector (
 CREATE TABLE Partido (
     identificador INT AUTO_INCREMENT PRIMARY KEY,
     fase VARCHAR(30) NOT NULL,
-    paisLocal VARCHAR(32) NOT NULL,
-    paisVisitante VARCHAR(32) NOT NULL,
+    EquipoLocal VARCHAR(32) NOT NULL,
+    EquipoVisitante VARCHAR(32) NOT NULL,
     identificadorEstadio INT NOT NULL,
     fechaHora DATETIME NOT NULL,
-    FOREIGN KEY (paisLocal) REFERENCES Pais(nombre),
-    FOREIGN KEY (paisVisitante) REFERENCES Pais(nombre),
+    FOREIGN KEY (EquipoLocal) REFERENCES Equipo(nombre),
+    FOREIGN KEY (EquipoVisitante) REFERENCES Equipo(nombre),
     FOREIGN KEY (identificadorEstadio) REFERENCES Estadio(identificador)
 );
 
@@ -117,8 +137,8 @@ CREATE TABLE EsAsignado(
 
 CREATE TABLE Usuario(
     mailPerfil VARCHAR(200) PRIMARY KEY ,
-    fechaRegistro DATE NOT NULL,
-    estadoVerificado ENUM('verificado', 'No verificado') NOT NULL,
+    fechaRegistro DATE NOT NULL DEFAULT(CURRENT_DATE),
+    estadoVerificado ENUM('verificado', 'noVerificado') NOT NULL DEFAULT('noVerificado'),
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail)
 );
 
@@ -174,11 +194,11 @@ CREATE TABLE Grupo (
 );
 
 CREATE TABLE Pertenece(
-    nombrePais VARCHAR(30),
+    nombreEquipo VARCHAR(30),
     identificadorGrupo INT,
-    FOREIGN KEY (nombrePais) REFERENCES Pais(nombre),
+    FOREIGN KEY (nombreEquipo) REFERENCES Equipo(nombre),
     FOREIGN KEY (identificadorGrupo) REFERENCES Grupo(identificador),
-    PRIMARY KEY (nombrePais, identificadorGrupo)
+    PRIMARY KEY (nombreEquipo, identificadorGrupo)
 );
 
 CREATE TABLE Etapa(
@@ -187,5 +207,3 @@ CREATE TABLE Etapa(
     identificadorGrupo INT NOT NULL,
     FOREIGN KEY (identificadorGrupo) REFERENCES Grupo(identificador)
 );
-
-

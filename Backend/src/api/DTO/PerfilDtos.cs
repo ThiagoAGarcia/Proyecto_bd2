@@ -5,7 +5,9 @@ public sealed record PerfilRequest(
     string PaisDocumento,
     string TipoDocumento,
     string NumeroDocumento,
+    string DireccionPais,
     string DireccionLocalidad,
+    string DireccionCalle,
     int DireccionNumero,
     int DireccionCodigoPostal
 );
@@ -14,7 +16,9 @@ public sealed record PerfilUpdateRequest(
     string PaisDocumento,
     string TipoDocumento,
     string NumeroDocumento,
+    string DireccionPais,
     string DireccionLocalidad,
+    string DireccionCalle,
     int DireccionNumero,
     int DireccionCodigoPostal
 );
@@ -24,7 +28,9 @@ public sealed record PerfilResponse(
     string PaisDocumento,
     string TipoDocumento,
     string NumeroDocumento,
+    string DireccionPais,
     string DireccionLocalidad,
+    string DireccionCalle,
     int DireccionNumero,
     int DireccionCodigoPostal
 );

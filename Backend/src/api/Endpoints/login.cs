@@ -201,7 +201,7 @@ public static class LoginEndpoints
             Token.ClearToken(response);
 
             return Results.NoContent();
-        }).RequireAuthorization("SoloUsuario");
+        });
     }
 
     private static async Task<LoginRow?> GetLogin(MySqlConnection connection, string mail)
