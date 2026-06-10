@@ -114,6 +114,6 @@ app.MapAdministradorEndpoints();
 app.MapFuncionarioEndpoints();
 app.MapVerificarMailEndpoints();
 app.MapEstadioEndpoints();
-app.MapJurisdiccionEndpoints();
+app.MapPaisEndpoints();
 
 app.Run();
