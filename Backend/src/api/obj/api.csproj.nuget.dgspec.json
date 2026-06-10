@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/src/api.csproj": {}
+    "C:\\Users\\Estudiante UCU\\OneDrive - Universidad Católica del Uruguay\\Documentos\\Proyecto_bd2\\Backend\\src\\api\\api.csproj": {}
   },
   "projects": {
-    "/src/api.csproj": {
+    "C:\\Users\\Estudiante UCU\\OneDrive - Universidad Católica del Uruguay\\Documentos\\Proyecto_bd2\\Backend\\src\\api\\api.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/src/api.csproj",
+        "projectUniqueName": "C:\\Users\\Estudiante UCU\\OneDrive - Universidad Católica del Uruguay\\Documentos\\Proyecto_bd2\\Backend\\src\\api\\api.csproj",
         "projectName": "api",
-        "projectPath": "/src/api.csproj",
-        "packagesPath": "/root/.nuget/packages/",
-        "outputPath": "/src/obj/",
+        "projectPath": "C:\\Users\\Estudiante UCU\\OneDrive - Universidad Católica del Uruguay\\Documentos\\Proyecto_bd2\\Backend\\src\\api\\api.csproj",
+        "packagesPath": "C:\\Users\\Estudiante UCU\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Estudiante UCU\\OneDrive - Universidad Católica del Uruguay\\Documentos\\Proyecto_bd2\\Backend\\src\\api\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/root/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\Estudiante UCU\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -24,7 +24,6 @@
         },
         "frameworks": {
           "net8.0": {
-            "framework": "net8.0",
             "targetAlias": "net8.0",
             "projectReferences": {}
           }
@@ -38,12 +37,10 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        },
-        "SdkAnalysisLevel": "10.0.300"
+        }
       },
       "frameworks": {
         "net8.0": {
-          "framework": "net8.0",
           "targetAlias": "net8.0",
           "dependencies": {
             "BCrypt.Net-Next": {
@@ -74,20 +71,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.27, 8.0.27]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.linux-x64",
-              "version": "[8.0.27, 8.0.27]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.27, 8.0.27]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -96,7 +79,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/10.0.300/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.303/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
