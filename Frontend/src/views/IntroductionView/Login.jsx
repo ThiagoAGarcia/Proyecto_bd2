@@ -1,6 +1,6 @@
 import { IoEye, IoEyeOff } from 'react-icons/io5'
 import { useEffect, useState } from 'react'
-import LoginService from '../../services/introductionService/getLogin.jsx'
+import LoginService from '../../services/introductionService/postLogin.jsx'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
@@ -114,11 +114,11 @@ function Login() {
                 </div>
             )}
 
-            <div className="w-full h-screen bg-[#045694] flex flex-col justify-center items-center">
+            <div className="w-full h-screen bg-[#045694] flex flex-row justify-center items-center">
                 <img
                     src={logo}
                     alt="FifaUcu"
-                    className="w-100 pb-6 h-auto"
+                    className="w-70 pr-5 h-auto"
                 />
                 <form
                     onSubmit={(e) => {
@@ -128,7 +128,7 @@ function Login() {
                     className="flex flex-col justify-center text-center items-center shadow-xl rounded-2xl w-full sm:w-[70%] md:w-[50%] lg:w-[30%] h-120 p-12 bg-white"
                 >
                     <h1 className="text-4xl text-black font-semibold">
-                        Inicio de sesión
+                        Iniciar sesión
                     </h1>
 
                     <div className="w-full flex flex-col justify-start items-start mt-10">
@@ -138,6 +138,7 @@ function Login() {
                             type="text"
                             id="emailInput"
                             className="w-full border-b border-gray-400 mb-6 p-2 rounded-sm focus:outline-none"
+                            placeholder="ejemplo@mail.com"
                             disabled={isLoading}
                         />
 
@@ -152,6 +153,7 @@ function Login() {
                                 type={verPwd ? 'password' : 'text'}
                                 id="passwordInput"
                                 className="w-full border-b border-gray-400 mb-6 p-2 rounded-sm focus:outline-none"
+                                placeholder="12345678"
                                 disabled={isLoading}
                             />
                         </section>

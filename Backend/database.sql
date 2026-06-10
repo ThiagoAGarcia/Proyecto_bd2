@@ -186,5 +186,8 @@ CREATE TABLE Etapa(
     FOREIGN KEY (identificadorGrupo) REFERENCES Grupo(identificador)
 );
 
+INSERT INTO Perfil(mail, paisDocumento, tipoDocumento, numeroDocumento, direccionLocalidad, direccionNumero, direccionCodigoPostal) VALUES
+('agos@gmail.com', 'Argentina', 'DNI', 12345678, 'Buenos Aires', 123, 1000)
 
-
+INSERT INTO Usuario(mailPerfil, fechaRegistro, estadoVerificado) VALUES
+('agos@gmail.com', '2024-01-01', 'verificado');
