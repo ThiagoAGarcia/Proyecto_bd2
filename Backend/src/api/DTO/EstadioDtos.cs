@@ -4,7 +4,7 @@ namespace api.DTOs;
 public sealed record EstadioRequest(
     string Nombre,
     string Imagen,
-    string NombreJurisdiccion,
+    string NombrePais,
     string DireccionLocalidad,
     string DireccionCalle,
     int DireccionNumero,
@@ -13,7 +13,7 @@ public sealed record EstadioRequest(
 public sealed record EstadioUpdateRequest(
     string Nombre,
     string Imagen,
-    string NombreJurisdiccion,
+    string NombrePais,
     string DireccionLocalidad,
     string DireccionCalle,
     int DireccionNumero,

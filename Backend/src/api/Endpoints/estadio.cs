@@ -17,13 +17,13 @@ public static class EstadioEndpoints
 
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                INSERT INTO `Estadio` (`Nombre`, `Imagen`, `NombreJurisdiccion`, `DireccionLocalidad`, `DireccionCalle`, `DireccionNumero`, `DireccionCodigoPostal`)
-                VALUES (@nombre, @imagen, @nombreJurisdiccion, @direccionLocalidad, @direccionCalle, @direccionNumero, @direccionCodigoPostal);
+                INSERT INTO `Estadio` (`Nombre`, `Imagen`, `NombrePais`, `DireccionLocalidad`, `DireccionCalle`, `DireccionNumero`, `DireccionCodigoPostal`)
+                VALUES (@nombre, @imagen, @nombrePais, @direccionLocalidad, @direccionCalle, @direccionNumero, @direccionCodigoPostal);
                 """;
 
             command.Parameters.AddWithValue("@nombre", request.Nombre);
             command.Parameters.AddWithValue("@imagen", request.Imagen);
-            command.Parameters.AddWithValue("@nombreJurisdiccion", request.NombreJurisdiccion);
+            command.Parameters.AddWithValue("@nombrePais", request.NombrePais);
             command.Parameters.AddWithValue("@direccionLocalidad", request.DireccionLocalidad);
             command.Parameters.AddWithValue("@direccionCalle", request.DireccionCalle);
             command.Parameters.AddWithValue("@direccionNumero", request.DireccionNumero);
@@ -35,7 +35,7 @@ public static class EstadioEndpoints
             {
                 Nombre = request.Nombre,
                 Imagen = request.Imagen,
-                NombreJurisdiccion = request.NombreJurisdiccion,
+                NombrePais = request.NombrePais,
                 DireccionLocalidad = request.DireccionLocalidad,
                 DireccionCalle = request.DireccionCalle,
                 DireccionNumero = request.DireccionNumero,
@@ -52,7 +52,7 @@ public static class EstadioEndpoints
 
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                SELECT `Identificador`, `Nombre`, `Imagen`, `NombreJurisdiccion`, `DireccionLocalidad`, `DireccionCalle`, `DireccionNumero`, `DireccionCodigoPostal`
+                SELECT `Identificador`, `Nombre`, `Imagen`, `NombrePais`, `DireccionLocalidad`, `DireccionCalle`, `DireccionNumero`, `DireccionCodigoPostal`
                 FROM `estadio`
                 WHERE `Identificador` = @identificador
                 LIMIT 1;
@@ -72,7 +72,7 @@ public static class EstadioEndpoints
                 Identificador = reader.GetInt32("Identificador"),
                 Nombre = reader.GetString("Nombre"),
                 Imagen = reader.GetString("Imagen"),
-                NombreJurisdiccion = reader.GetString("NombreJurisdiccion"),
+                NombrePais = reader.GetString("NombrePais"),
                 DireccionLocalidad = reader.GetString("DireccionLocalidad"),
                 DireccionCalle = reader.GetString("DireccionCalle"),
                 DireccionNumero = reader.GetInt32("DireccionNumero"),
@@ -88,7 +88,7 @@ public static class EstadioEndpoints
 
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                SELECT `Identificador`, `Nombre`, `Imagen`, `NombreJurisdiccion`, `DireccionLocalidad`, `DireccionCalle`, `DireccionNumero`, `DireccionCodigoPostal`
+                SELECT `Identificador`, `Nombre`, `Imagen`, `NombrePais`, `DireccionLocalidad`, `DireccionCalle`, `DireccionNumero`, `DireccionCodigoPostal`
                 FROM `estadio`
                 """;
 
@@ -105,7 +105,7 @@ public static class EstadioEndpoints
                 identificador = reader.GetInt32("Identificador"),
                 nombre = reader.GetString("Nombre"),
                 imagen = reader.GetString("Imagen"),
-                nombreJurisdiccion = reader.GetString("NombreJurisdiccion"),
+                nombrePais = reader.GetString("NombrePais"),
                 direccionLocalidad = reader.GetString("DireccionLocalidad"),
                 direccionCalle = reader.GetString("DireccionCalle"),
                 direccionNumero = reader.GetInt32("DireccionNumero"),
@@ -153,7 +153,7 @@ public static class EstadioEndpoints
                 UPDATE `estadio`
                 SET `Nombre` = @nombre,
                     `Imagen` = @imagen,
-                    `NombreJurisdiccion` = @nombreJurisdiccion,
+                    `NombrePais` = @nombrePais,
                     `DireccionLocalidad` = @direccionLocalidad,
                     `DireccionCalle` = @direccionCalle,
                     `DireccionNumero` = @direccionNumero,
@@ -164,7 +164,7 @@ public static class EstadioEndpoints
             command.Parameters.AddWithValue("@identificador", identificador);
             command.Parameters.AddWithValue("@nombre", request.Nombre);
             command.Parameters.AddWithValue("@imagen", request.Imagen);
-            command.Parameters.AddWithValue("@nombreJurisdiccion", request.NombreJurisdiccion);
+            command.Parameters.AddWithValue("@nombrePais", request.NombrePais);
             command.Parameters.AddWithValue("@direccionLocalidad", request.DireccionLocalidad);
             command.Parameters.AddWithValue("@direccionCalle", request.DireccionCalle);
             command.Parameters.AddWithValue("@direccionNumero", request.DireccionNumero);
