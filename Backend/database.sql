@@ -124,7 +124,9 @@ CREATE TABLE DispositivoFuncionario(
 CREATE TABLE Administrador(
     mailPerfil VARCHAR(200) PRIMARY KEY,
     fechaAsignacionCargo DATE NOT NULL,
-    FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail)
+    nombrePais VARCHAR(20) NOT NULL,
+    FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail),
+    FOREIGN KEY (nombrePais) REFERENCES Pais(nombre)
 );
 
 CREATE TABLE EsAsignado(
@@ -217,3 +219,46 @@ CREATE TABLE VerificacionMail(
     usado BOOLEAN NOT NULL DEFAULT FALSE,
     FOREIGN KEY (mailPerfil) REFERENCES Usuario(mailPerfil)
 );
+
+SELECT * FROM login;
+
+INSERT INTO Perfil VALUES
+('admin@mundial.com','uruguay','ci','12345678','Uruguay','Montevideo','18 de Julio',1000,11000),
+('func1@mundial.com','uruguay','ci','23456789','Uruguay','Montevideo','Rivera',2000,11000),
+('func2@mundial.com','argentina','dni','30123456','Argentina','Buenos Aires','Corrientes',1500,1000),
+('user1@gmail.com','uruguay','ci','34567890','Uruguay','Canelones','Artigas',500,90000),
+('user2@gmail.com','brasil','cpf','12345678901','Brasil','Porto Alegre','Central',100,9000),
+('user3@gmail.com','argentina','dni','40123456','Argentina','Córdoba','San Martín',800,5000);
+
+INSERT INTO Login VALUES
+('admin@mundial.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
+('func1@mundial.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
+('func2@mundial.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
+('user1@gmail.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
+('user2@gmail.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
+('user3@gmail.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06');
+
+
+INSERT INTO Pais VALUES
+('uruguay'),
+('argentina'),
+('brasil');
+
+INSERT INTO Administrador VALUES
+('admin@mundial.com','2026-01-01','uruguay');
+
+INSERT INTO Funcionario VALUES
+('func1@mundial.com',1001),
+('func2@mundial.com',1002);
+
+
+INSERT INTO Usuario VALUES
+('user1@gmail.com','2026-06-01','verificado'),
+('user2@gmail.com','2026-06-02','verificado'),
+('user3@gmail.com','2026-06-03','noVerificado');
+
+INSERT INTO Usuario VALUES
+('admin@mundial.com','2026-06-01','verificado'),
+('func1@mundial.com','2026-06-01','verificado'),
+('func2@mundial.com','2026-06-01','verificado');
+

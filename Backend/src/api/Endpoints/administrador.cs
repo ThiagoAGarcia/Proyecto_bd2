@@ -19,11 +19,12 @@ public static class AdministradorEndpoints
 
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                INSERT INTO `administrador` (`MailPerfil`)
-                VALUES (@mail);
+                INSERT INTO `administrador` (`MailPerfil`, `NombrePais`)
+                VALUES (@mail, @nombrePais);
                 """;
 
             command.Parameters.AddWithValue("@mail", mail);
+            command.Parameters.AddWithValue("@nombrePais", request.NombrePais);
 
             try
             {
@@ -43,7 +44,8 @@ public static class AdministradorEndpoints
 
             return Results.Created($"/administrador/{mail}", new
             {
-                MailPerfil = mail
+                MailPerfil = mail,
+                NombrePais = request.NombrePais
             });
         }).RequireAuthorization("SoloAdministrador");
 
@@ -69,7 +71,7 @@ public static class AdministradorEndpoints
 
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                SELECT `MailPerfil`
+                SELECT `MailPerfil`, `NombrePais`
                 FROM `administrador`
                 WHERE `MailPerfil` = @mail
                 LIMIT 1;
@@ -86,7 +88,8 @@ public static class AdministradorEndpoints
 
             return Results.Ok(new
             {
-                MailPerfil = Normalizar.NormalizarMethod(reader.GetString("MailPerfil"))
+                MailPerfil = Normalizar.NormalizarMethod(reader.GetString("MailPerfil")),
+                NombrePais = reader.GetString("NombrePais")
             });
         }).RequireAuthorization();
     }
