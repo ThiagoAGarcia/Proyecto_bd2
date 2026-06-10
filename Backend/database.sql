@@ -29,8 +29,10 @@ CREATE TABLE Perfil(
       'ssn',
       'sin'
     ) NOT NULL,
-    numeroDocumento VARCHAR(32) NOT NULL UNIQUE,
+    numeroDocumento VARCHAR(32) NOT NULL,
+    direccionPais VARCHAR(100) NOT NULL,
     direccionLocalidad VARCHAR(32) NOT NULL,
+    direccionCalle VARCHAR(100) NOT NULL,
     direccionNumero INT NOT NULL,
     direccionCodigoPostal INT NOT NULL,
     unique(numeroDocumento, tipoDocumento)
