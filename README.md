@@ -10,6 +10,11 @@ Contenido del archivo `.env`:
 
 ```env
 ConnectionStrings__DefaultConnection=Server=host.docker.internal;Port=3306;Database=proyectoBD2;User=root;Password=root;
+
+Gmail__Email=mundialucu2026@gmail.com
+Gmail__Password=kebzimmwvnvkiqmm
+
+
 Instalar Entity Framework CLI:
 
 dotnet tool install --global dotnet-ef
@@ -19,6 +24,8 @@ Paquetes usados
 dotnet add package MySqlConnector
 dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer
 dotnet add package BCrypt.Net-Next
+dotnet add package MailKit
+
 Borrar imagen/contenedores
 Solo si es necesario:
 
