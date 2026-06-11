@@ -46,6 +46,7 @@ public static class LoginEndpoints
             {
                 return Results.Json(new
                 {
+                    success = false, // No sé si borrarlo por si acaso
                     message = "Usuario no verificado"
                 }, statusCode: StatusCodes.Status401Unauthorized);
             }
@@ -54,6 +55,7 @@ public static class LoginEndpoints
 
             return Results.Ok(new
             {
+                success = true,
                 message = "Login correcto",
                 role = typeUser
             });
@@ -282,6 +284,7 @@ public static class LoginEndpoints
 
             return Results.Created($"/login/{mail}", new
             {
+                Success = true,
                 MailPerfil = mail
             });
         });

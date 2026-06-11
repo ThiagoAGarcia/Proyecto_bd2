@@ -40,7 +40,7 @@ CREATE TABLE Perfil(
 
 CREATE TABLE Telefono (
     mailPerfil VARCHAR(200) PRIMARY KEY,
-    telefono INT NOT NULL,
+    telefono VARCHAR(16) NOT NULL,
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail)
 );
 

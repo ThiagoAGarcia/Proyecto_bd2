@@ -58,7 +58,7 @@ function Login() {
             console.log(mailPerfil)
             console.log(password)
 
-            if (logged?.access_token) {
+            if (logged?.success) {
                 localStorage.setItem('token', logged.access_token)
                 localStorage.setItem('role', JSON.stringify(logged.role))
                 localStorage.setItem('roles', JSON.stringify(logged.roles))

@@ -1,35 +1,17 @@
-const API = 'http://localhost:5001'
-const PATH = '/loginCheck'
+const API = "http://localhost:5001";
+const PATH = "/loginCheck"
 
-export default async function postRegisterService(BODY) {
-  try {
-    const res = await fetch(`${API}${PATH}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(BODY),
-    })
-
-    const data = await res.json()
-
-    console.log(data)
-
-    if (res.status !== 201) {
-      return {
-        success: false,
-        description: data.message || 'Error desconocido en el servidor',
-        status: res.status,
-      }
+export default async function postLoginService(BODY) {
+    try {
+        const res = await fetch(`${API}${PATH}`, {
+            method: "POST",
+            headers: {"Content-Type":"application/json"},
+            body: JSON.stringify(BODY)
+        });
+    if (!res.ok) throw new Error(`POST ${PATH} -> ${res.status}`);
+    const login = await res.json();
+    return login;
+    } catch(error) {
+        console.log(error.message);
     }
-
-    return {
-      success: true,
-      ...data,
-    }
-  } catch (error) {
-    console.error('Error en postRegisterService:', error)
-    return {
-      success: false,
-      description: 'Error de conexión con el servidor',
-    }
-  }
 }

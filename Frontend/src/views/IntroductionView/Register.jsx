@@ -1,5 +1,6 @@
 import { IoEye, IoEyeOff, IoAddCircleOutline, IoTrashOutline } from 'react-icons/io5'
 import { useEffect, useState } from 'react'
+import postTelefono from '../../services/TelefonoService/postTelefono.jsx'
 import postPerfil from '../../services/PerfilService/postPerfil.jsx'
 import postUsuario from '../../services/UsuarioService/postUsuario.jsx'
 import postLogin from '../../services/LoginService/postLogin.jsx'
@@ -66,20 +67,19 @@ function Register() {
     const err = {}
     const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
-    if (!regexEmail.test(form.mail)) err.mail = 'Ingresá un correo electrónico válido.'
-    if (!form.tipoDocumento) err.tipoDocumento = 'Seleccioná un tipo de documento.'
-    if (!form.paisDocumento.trim()) err.paisDocumento = 'Ingresá el país del documento.'
-    if (!form.numeroDocumento.trim()) err.numeroDocumento = 'Ingresá el número de documento.'
-    if (!form.direccionPais.trim()) err.direccionPais = 'Ingresá el país de residencia.'
-    if (!form.direccionLocalidad.trim()) err.direccionLocalidad = 'Ingresá la localidad.'
-    if (!form.direccionCalle.trim()) err.direccionCalle = 'Ingresá la calle.'
-    if (!form.direccionNumero.trim()) err.direccionNumero = 'Ingresá el número de puerta.'
-    if (!form.direccionCodigoPostal.trim()) err.direccionCodigoPostal = 'Ingresá el código postal.'
+    if (!regexEmail.test(form.mail)) err.mail = 'Ingresar un correo electrónico válido.'
+    if (!form.tipoDocumento) err.tipoDocumento = 'Seleccionar un tipo de documento.'
+    if (!form.paisDocumento.trim()) err.paisDocumento = 'Ingresar el país del documento.'
+    if (!form.numeroDocumento.trim()) err.numeroDocumento = 'Ingresar el número de documento.'
+    if (!form.direccionPais.trim()) err.direccionPais = 'Ingresar el país de residencia.'
+    if (!form.direccionLocalidad.trim()) err.direccionLocalidad = 'Ingresar la localidad.'
+    if (!form.direccionCalle.trim()) err.direccionCalle = 'Ingresar la calle.'
+    if (!form.direccionNumero.trim()) err.direccionNumero = 'Ingresar el número de puerta.'
+    if (!form.direccionCodigoPostal.trim()) err.direccionCodigoPostal = 'Ingresar el código postal.'
     if (form.password.length < 8) err.password = 'La contraseña debe tener al menos 8 caracteres.'
     if (form.confirmPassword !== form.password) err.confirmPassword = 'Las contraseñas no coinciden.'
 
     const telefonosValidos = telefonos.filter((t) => t.trim() !== '')
-    if (telefonosValidos.length === 0) err.telefonos = 'Agregá al menos un teléfono.'
 
     return err
   }
@@ -96,7 +96,7 @@ function Register() {
 
     const BODY = {
       mail: form.mail,
-      paisDocumento: form.paisDocumento, 
+      paisDocumento: form.paisDocumento,
       tipoDocumento: form.tipoDocumento,
       numeroDocumento: form.numeroDocumento,
       direccionPais: form.direccionPais,
@@ -104,7 +104,7 @@ function Register() {
       direccionCalle: form.direccionCalle,
       direccionNumero: parseInt(form.direccionNumero),
       direccionCodigoPostal: parseInt(form.direccionCodigoPostal),
-      
+
     }
     const BODYUsuario = {
       mailPerfil: form.mail,
@@ -123,10 +123,34 @@ function Register() {
       setIsLoading(true)
       const registerPerfil = await postPerfil(BODY)
       if (registerPerfil?.success) {
-        const registerUsuario = await postUsuario(BODYUsuario);
-        const registerLogin = await postLogin(BODYLogin);
+        const registerTelefono = await postTelefono(BODYTelefono);
+        if (registerTelefono?.success) {
+          const registerUsuario = await postUsuario(BODYUsuario);
+          console.log(registerUsuario)
+          if (registerUsuario?.success) {
+            const registerLogin = await postLogin(BODYLogin);
+            console.log(registerLogin)
+            if (registerLogin?.success) {
+              navigate('/')
+            } else {
+              toast.error(registerPerfil?.description || 'Error al registrar', {
+                position: 'bottom-left',
+                autoClose: 3000,
+              })
+            }
+          } else {
+            toast.error(registerPerfil?.description || 'Error al registrar', {
+              position: 'bottom-left',
+              autoClose: 3000,
+            })
+          }
+        } else {
+          toast.error(registerPerfil?.description || 'Error al registrar', {
+            position: 'bottom-left',
+            autoClose: 3000,
+          })
+        }
 
-        navigate('/')
       } else {
         toast.error(registerPerfil?.description || 'Error al registrar', {
           position: 'bottom-left',
@@ -335,7 +359,7 @@ function Register() {
               </Field>
             </div>
 
-            <SectionLabel>Teléfonos</SectionLabel>
+            <SectionLabel>Teléfonos (opcional)</SectionLabel>
 
             <div className="flex flex-col gap-2 mb-1">
               {telefonos.map((tel, i) => (
@@ -385,7 +409,7 @@ function Register() {
             <div className="w-full flex justify-center items-center mt-4">
               <span className="text-sm">
                 ¿Ya tenés una cuenta?{' '}
-                <a href="/" className="font-bold border-b border-black hover:border-transparent transition-all">
+                <a className="font-bold border-b border-black hover:border-transparent transition-all">
                   INICIAR SESIÓN
                 </a>
               </span>
