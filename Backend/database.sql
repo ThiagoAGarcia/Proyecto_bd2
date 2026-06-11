@@ -52,7 +52,7 @@ CREATE TABLE Login (
 
 CREATE TABLE Equipo(
     nombre VARCHAR(20) PRIMARY KEY,
-    continente VARCHAR(30) NOT NULL
+    bandera VARCHAR(256)
 );
 
 CREATE TABLE Pais(
@@ -61,6 +61,7 @@ CREATE TABLE Pais(
 
 CREATE TABLE Estadio (
     identificador INT PRIMARY KEY AUTO_INCREMENT,
+    imagen VARCHAR(256) NOT NULL,
     nombre VARCHAR(32) NOT NULL,
     nombrePais VARCHAR(20) NOT NULL,
     direccionLocalidad VARCHAR(200) NOT NULL,
@@ -256,9 +257,3 @@ INSERT INTO Usuario VALUES
 ('user1@gmail.com','2026-06-01','verificado'),
 ('user2@gmail.com','2026-06-02','verificado'),
 ('user3@gmail.com','2026-06-03','noVerificado');
-
-INSERT INTO Usuario VALUES
-('admin@mundial.com','2026-06-01','verificado'),
-('func1@mundial.com','2026-06-01','verificado'),
-('func2@mundial.com','2026-06-01','verificado');
-
