@@ -116,5 +116,7 @@ app.MapVerificarMailEndpoints();
 app.MapEstadioEndpoints();
 app.MapPaisEndpoints();
 app.MapTelefonoEndpoints();
+app.MapEquipoEndpoints();
+app.MapPartidoEndpoints();
 
 app.Run();

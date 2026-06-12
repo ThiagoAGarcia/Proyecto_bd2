@@ -52,7 +52,7 @@ CREATE TABLE Login (
 
 CREATE TABLE Equipo(
     nombre VARCHAR(20) PRIMARY KEY,
-    continente VARCHAR(30) NOT NULL
+    bandera VARCHAR(256)
 );
 
 CREATE TABLE Pais(
@@ -61,8 +61,9 @@ CREATE TABLE Pais(
 
 CREATE TABLE Estadio (
     identificador INT PRIMARY KEY AUTO_INCREMENT,
+    imagen VARCHAR(256),
     nombre VARCHAR(32) NOT NULL,
-    nombrePais VARCHAR(20) NOT NULL,
+    nombrePais ENUM('estados unidos', 'canada', 'mexico') NOT NULL,
     direccionLocalidad VARCHAR(200) NOT NULL,
     direccionCalle VARCHAR(20) NOT NULL,
     direccionNumero INT NOT NULL,
@@ -194,7 +195,7 @@ CREATE TABLE Transferencia(
 
 CREATE TABLE Grupo (
     identificador INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(200)
+    nombre VARCHAR(200) UNIQUE
 );
 
 CREATE TABLE Pertenece(
@@ -256,9 +257,4 @@ INSERT INTO Usuario VALUES
 ('user1@gmail.com','2026-06-01','verificado'),
 ('user2@gmail.com','2026-06-02','verificado'),
 ('user3@gmail.com','2026-06-03','noVerificado');
-
-INSERT INTO Usuario VALUES
-('admin@mundial.com','2026-06-01','verificado'),
-('func1@mundial.com','2026-06-01','verificado'),
-('func2@mundial.com','2026-06-01','verificado');
 
