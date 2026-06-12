@@ -118,5 +118,7 @@ app.MapPaisEndpoints();
 app.MapTelefonoEndpoints();
 app.MapEquipoEndpoints();
 app.MapPartidoEndpoints();
+app.MapGrupoEndpoints();
+app.MapEquipoPerteneceGrupoEndpoints();
 
 app.Run();

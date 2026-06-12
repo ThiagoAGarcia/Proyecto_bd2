@@ -15,20 +15,22 @@ public static class EquipoEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
+            var Nombre = Normalizar.NormalizarMethod(request.Nombre);
+
             await using var command = connection.CreateCommand();
             command.CommandText = """
                 INSERT INTO `Equipo` (`Nombre`, `Bandera`)
                 VALUES (@nombre, @bandera);
                 """;
 
-            command.Parameters.AddWithValue("@nombre", request.Nombre);
+            command.Parameters.AddWithValue("@nombre", Nombre);
             command.Parameters.AddWithValue("@bandera", request.Bandera);
 
             await command.ExecuteNonQueryAsync();
 
             return Results.Created($"/equipo", new
             {
-                Nombre = request.Nombre,
+                Nombre = Nombre,
                 Bandera = request.Bandera
             });
         }).RequireAuthorization("SoloAdministrador");
