@@ -63,7 +63,7 @@ CREATE TABLE Estadio (
     identificador INT PRIMARY KEY AUTO_INCREMENT,
     imagen VARCHAR(256),
     nombre VARCHAR(32) NOT NULL,
-    nombrePais ENUM('estados unidos', 'canada', 'mexico') NOT NULL,
+    nombrePais VARCHAR(20) NOT NULL, # cambio para que lo estadios solo puedan pertenecer a los paises anfitriones del mundial
     direccionLocalidad VARCHAR(200) NOT NULL,
     direccionCalle VARCHAR(20) NOT NULL,
     direccionNumero INT NOT NULL,
@@ -81,7 +81,7 @@ CREATE TABLE Sector (
     PRIMARY KEY (identificadorEstadio, identificador)
 );
 
-CREATE TABLE Partido (
+CREATE TABLE Partido (  # que hacer con fase aca
     identificador INT AUTO_INCREMENT PRIMARY KEY,
     fase VARCHAR(30) NOT NULL,
     EquipoLocal VARCHAR(32) NOT NULL,
@@ -194,23 +194,18 @@ CREATE TABLE Transferencia(
 );
 
 CREATE TABLE Grupo (
-    identificador INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(200) UNIQUE
+    nombreGrupo VARCHAR(25),
+    nombreEtapa VARCHAR(25),
+    PRIMARY KEY (nombreGrupo, nombreEtapa)
 );
 
 CREATE TABLE Pertenece(
     nombreEquipo VARCHAR(30),
-    identificadorGrupo INT,
+    nombreGrupo VARCHAR(25),
+    nombreEtapa VARCHAR(25),
     FOREIGN KEY (nombreEquipo) REFERENCES Equipo(nombre),
-    FOREIGN KEY (identificadorGrupo) REFERENCES Grupo(identificador),
-    PRIMARY KEY (nombreEquipo, identificadorGrupo)
-);
-
-CREATE TABLE Etapa(
-    identificador INT PRIMARY KEY AUTO_INCREMENT,
-    nombre VARCHAR(50) NOT NULL,
-    identificadorGrupo INT NOT NULL,
-    FOREIGN KEY (identificadorGrupo) REFERENCES Grupo(identificador)
+    FOREIGN KEY (nombreGrupo, nombreEtapa) REFERENCES Grupo(nombreGrupo, nombreEtapa),
+    PRIMARY KEY (nombreEquipo, nombreGrupo, nombreEtapa)
 );
 
 CREATE TABLE VerificacionMail(
