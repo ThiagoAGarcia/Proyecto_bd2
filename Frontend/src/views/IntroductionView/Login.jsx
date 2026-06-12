@@ -12,13 +12,6 @@ function Login() {
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
 
-    useEffect(() => {
-        localStorage.removeItem('token')
-        localStorage.removeItem('role')
-        localStorage.removeItem('ci')
-        localStorage.removeItem('roles')
-    }, [])
-
     const commitLogin = async () => {
 
         console.log("commitLogin ejecutado");
@@ -51,19 +44,9 @@ function Login() {
 
         try {
             setIsLoading(true)
-
             const BODY = { mailPerfil, password }
             const logged = await LoginService(BODY)
-            console.log(logged);
-            console.log(mailPerfil)
-            console.log(password)
-
             if (logged?.success) {
-                localStorage.setItem('token', logged.access_token)
-                localStorage.setItem('role', JSON.stringify(logged.role))
-                localStorage.setItem('roles', JSON.stringify(logged.roles))
-                localStorage.setItem('ci', JSON.stringify(logged.ci))
-
                 if (logged.role.includes('Administrador')) {
                     navigate('/main-admin')
                     return
@@ -85,7 +68,6 @@ function Login() {
                 })
             }
         } catch (error) {
-            console.error(error)
             toast.error('Error de conexión con el servidor', {
                 position: 'bottom-left',
                 autoClose: 3000,
@@ -114,7 +96,7 @@ function Login() {
                 </div>
             )}
 
-            <div className="w-full h-screen bg-[#045694] flex flex-row justify-center items-center">
+            <div className="w-full h-screen bg-[#0a1628] flex flex-row justify-center items-center">
                 <img
                     src={logo}
                     alt="FifaUcu"

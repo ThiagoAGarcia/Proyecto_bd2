@@ -13,13 +13,6 @@ import logo from './../../assets/FifaUCULogo.png'
 const TIPOS_DOCUMENTO = ['ci', 'dni', 'cpf', 'rut', 'cc', 'curp', 'ssn', 'sin']
 
 function Register() {
-  useEffect(() => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('role')
-    localStorage.removeItem('ci')
-    localStorage.removeItem('roles')
-  }, [])
-
   const navigate = useNavigate()
   const [verPwd, setVerPwd] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -185,7 +178,7 @@ function Register() {
         </div>
       )}
 
-      <div className="min-h-screen w-full bg-[#045694] flex flex-col items-center justify-center py-10 px-4">
+      <div className="min-h-screen w-full bg-[#0a1628] flex flex-col items-center justify-center py-10 px-4">
         <img
           src={logo}
           alt="FifaUcu"
@@ -409,7 +402,7 @@ function Register() {
             <div className="w-full flex justify-center items-center mt-4">
               <span className="text-sm">
                 ¿Ya tenés una cuenta?{' '}
-                <a className="font-bold border-b border-black hover:border-transparent transition-all">
+                <a href="/" className="font-bold border-b border-black hover:border-transparent transition-all" >
                   INICIAR SESIÓN
                 </a>
               </span>
