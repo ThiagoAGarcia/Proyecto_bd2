@@ -1,0 +1,326 @@
+using api.Methods;
+using MySqlConnector;
+using api.DTOs;
+
+namespace api.Endpoints;
+
+public static class PartidoEndpoints
+{
+    public static void MapPartidoEndpoints(this WebApplication app)
+    {
+        app.MapPost("/partido", async (PartidoRequest request, IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            if (request.EquipoLocal == request.EquipoVisitante)
+            {
+                return Results.BadRequest("El equipo local y el equipo visitante no pueden ser el mismo.");
+            }
+
+            if (request.FechaHora < DateTime.UtcNow)
+            {
+                return Results.BadRequest("La fecha y hora del partido no pueden ser en el pasado.");
+            }
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                INSERT INTO `partido` (`fase`, `EquipoLocal`, `EquipoVisitante`, `identificadorEstadio`, `fechaHora`)
+                VALUES (@fase, @equipoLocal, @equipoVisitante, @identificadorEstadio, @fechaHora);
+                """;
+
+            command.Parameters.AddWithValue("@fase", request.Fase);
+            command.Parameters.AddWithValue("@equipoLocal", request.EquipoLocal);
+            command.Parameters.AddWithValue("@equipoVisitante", request.EquipoVisitante);
+            command.Parameters.AddWithValue("@identificadorEstadio", request.IdentificadorEstadio);
+            command.Parameters.AddWithValue("@fechaHora", request.FechaHora);
+
+            await command.ExecuteNonQueryAsync();
+
+            return Results.Created($"/partido", new
+            {
+                Fase = request.Fase,
+                EquipoLocal = request.EquipoLocal,
+                EquipoVisitante = request.EquipoVisitante,
+                IdentificadorEstadio = request.IdentificadorEstadio,
+                FechaHora = request.FechaHora
+            });
+        }).RequireAuthorization("SoloAdministrador");
+        app.MapGet("/partido/{identificador}", async (int identificador, IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT p.identificador,
+                    p.fase,
+                    p.EquipoLocal,
+                    p.EquipoVisitante,
+                    p.identificadorEstadio,
+                    p.fechaHora,
+                    el.Nombre AS NombreEstadio,
+                    el.Imagen AS ImagenEstadio,
+                    el.DireccionLocalidad AS DireccionLocalidadEstadio,
+                    el.DireccionCalle AS DireccionCalleEstadio,
+                    el.NombrePais AS NombrePaisEstadio
+                FROM partido p
+                JOIN estadio el ON p.identificadorEstadio = el.identificador
+                WHERE p.identificador = @identificador
+                LIMIT 1;
+                """;
+
+            command.Parameters.AddWithValue("@identificador", identificador);
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            if (!await reader.ReadAsync())
+            {
+                return Results.NotFound();
+            }
+
+            return Results.Ok(new
+            {
+                Identificador = reader.GetInt32("identificador"),
+                Fase = reader.GetString("fase"),
+                EquipoLocal = reader.GetString("EquipoLocal"),
+                EquipoVisitante = reader.GetString("EquipoVisitante"),
+                IdentificadorEstadio = reader.GetInt32("identificadorEstadio"),
+                FechaHora = reader.GetDateTime("fechaHora"),
+                NombreEstadio = reader.GetString("NombreEstadio"),
+                ImagenEstadio = reader.GetString("ImagenEstadio"),
+                DireccionLocalidadEstadio = reader.GetString("DireccionLocalidadEstadio"),
+                DireccionCalleEstadio = reader.GetString("DireccionCalleEstadio"),
+                NombrePaisEstadio = reader.GetString("NombrePaisEstadio")
+            });
+        }).RequireAuthorization();
+
+        app.MapDelete("/partido/{identificador}", async (int identificador, IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                DELETE FROM `partido`
+                WHERE `identificador` = @identificador;
+                """;
+
+            command.Parameters.AddWithValue("@identificador", identificador);
+
+            var rowsAffected = await command.ExecuteNonQueryAsync();
+
+            if (rowsAffected == 0)
+            {
+                return Results.NotFound();
+            }
+
+            return Results.NoContent();
+        }).RequireAuthorization("SoloAdministrador");
+
+        app.MapPut("/partido/{identificador}", async (int identificador, PartidoUpdateRequest request, IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                UPDATE `partido`
+                SET `fase` = @fase,
+                    `EquipoLocal` = @equipoLocal,
+                    `EquipoVisitante` = @equipoVisitante,
+                    `identificadorEstadio` = @identificadorEstadio,
+                    `fechaHora` = @fechaHora
+                WHERE `identificador` = @identificador;
+                """;
+
+            command.Parameters.AddWithValue("@identificador", identificador);
+            command.Parameters.AddWithValue("@fase", request.Fase);
+            command.Parameters.AddWithValue("@equipoLocal", request.EquipoLocal);
+            command.Parameters.AddWithValue("@equipoVisitante", request.EquipoVisitante);
+            command.Parameters.AddWithValue("@identificadorEstadio", request.IdentificadorEstadio);
+            command.Parameters.AddWithValue("@fechaHora", request.FechaHora);
+
+            var rowsAffected = await command.ExecuteNonQueryAsync();
+
+            if (rowsAffected == 0)
+            {
+                return Results.NotFound();
+            }
+
+            return Results.Ok(new
+            {
+                Identificador = identificador,
+                Fase = request.Fase,
+                EquipoLocal = request.EquipoLocal,
+                EquipoVisitante = request.EquipoVisitante,
+                IdentificadorEstadio = request.IdentificadorEstadio,
+                FechaHora = request.FechaHora
+            });
+
+        }).RequireAuthorization("SoloAdministrador");
+
+        app.MapGet("/partidos", async (IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT p.identificador,
+                    p.fase,
+                    p.EquipoLocal,
+                    p.EquipoVisitante,
+                    p.identificadorEstadio,
+                    p.fechaHora,
+                    el.Nombre AS NombreEstadio,
+                    el.Imagen AS ImagenEstadio,
+                    el.DireccionLocalidad AS DireccionLocalidadEstadio,
+                    el.DireccionCalle AS DireccionCalleEstadio,
+                    el.NombrePais AS NombrePaisEstadio
+                FROM partido p
+                JOIN estadio el ON p.identificadorEstadio = el.identificador;
+                """;
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var partidos = new List<object>();
+
+            while (await reader.ReadAsync())
+            {
+                partidos.Add(new
+                {
+                    Identificador = reader.GetInt32("identificador"),
+                    Fase = reader.GetString("fase"),
+                    EquipoLocal = reader.GetString("EquipoLocal"),
+                    EquipoVisitante = reader.GetString("EquipoVisitante"),
+                    IdentificadorEstadio = reader.GetInt32("identificadorEstadio"),
+                    FechaHora = reader.GetDateTime("fechaHora"),
+                    NombreEstadio = reader.GetString("NombreEstadio"),
+                    ImagenEstadio = reader.GetString("ImagenEstadio"),
+                    DireccionLocalidadEstadio = reader.GetString("DireccionLocalidadEstadio"),
+                    DireccionCalleEstadio = reader.GetString("DireccionCalleEstadio"),
+                    NombrePaisEstadio = reader.GetString("NombrePaisEstadio")
+                });
+            }
+
+            return Results.Ok(partidos);
+        }).RequireAuthorization();
+
+        app.MapGet("/partidoFase/{fase}", async (string fase, IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT p.identificador,
+                    p.fase,
+                    p.EquipoLocal,
+                    p.EquipoVisitante,
+                    p.identificadorEstadio,
+                    p.fechaHora,
+                    el.Nombre AS NombreEstadio,
+                    el.Imagen AS ImagenEstadio,
+                    el.DireccionLocalidad AS DireccionLocalidadEstadio,
+                    el.DireccionCalle AS DireccionCalleEstadio,
+                    el.NombrePais AS NombrePaisEstadio
+                FROM partido p
+                JOIN estadio el ON p.identificadorEstadio = el.identificador
+                WHERE p.fase = @fase;
+                """;
+
+            command.Parameters.AddWithValue("@fase", fase);
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var partidos = new List<object>();
+
+            while (await reader.ReadAsync())
+            {
+                partidos.Add(new
+                {
+                    Identificador = reader.GetInt32("identificador"),
+                    Fase = reader.GetString("fase"),
+                    EquipoLocal = reader.GetString("EquipoLocal"),
+                    EquipoVisitante = reader.GetString("EquipoVisitante"),
+                    IdentificadorEstadio = reader.GetInt32("identificadorEstadio"),
+                    FechaHora = reader.GetDateTime("fechaHora"),
+                    NombreEstadio = reader.GetString("NombreEstadio"),
+                    ImagenEstadio = reader.GetString("ImagenEstadio"),
+                    DireccionLocalidadEstadio = reader.GetString("DireccionLocalidadEstadio"),
+                    DireccionCalleEstadio = reader.GetString("DireccionCalleEstadio"),
+                    NombrePaisEstadio = reader.GetString("NombrePaisEstadio")
+                });
+            }
+
+            return Results.Ok(partidos);
+        }).RequireAuthorization();
+        app.MapGet("/partidoEquipo/{equipo}", async (string equipo, IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT p.identificador,
+                    p.fase,
+                    p.EquipoLocal,
+                    p.EquipoVisitante,
+                    p.identificadorEstadio,
+                    p.fechaHora,
+                    el.Nombre AS NombreEstadio,
+                    el.Imagen AS ImagenEstadio,
+                    el.DireccionLocalidad AS DireccionLocalidadEstadio,
+                    el.DireccionCalle AS DireccionCalleEstadio,
+                    el.NombrePais AS NombrePaisEstadio
+                FROM partido p
+                JOIN estadio el ON p.identificadorEstadio = el.identificador
+                WHERE p.EquipoLocal = @equipo
+                OR p.EquipoVisitante = @equipo;
+                """;
+
+            command.Parameters.AddWithValue("@equipo", equipo);
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var partidos = new List<object>();
+
+            while (await reader.ReadAsync())
+            {
+                partidos.Add(new
+                {
+                    Identificador = reader.GetInt32("identificador"),
+                    Fase = reader.GetString("fase"),
+                    EquipoLocal = reader.GetString("EquipoLocal"),
+                    EquipoVisitante = reader.GetString("EquipoVisitante"),
+                    IdentificadorEstadio = reader.GetInt32("identificadorEstadio"),
+                    FechaHora = reader.GetDateTime("fechaHora"),
+                    NombreEstadio = reader.GetString("NombreEstadio"),
+                    ImagenEstadio = reader.GetString("ImagenEstadio"),
+                    DireccionLocalidadEstadio = reader.GetString("DireccionLocalidadEstadio"),
+                    DireccionCalleEstadio = reader.GetString("DireccionCalleEstadio"),
+                    NombrePaisEstadio = reader.GetString("NombrePaisEstadio")
+                });
+            }
+
+            return Results.Ok(partidos);
+
+        }).RequireAuthorization();
+
+
+    }
+}
