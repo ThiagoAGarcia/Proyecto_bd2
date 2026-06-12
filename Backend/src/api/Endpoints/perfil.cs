@@ -72,7 +72,15 @@ public static class PerfilEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
-            
+            string mail = Normalizar.NormalizarMethod(request.Mail);
+
+            var resultadoMail = PerfilValidation.ValidarMail(mail);
+
+            if (resultadoMail is not null)
+            {
+                return Results.BadRequest(resultadoMail);
+            }
+
 
             if (!Documento.ValidarDocumento(request.PaisDocumento, request.TipoDocumento, request.NumeroDocumento))
             {
@@ -88,8 +96,15 @@ public static class PerfilEndpoints
                     (@mail, @paisDocumento, @tipoDocumento, @numeroDocumento,
                      @direccionPais, @direccionCalle, @direccionLocalidad, @direccionNumero, @direccionCodigoPostal);
                 """;
-
-            AddPerfilParameters(command, request);
+            command.Parameters.AddWithValue("@mail", mail);
+            command.Parameters.AddWithValue("@paisDocumento", Normalizar.NormalizarMethod(request.PaisDocumento));
+            command.Parameters.AddWithValue("@tipoDocumento", Normalizar.NormalizarMethod(request.TipoDocumento));
+            command.Parameters.AddWithValue("@numeroDocumento", Normalizar.NormalizarMethod(request.NumeroDocumento));
+            command.Parameters.AddWithValue("@direccionPais", Normalizar.NormalizarMethod(request.DireccionPais));
+            command.Parameters.AddWithValue("@direccionCalle", Normalizar.NormalizarMethod(request.DireccionCalle));
+            command.Parameters.AddWithValue("@direccionLocalidad", Normalizar.NormalizarMethod(request.DireccionLocalidad));
+            command.Parameters.AddWithValue("@direccionNumero", request.DireccionNumero);
+            command.Parameters.AddWithValue("@direccionCodigoPostal", request.DireccionCodigoPostal);
 
             try
             {

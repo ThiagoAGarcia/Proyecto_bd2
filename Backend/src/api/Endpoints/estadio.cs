@@ -15,6 +15,14 @@ public static class EstadioEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
+            var NombrePais = Normalizar.NormalizarMethod(request.NombrePais);
+            if (NombrePais != "estados unidos" && NombrePais != "canada" && NombrePais != "mexico")
+            {
+                return Results.BadRequest(new
+                {
+                    message = "El país debe ser Estados Unidos, Canadá o Mexico"
+                });
+            }
             await using var command = connection.CreateCommand();
             command.CommandText = """
                 INSERT INTO `Estadio` (`Nombre`, `Imagen`, `NombrePais`, `DireccionLocalidad`, `DireccionCalle`, `DireccionNumero`, `DireccionCodigoPostal`)
@@ -23,7 +31,7 @@ public static class EstadioEndpoints
 
             command.Parameters.AddWithValue("@nombre", request.Nombre);
             command.Parameters.AddWithValue("@imagen", request.Imagen);
-            command.Parameters.AddWithValue("@nombrePais", request.NombrePais);
+            command.Parameters.AddWithValue("@nombrePais", NombrePais);
             command.Parameters.AddWithValue("@direccionLocalidad", request.DireccionLocalidad);
             command.Parameters.AddWithValue("@direccionCalle", request.DireccionCalle);
             command.Parameters.AddWithValue("@direccionNumero", request.DireccionNumero);
@@ -35,7 +43,7 @@ public static class EstadioEndpoints
             {
                 Nombre = request.Nombre,
                 Imagen = request.Imagen,
-                NombrePais = request.NombrePais,
+                NombrePais = NombrePais,
                 DireccionLocalidad = request.DireccionLocalidad,
                 DireccionCalle = request.DireccionCalle,
                 DireccionNumero = request.DireccionNumero,
@@ -148,6 +156,8 @@ public static class EstadioEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
+            var NombrePais = Normalizar.NormalizarMethod(request.NombrePais);
+
             await using var command = connection.CreateCommand();
             command.CommandText = """
                 UPDATE `estadio`
@@ -164,7 +174,7 @@ public static class EstadioEndpoints
             command.Parameters.AddWithValue("@identificador", identificador);
             command.Parameters.AddWithValue("@nombre", request.Nombre);
             command.Parameters.AddWithValue("@imagen", request.Imagen);
-            command.Parameters.AddWithValue("@nombrePais", request.NombrePais);
+            command.Parameters.AddWithValue("@nombrePais", NombrePais);
             command.Parameters.AddWithValue("@direccionLocalidad", request.DireccionLocalidad);
             command.Parameters.AddWithValue("@direccionCalle", request.DireccionCalle);
             command.Parameters.AddWithValue("@direccionNumero", request.DireccionNumero);

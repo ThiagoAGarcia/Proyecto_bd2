@@ -64,12 +64,20 @@ public static class LoginEndpoints
         app.MapPost("/login", async (LoginRequest request, IConfiguration config) =>
         {
             var mail = Normalizar.NormalizarMethod(request.MailPerfil);
+            var passwordError = PerfilValidation.ValidarPassword(request.Password);
+
+            if (passwordError is not null)
+            {
+                return Results.BadRequest(passwordError);
+            }
 
             var connectionString = config.GetConnectionString("DefaultConnection");
             var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
+
+
 
             await using var command = connection.CreateCommand();
             command.CommandText = """

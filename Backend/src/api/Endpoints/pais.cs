@@ -15,13 +15,15 @@ public static class PaisEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
+            var Nombre = Normalizar.NormalizarMethod(request.Nombre);
+
             await using var command = connection.CreateCommand();
             command.CommandText = """
                 INSERT INTO `pais` (`Nombre`)
                 VALUES (@nombre);
                 """;
 
-            command.Parameters.AddWithValue("@nombre", request.Nombre);
+            command.Parameters.AddWithValue("@nombre", Nombre);
 
             await command.ExecuteNonQueryAsync();
 
