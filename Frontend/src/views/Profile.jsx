@@ -2,7 +2,6 @@ import { useEffect, useState, useRef } from 'react'
 import Footer from "../components/footer";
 import NavBar from "../components/navBar";
 import getPerfilMe from '../services/PerfilService/getPerfilMe'
-import postLogout from '../services/LoginService/postLogout'
 import getPerfilPorMail from '../services/PerfilService/getPerfilPorMail'
 import getTelefonoPorMail from '../services/TelefonoService/getTelefonoPorMail';
 import ModalProfile from './ModalProfile'
