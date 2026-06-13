@@ -258,3 +258,53 @@ INSERT INTO Usuario VALUES
 ('user2@gmail.com','2026-06-02','verificado'),
 ('user3@gmail.com','2026-06-03','noVerificado');
 
+INSERT INTO Equipo VALUES
+('argentina', 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Flag_of_Argentina.svg/960px-Flag_of_Argentina.svg.png'),
+('brasil', 'https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg'),
+('uruguay', 'https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Uruguay.svg'),
+('chile', 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Flag_of_Chile.svg/960px-Flag_of_Chile.svg.png'),
+('paraguay', 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Flag_of_Paraguay.svg/960px-Flag_of_Paraguay.svg.png'),
+('peru', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Flag_of_Peru.svg/960px-Flag_of_Peru.svg.png'),
+('colombia', 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Flag_of_Colombia.svg/960px-Flag_of_Colombia.svg.png'),
+('mexico', 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Flag_of_Mexico.svg/960px-Flag_of_Mexico.svg.png'),
+('españa', 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Flag_of_Spain.svg/960px-Flag_of_Spain.svg.png'),
+('estados unidos', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_the_United_States.svg/960px-Flag_of_the_United_States.svg.png'),
+('canada', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Flag_of_Canada.svg/960px-Flag_of_Canada.svg.png');
+
+INSERT INTO Estadio (imagen, nombre, nombrePais, direccionLocalidad, direccionCalle, direccionNumero, direccionCodigoPostal) VALUES
+(NULL, 'MetLife Stadium', 'estados unidos', 'New Jersey', 'MetLife Dr', 1, 7032),
+(NULL, 'SoFi Stadium', 'estados unidos', 'Los Angeles', 'Stadium Dr', 1001, 90301),
+(NULL, 'AT&T Stadium', 'estados unidos', 'Arlington', 'Legends Way', 1, 76011),
+(NULL, 'BMO Field', 'canada', 'Toronto', 'Princes Blvd', 170, 10001),
+(NULL, 'BC Place', 'canada', 'Vancouver', 'Pacific Blvd', 777, 20001),
+(NULL, 'Estadio Azteca', 'mexico', 'Ciudad de Mexico', 'Calzada Tlalpan', 3465, 14370),
+(NULL, 'Estadio Akron', 'mexico', 'Guadalajara', 'Circuito JVC', 2800, 45019),
+(NULL, 'BBVA Stadium', 'mexico', 'Monterrey', 'Pablo Livas', 2011, 67140);
+
+INSERT INTO Partido (fase, EquipoLocal, EquipoVisitante, identificadorEstadio, fechaHora) VALUES
+('Fase de Grupos', 'argentina', 'canada', 1, '2026-06-11 20:00:00'),
+('Fase de Grupos', 'mexico', 'uruguay', 2, '2026-06-12 18:00:00'),
+('Fase de Grupos', 'brasil', 'estados unidos', 3, '2026-06-13 21:00:00'),
+('Fase de Grupos', 'chile', 'paraguay', 4, '2026-06-14 17:00:00'),
+('Fase de Grupos', 'colombia', 'peru', 5, '2026-06-15 19:00:00'),
+('Fase de Grupos', 'españa', 'mexico', 6, '2026-06-16 20:30:00'),
+
+-- Octavos
+('Octavos de Final', 'argentina', 'mexico', 1, '2026-06-28 20:00:00'),
+('Octavos de Final', 'brasil', 'uruguay', 2, '2026-06-29 21:00:00'),
+('Octavos de Final', 'españa', 'canada', 3, '2026-06-30 18:00:00'),
+('Octavos de Final', 'colombia', 'estados unidos', 4, '2026-07-01 19:00:00'),
+
+-- Cuartos
+('Cuartos de Final', 'argentina', 'brasil', 5, '2026-07-04 21:00:00'),
+('Cuartos de Final', 'españa', 'colombia', 6, '2026-07-05 21:00:00'),
+
+-- Semifinales
+('Semifinal', 'argentina', 'españa', 1, '2026-07-10 20:00:00'),
+('Semifinal', 'brasil', 'colombia', 2, '2026-07-11 20:00:00'),
+
+-- Tercer puesto
+('Tercer Puesto', 'españa', 'colombia', 3, '2026-07-14 18:00:00'),
+
+-- Final
+('Final', 'argentina', 'brasil', 1, '2026-07-19 21:00:00');

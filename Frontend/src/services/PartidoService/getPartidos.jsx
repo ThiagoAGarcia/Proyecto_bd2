@@ -1,7 +1,7 @@
 const API = "http://localhost:5001";
-const PATH = "/perfil/me"
+const PATH = "/partidos"
 
-export default async function getPerfilMe() {
+export default async function getPartidos() {
     try {
         const res = await fetch(`${API}${PATH}`, {
             method: "GET",

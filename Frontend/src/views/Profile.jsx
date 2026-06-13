@@ -1,9 +1,9 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import Footer from "../components/footer";
 import NavBar from "../components/navBar";
 import getPerfilMe from '../services/PerfilService/getPerfilMe'
 import getPerfilPorMail from '../services/PerfilService/getPerfilPorMail'
-import getTelefonoPorMail from '../services/TelefonoService/getTelefonoPorMail';
+import getTelefonoPorMail from '../services/TelefonoService/getTelefonoPorMail'
 import ModalProfile from './ModalProfile'
 
 export default function Profile() {
