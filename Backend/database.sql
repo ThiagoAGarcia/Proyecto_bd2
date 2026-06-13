@@ -39,8 +39,9 @@ CREATE TABLE Perfil(
 );
 
 CREATE TABLE Telefono (
-    mailPerfil VARCHAR(200) PRIMARY KEY,
+    mailPerfil VARCHAR(200) NOT NULL,
     telefono VARCHAR(16) NOT NULL,
+    PRIMARY KEY (mailPerfil, telefono),
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail)
 );
 
@@ -56,7 +57,7 @@ CREATE TABLE Equipo(
 );
 
 CREATE TABLE Pais(
-    nombre VARCHAR(20) PRIMARY KEY
+    nombre ENUM('estados unidos', 'canada', 'mexico') PRIMARY KEY
 );
 
 CREATE TABLE Estadio (
@@ -125,7 +126,7 @@ CREATE TABLE DispositivoFuncionario(
 CREATE TABLE Administrador(
     mailPerfil VARCHAR(200) PRIMARY KEY,
     fechaAsignacionCargo DATE NOT NULL,
-    nombrePais VARCHAR(20) NOT NULL,
+    nombrePais ENUM('estados unidos', 'canada', 'mexico') NOT NULL,
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail),
     FOREIGN KEY (nombrePais) REFERENCES Pais(nombre)
 );
@@ -234,14 +235,13 @@ INSERT INTO Login VALUES
 ('user2@gmail.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
 ('user3@gmail.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06');
 
-
 INSERT INTO Pais VALUES
-('uruguay'),
-('argentina'),
-('brasil');
+('canada'),
+('estados unidos'),
+('mexico');
 
 INSERT INTO Administrador VALUES
-('admin@mundial.com','2026-01-01','uruguay');
+('admin@mundial.com','2026-01-01','canada');
 
 INSERT INTO Funcionario VALUES
 ('func1@mundial.com',1001),

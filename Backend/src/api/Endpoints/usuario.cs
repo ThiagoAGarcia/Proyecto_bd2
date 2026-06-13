@@ -122,12 +122,9 @@ public static class UsuarioEndpoints
             });
         }).RequireAuthorization();
 
-        app.MapPut("/usuario/{mail}", async (string mail, UserUpdateRequest request, IConfiguration config, HttpContext context) =>
+        app.MapPut("/usuarios/{mail}", async (string mail, UserUpdateRequest request, IConfiguration config, HttpContext context) =>
         {
             mail = Normalizar.NormalizarMethod(mail);
-
-
-
 
             var connectionString = config.GetConnectionString("DefaultConnection");
 

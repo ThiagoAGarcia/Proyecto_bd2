@@ -27,7 +27,7 @@ public static class Token
                 new Claim(ClaimTypes.Email, mail),
                 new Claim(ClaimTypes.Role, typeUser)
             }),
-            Expires = DateTime.UtcNow.AddMinutes(15),
+            Expires = DateTime.UtcNow.AddHours(3),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(byteKey),
                 SecurityAlgorithms.HmacSha256Signature
@@ -42,7 +42,7 @@ public static class Token
             HttpOnly = true,
             Secure = true,
             SameSite = SameSiteMode.None,
-            Expires = DateTimeOffset.UtcNow.AddMinutes(15)
+            Expires = DateTimeOffset.UtcNow.AddHours(3)
         });
 
         return Results.Ok();
@@ -58,6 +58,18 @@ public static class Token
         }
 
         return mail;
+    }
+
+    public static string? GetRoleUser(HttpContext context)
+    {
+        var role = context.User.FindFirst(ClaimTypes.Role)?.Value;
+
+        if (string.IsNullOrWhiteSpace(role))
+        {
+            return null;
+        }
+
+        return role;
     }
 
     public static void ClearToken(HttpResponse response)
