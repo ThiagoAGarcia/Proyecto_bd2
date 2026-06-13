@@ -58,7 +58,7 @@ function Login() {
                 }
 
                 if (logged.role.includes('Usuario')) {
-                    navigate('/main')
+                    navigate('/main-user')
                     return
                 }
             } else {
@@ -96,18 +96,18 @@ function Login() {
                 </div>
             )}
 
-            <div className="w-full h-screen bg-[#0a1628] flex flex-row justify-center items-center">
+            <div className="w-full h-screen bg-[#0a1628] flex md:flex-row flex-col justify-center items-center">
                 <img
                     src={logo}
                     alt="FifaUcu"
-                    className="w-70 pr-5 h-auto"
+                    className="md:w-70 w-50 pr-5 h-auto my-5 md:my-0"
                 />
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
                         commitLogin();
                     }}
-                    className="flex flex-col justify-center text-center items-center shadow-xl rounded-2xl w-full sm:w-[70%] md:w-[50%] lg:w-[30%] h-120 p-12 bg-white"
+                    className="flex flex-col  justify-center text-center items-center shadow-xl rounded-2xl w-full md:w-[70%] lg:w-[50%] xl:w-[30%] h-120 p-12 bg-white"
                 >
                     <h1 className="text-4xl text-black font-semibold">
                         Iniciar sesión

@@ -1,10 +1,10 @@
 const API = "http://localhost:5001";
-const PATH = "/loginCheck"
+const PATH = "/perfil/me"
 
 export default async function postLoginService(BODY) {
     try {
         const res = await fetch(`${API}${PATH}`, {
-            method: "POST",
+            method: "GET",
             credentials: "include",
             headers: {"Content-Type":"application/json"},
             body: JSON.stringify(BODY)

@@ -10,7 +10,7 @@ import { Oval } from 'react-loader-spinner'
 import { useNavigate } from 'react-router-dom'
 import logo from './../../assets/FifaUCULogo.png'
 
-const TIPOS_DOCUMENTO = ['ci', 'dni', 'cpf', 'rut', 'cc', 'curp', 'ssn', 'sin']
+const TIPOS_DOCUMENTO = ['CI', 'DNI', 'CPF', 'RUT', 'CC', 'CURP', 'SSN', 'SIN']
 
 function Register() {
   const navigate = useNavigate()
@@ -93,11 +93,10 @@ function Register() {
       tipoDocumento: form.tipoDocumento,
       numeroDocumento: form.numeroDocumento,
       direccionPais: form.direccionPais,
-      direccionLocalidad: form.direccionLocalidad,
       direccionCalle: form.direccionCalle,
+      direccionLocalidad: form.direccionLocalidad,
       direccionNumero: parseInt(form.direccionNumero),
       direccionCodigoPostal: parseInt(form.direccionCodigoPostal),
-
     }
     const BODYUsuario = {
       mailPerfil: form.mail,
@@ -254,10 +253,10 @@ function Register() {
                     value={form.tipoDocumento}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className={selectCls(errores.tipoDocumento)}>
+                    className={selectCls(errores.tipoDocumento)} >
                     <option value="">Seleccioná</option>
                     {TIPOS_DOCUMENTO.map((t) => (
-                      <option key={t} value={t}>{t}</option>
+                      <option className="uppercase" key={t} value={t}>{t}</option>
                     ))}
                   </select>
                   <span className="absolute top-1/2 -translate-y-1/2 right-3 pointer-events-none text-gray-500 text-xs">▼</span>
