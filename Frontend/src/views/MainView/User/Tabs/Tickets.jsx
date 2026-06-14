@@ -5,14 +5,9 @@ export default function Groups() {
     <>
       <div className="text-xl">
         <div className="sm:flex justify-between sm:items-end items-start w-full sm:pb-4">
-          <h1 className="font-['Barlow_Condensed'] text-3xl font-bold text-[#0a1628] uppercase tracking-wide leading-none">
+          <h1 className="font-sans text-3xl font-bold text-[#0a1628] uppercase tracking-wide leading-none">
             Mis <span className="text-[#c8a84b]">entradas</span>
           </h1>
-          <div className="sm:py-0 sm:m-0 my-3 px-1 sm:px-0">
-            <button className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all border-none font-['Inter'] leading-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
-              <i className="fa-solid fa-plus" /> Comprar entradas
-            </button>
-          </div>
         </div>
 
         <div className="flex flex-col gap-2.5">
@@ -51,7 +46,7 @@ export default function Groups() {
                 <div className="p-3 rounded-lg bg-[#0a1628] flex items-center justify-center shrink-0">
                   <img className="w-10 h-auto" src="https://upload.wikimedia.org/wikipedia/commons/f/fe/Flag_of_Uruguay.svg" alt="Uruguay" />
                   <span className="px-3 font-extrabold text-[#e0c472] font-['Barlow_Condensed']">-</span>
-                  <img className="w-10 h-auto" src="https://upload.wikimedia.org/wikipedia/commons/0/05/Flag_of_Brazil.svg" alt="Brasil" />
+                  <img className="w-10 h-auto" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Flag_of_Argentina.svg/960px-Flag_of_Argentina.svg.png" alt="Brasil" />
                 </div>
                 <div className="min-w-0">
                   <div className="font-semibold text-[#0a1628] truncate">Uruguay vs Brasil</div>

@@ -1,6 +1,7 @@
 import NavBar from '../../../components/navBar'
 import Footer from '../../../components/footer'
 import Tickets from '../../MainView/User/Tabs/Tickets'
+import AvailableMatchs from './Tabs/AvailableMatchs'
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -16,7 +17,7 @@ export default function MainUser() {
                 <div className="w-full flex justify-start overflow-x-auto overflow-y-hidden mx-0">
                     {[
                         { id: "Mis entradas", label: "Mis entradas", icon: "fa-ticket" },
-                        { id: "Eventos disponibles", label: "Eventos Disponibles", icon: "fa-calendar-days" },
+                        { id: "Partidos disponibles", label: "Partidos Disponibles", icon: "fa-futbol" },
                         { id: "Historial de compras", label: "Historial de compras", icon: "fa-receipt" },
                         { id: "Transferencias", label: "Transferencias", icon: "fa-arrow-right-arrow-left" },
                     ].map((tab) => (
@@ -30,7 +31,7 @@ export default function MainUser() {
                 <div className="w-full sm:max-w-9xl bg-white border border-gray-300 rounded-b-2xl rounded-tr-2xl shadow-md flex flex-col h-[68vh] relative z-10">
                     <div className="sm:p-8 p-4 text-gray-700 text-lg overflow-y-auto scrollbar">
                         {activeTab === "Mis entradas" && <Tickets />}
-                        {/*activeTab === "Eventos disponibles" && <AvailableRooms />*/}
+                        {activeTab === "Partidos disponibles" && <AvailableMatchs />}
                     </div>
                 </div>
             </section>

@@ -83,7 +83,7 @@ export default function NavBar() {
   }, [isOpen])
 
   return (
-    <nav className="bg-[#0a1628] px-6 h-23 flex items-center justify-between relative z-50">
+    <nav className="bg-[#0a1628] px-6 h-23 flex items-center justify-between relative">
       <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-linear-to-r from-[#c8a84b] via-[#006BB6] to-[#c8a84b] animate-stripe"></div>
 
       <button className="cursor-pointer flex items-center gap-3 no-underline" onClick={menuTravel} >
