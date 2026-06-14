@@ -64,7 +64,7 @@ CREATE TABLE Estadio (
     identificador INT PRIMARY KEY AUTO_INCREMENT,
     imagen VARCHAR(256),
     nombre VARCHAR(32) NOT NULL,
-    nombrePais VARCHAR(20) NOT NULL, # cambio para que lo estadios solo puedan pertenecer a los paises anfitriones del mundial
+    nombrePais ENUM('estados unidos', 'canada', 'mexico') NOT NULL, # cambio para que lo estadios solo puedan pertenecer a los paises anfitriones del mundial
     direccionLocalidad VARCHAR(200) NOT NULL,
     direccionCalle VARCHAR(20) NOT NULL,
     direccionNumero INT NOT NULL,
@@ -167,18 +167,18 @@ CREATE TABLE Venta(
 );
 
 CREATE TABLE Entrada(
-    identificador INT AUTO_INCREMENT PRIMARY KEY ,
-    identificadorVenta INT,
-    identificadorPartido INT,
-    MailUsuarioTiene VARCHAR(200),
-    estadoEntrada ENUM('Registrada', 'No registrada', 'Cancelada') NOT NULL,
-    identificadorSector INT,
-    identificadorEstadio INT,
-    mailFuncionario VARCHAR(200),
-    identificadorDispositivo INT,
-    codigoQRAceptado VARCHAR(200),
-    fechaHoraIngreso DATETIME NOT NULL,
-    FOREIGN KEY (MailUsuarioTiene) REFERENCES Usuario(mailPerfil),
+    identificador INT AUTO_INCREMENT PRIMARY KEY,
+    identificadorVenta INT NOT NULL,
+    identificadorPartido INT NOT NULL,
+    mailUsuarioTiene VARCHAR(200) NOT NULL,
+    estadoEntrada ENUM('Registrada', 'No registrada', 'Cancelada') DEFAULT('No registrada') NOT NULL,
+    identificadorSector INT NOT NULL,
+    identificadorEstadio INT NOT NULL,
+    mailFuncionario VARCHAR(200) DEFAULT NULL,
+    identificadorDispositivo INT DEFAULT NULL,
+    codigoQRAceptado VARCHAR(200) DEFAULT NULL,
+    fechaHoraIngreso DATETIME DEFAULT NULL, # Habria que poner que si pueda ser null
+    FOREIGN KEY (mailUsuarioTiene) REFERENCES Usuario(mailPerfil),
     FOREIGN KEY (identificadorPartido) REFERENCES Partido(identificador),
     FOREIGN KEY (identificadorEstadio, identificadorSector) REFERENCES Sector(identificadorEstadio, identificador),
     FOREIGN KEY (mailFuncionario) REFERENCES  Funcionario(mailPerfil),
@@ -190,6 +190,7 @@ CREATE TABLE Transferencia(
     identificadorEntrada INT NOT NULL,
     mailUsuarioRealiza VARCHAR(200) NOT NULL,
     mailUsuarioRecibe VARCHAR(200) NOT NULL,
+    fechaHora DATETIME NOT NULL DEFAULT(CURRENT_TIMESTAMP),
     FOREIGN KEY(identificadorEntrada) REFERENCES Entrada(identificador),
     FOREIGN KEY (mailUsuarioRealiza) REFERENCES Usuario(mailPerfil),
     FOREIGN KEY (mailUsuarioRecibe) REFERENCES Usuario(mailPerfil)
@@ -313,3 +314,7 @@ INSERT INTO Habilita VALUES
 (1, 2, 1),
 (2, 2, 2),
 (3, 3, 3);
+
+INSERT INTO Entrada (identificadorVenta, identificadorPartido, MailUsuarioTiene, estadoEntrada, identificadorSector, identificadorEstadio) VALUES
+(1, 1, 'user1@gmail.com', 'No registrada', 1, 1),
+(1, 1, 'user1@gmail.com', 'No registrada', 1, 2);
