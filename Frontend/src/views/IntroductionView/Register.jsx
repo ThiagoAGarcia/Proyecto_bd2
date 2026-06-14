@@ -10,16 +10,9 @@ import { Oval } from 'react-loader-spinner'
 import { useNavigate } from 'react-router-dom'
 import logo from './../../assets/FifaUCULogo.png'
 
-const TIPOS_DOCUMENTO = ['ci', 'dni', 'cpf', 'rut', 'cc', 'curp', 'ssn', 'sin']
+const TIPOS_DOCUMENTO = ['CI', 'DNI', 'CPF', 'RUT', 'CC', 'CURP', 'SSN', 'SIN']
 
 function Register() {
-  useEffect(() => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('role')
-    localStorage.removeItem('ci')
-    localStorage.removeItem('roles')
-  }, [])
-
   const navigate = useNavigate()
   const [verPwd, setVerPwd] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -100,11 +93,10 @@ function Register() {
       tipoDocumento: form.tipoDocumento,
       numeroDocumento: form.numeroDocumento,
       direccionPais: form.direccionPais,
-      direccionLocalidad: form.direccionLocalidad,
       direccionCalle: form.direccionCalle,
+      direccionLocalidad: form.direccionLocalidad,
       direccionNumero: parseInt(form.direccionNumero),
       direccionCodigoPostal: parseInt(form.direccionCodigoPostal),
-
     }
     const BODYUsuario = {
       mailPerfil: form.mail,
@@ -185,7 +177,7 @@ function Register() {
         </div>
       )}
 
-      <div className="min-h-screen w-full bg-[#045694] flex flex-col items-center justify-center py-10 px-4">
+      <div className="min-h-screen w-full bg-[#0a1628] flex flex-col items-center justify-center py-10 px-4">
         <img
           src={logo}
           alt="FifaUcu"
@@ -261,10 +253,10 @@ function Register() {
                     value={form.tipoDocumento}
                     onChange={handleChange}
                     disabled={isLoading}
-                    className={selectCls(errores.tipoDocumento)}>
+                    className={selectCls(errores.tipoDocumento)} >
                     <option value="">Seleccioná</option>
                     {TIPOS_DOCUMENTO.map((t) => (
-                      <option key={t} value={t}>{t}</option>
+                      <option className="uppercase" key={t} value={t}>{t}</option>
                     ))}
                   </select>
                   <span className="absolute top-1/2 -translate-y-1/2 right-3 pointer-events-none text-gray-500 text-xs">▼</span>
@@ -409,7 +401,7 @@ function Register() {
             <div className="w-full flex justify-center items-center mt-4">
               <span className="text-sm">
                 ¿Ya tenés una cuenta?{' '}
-                <a className="font-bold border-b border-black hover:border-transparent transition-all">
+                <a href="/" className="font-bold border-b border-black hover:border-transparent transition-all" >
                   INICIAR SESIÓN
                 </a>
               </span>

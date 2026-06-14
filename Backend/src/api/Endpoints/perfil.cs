@@ -63,7 +63,7 @@ public static class PerfilEndpoints
             }
 
             return Results.Ok(MapPerfil(reader));
-        }).RequireAuthorization("SoloUsuario");
+        }).RequireAuthorization();
 
         app.MapPost("/perfil", async (PerfilRequest request, IConfiguration config) =>
         {
@@ -80,7 +80,6 @@ public static class PerfilEndpoints
             {
                 return Results.BadRequest(resultadoMail);
             }
-
 
             if (!Documento.ValidarDocumento(request.PaisDocumento, request.TipoDocumento, request.NumeroDocumento))
             {
@@ -124,6 +123,29 @@ public static class PerfilEndpoints
 
             return Results.Created($"/perfiles/{Normalizar.NormalizarMethod(request.Mail)}", request);
         });
+
+        app.MapGet("/perfil/me", (HttpContext context) =>
+        {
+            var mail = Token.GetMailUser(context);
+            var role = Token.GetRoleUser(context);
+
+            if (mail == null)
+            {
+                return Results.Json(
+                    new
+                    {
+                        message = "No se pudo obtener el correo del usuario"
+                    },
+                    statusCode: 401
+                );
+            }
+
+            return Results.Ok(new
+            {
+                mail,
+                role
+            });
+        }).RequireAuthorization();
 
         app.MapPut("/perfil/{mail}", async (string mail, PerfilUpdateRequest request, IConfiguration config) =>
         {
@@ -198,8 +220,8 @@ public static class PerfilEndpoints
             Normalizar.NormalizarMethod(reader.GetString("TipoDocumento")),
             Normalizar.NormalizarMethod(reader.GetString("NumeroDocumento")),
             Normalizar.NormalizarMethod(reader.GetString("DireccionPais")),
-            Normalizar.NormalizarMethod(reader.GetString("DireccionCalle")),
             Normalizar.NormalizarMethod(reader.GetString("DireccionLocalidad")),
+            Normalizar.NormalizarMethod(reader.GetString("DireccionCalle")),
             reader.GetInt32("DireccionNumero"),
             reader.GetInt32("DireccionCodigoPostal")
         );

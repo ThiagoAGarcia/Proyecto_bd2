@@ -79,14 +79,15 @@ public static class EstadioEndpoints
             {
                 Identificador = reader.GetInt32("Identificador"),
                 Nombre = reader.GetString("Nombre"),
-                Imagen = reader.GetString("Imagen"),
+                Imagen = reader["Imagen"] as string,
                 NombrePais = reader.GetString("NombrePais"),
                 DireccionLocalidad = reader.GetString("DireccionLocalidad"),
                 DireccionCalle = reader.GetString("DireccionCalle"),
                 DireccionNumero = reader.GetInt32("DireccionNumero"),
-                direccionCodigoPostal = reader.GetInt32("DireccionCodigoPostal")
+                DireccionCodigoPostal = reader.GetInt32("DireccionCodigoPostal")
             });
         }).RequireAuthorization();
+
         app.MapGet("/allEstadio", async (IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
@@ -110,18 +111,18 @@ public static class EstadioEndpoints
 
             return Results.Ok(new
             {
-                identificador = reader.GetInt32("Identificador"),
-                nombre = reader.GetString("Nombre"),
-                imagen = reader.GetString("Imagen"),
-                nombrePais = reader.GetString("NombrePais"),
-                direccionLocalidad = reader.GetString("DireccionLocalidad"),
-                direccionCalle = reader.GetString("DireccionCalle"),
-                direccionNumero = reader.GetInt32("DireccionNumero"),
-                direccionCodigoPostal = reader.GetInt32("DireccionCodigoPostal")
+                Identificador = reader.GetInt32("Identificador"),
+                Nombre = reader.GetString("Nombre"),
+                Imagen = reader["Imagen"] as string,
+                NombrePais = reader.GetString("NombrePais"),
+                DireccionLocalidad = reader.GetString("DireccionLocalidad"),
+                DireccionCalle = reader.GetString("DireccionCalle"),
+                DireccionNumero = reader.GetInt32("DireccionNumero"),
+                DireccionCodigoPostal = reader.GetInt32("DireccionCodigoPostal")
             });
         }).RequireAuthorization();
 
-        app.MapDelete("/estadio/{identificador}", async (int identificador, IConfiguration config) =>
+        app.MapDelete("/estadioDelete/{identificador}", async (int identificador, IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 
@@ -149,7 +150,7 @@ public static class EstadioEndpoints
             });
         }).RequireAuthorization("SoloAdministrador");
 
-        app.MapPut("/estadio/{identificador}", async (int identificador, EstadioUpdateRequest request, IConfiguration config) =>
+        app.MapPut("/estadioUpdate/{identificador}", async (int identificador, EstadioUpdateRequest request, IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 

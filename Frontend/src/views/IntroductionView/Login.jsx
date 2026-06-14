@@ -12,13 +12,6 @@ function Login() {
     const [isLoading, setIsLoading] = useState(false)
     const navigate = useNavigate()
 
-    useEffect(() => {
-        localStorage.removeItem('token')
-        localStorage.removeItem('role')
-        localStorage.removeItem('ci')
-        localStorage.removeItem('roles')
-    }, [])
-
     const commitLogin = async () => {
 
         console.log("commitLogin ejecutado");
@@ -51,19 +44,9 @@ function Login() {
 
         try {
             setIsLoading(true)
-
             const BODY = { mailPerfil, password }
             const logged = await LoginService(BODY)
-            console.log(logged);
-            console.log(mailPerfil)
-            console.log(password)
-
             if (logged?.success) {
-                localStorage.setItem('token', logged.access_token)
-                localStorage.setItem('role', JSON.stringify(logged.role))
-                localStorage.setItem('roles', JSON.stringify(logged.roles))
-                localStorage.setItem('ci', JSON.stringify(logged.ci))
-
                 if (logged.role.includes('Administrador')) {
                     navigate('/main-admin')
                     return
@@ -75,7 +58,7 @@ function Login() {
                 }
 
                 if (logged.role.includes('Usuario')) {
-                    navigate('/main')
+                    navigate('/main-user')
                     return
                 }
             } else {
@@ -85,7 +68,6 @@ function Login() {
                 })
             }
         } catch (error) {
-            console.error(error)
             toast.error('Error de conexión con el servidor', {
                 position: 'bottom-left',
                 autoClose: 3000,
@@ -114,18 +96,18 @@ function Login() {
                 </div>
             )}
 
-            <div className="w-full h-screen bg-[#045694] flex flex-row justify-center items-center">
+            <div className="w-full h-screen bg-[#0a1628] flex md:flex-row flex-col justify-center items-center">
                 <img
                     src={logo}
                     alt="FifaUcu"
-                    className="w-70 pr-5 h-auto"
+                    className="md:w-70 w-50 pr-5 h-auto my-5 md:my-0"
                 />
                 <form
                     onSubmit={(e) => {
                         e.preventDefault();
                         commitLogin();
                     }}
-                    className="flex flex-col justify-center text-center items-center shadow-xl rounded-2xl w-full sm:w-[70%] md:w-[50%] lg:w-[30%] h-120 p-12 bg-white"
+                    className="flex flex-col  justify-center text-center items-center shadow-xl rounded-2xl w-full md:w-[70%] lg:w-[50%] xl:w-[30%] h-120 p-12 bg-white"
                 >
                     <h1 className="text-4xl text-black font-semibold">
                         Iniciar sesión

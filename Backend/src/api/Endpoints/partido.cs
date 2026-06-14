@@ -98,7 +98,7 @@ public static class PartidoEndpoints
             });
         }).RequireAuthorization();
 
-        app.MapDelete("/partido/{identificador}", async (int identificador, IConfiguration config) =>
+        app.MapDelete("/partido/borrar/{identificador}", async (int identificador, IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 
@@ -123,7 +123,7 @@ public static class PartidoEndpoints
             return Results.NoContent();
         }).RequireAuthorization("SoloAdministrador");
 
-        app.MapPut("/partido/{identificador}", async (int identificador, PartidoUpdateRequest request, IConfiguration config) =>
+        app.MapPut("/partidos/{identificador}", async (int identificador, PartidoUpdateRequest request, IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 
@@ -182,14 +182,20 @@ public static class PartidoEndpoints
                     p.EquipoVisitante,
                     p.identificadorEstadio,
                     p.fechaHora,
-                    el.Nombre AS NombreEstadio,
-                    el.Imagen AS ImagenEstadio,
-                    el.DireccionLocalidad AS DireccionLocalidadEstadio,
-                    el.DireccionCalle AS DireccionCalleEstadio,
-                    el.NombrePais AS NombrePaisEstadio
+
+                    el.nombre AS NombreEstadio,
+                    el.imagen AS ImagenEstadio,
+                    el.direccionLocalidad AS DireccionLocalidadEstadio,
+                    el.direccionCalle AS DireccionCalleEstadio,
+                    el.nombrePais AS NombrePaisEstadio,
+
+                    eql.bandera AS BanderaEquipoLocal,
+                    eqv.bandera AS BanderaEquipoVisitante
                 FROM partido p
-                JOIN estadio el ON p.identificadorEstadio = el.identificador;
-                """;
+                JOIN estadio el ON p.identificadorEstadio = el.identificador
+                JOIN equipo eql ON p.EquipoLocal = eql.nombre
+                JOIN equipo eqv ON p.EquipoVisitante = eqv.nombre;
+            """;
 
             await using var reader = await command.ExecuteReaderAsync();
 
@@ -206,10 +212,12 @@ public static class PartidoEndpoints
                     IdentificadorEstadio = reader.GetInt32("identificadorEstadio"),
                     FechaHora = reader.GetDateTime("fechaHora"),
                     NombreEstadio = reader.GetString("NombreEstadio"),
-                    ImagenEstadio = reader.GetString("ImagenEstadio"),
+                    ImagenEstadio = reader["ImagenEstadio"] as string,
                     DireccionLocalidadEstadio = reader.GetString("DireccionLocalidadEstadio"),
                     DireccionCalleEstadio = reader.GetString("DireccionCalleEstadio"),
-                    NombrePaisEstadio = reader.GetString("NombrePaisEstadio")
+                    NombrePaisEstadio = reader.GetString("NombrePaisEstadio"),
+                    BanderaEquipoLocal = reader["BanderaEquipoLocal"] as string,
+                    BanderaEquipoVisitante = reader["BanderaEquipoVisitante"] as string
                 });
             }
 
