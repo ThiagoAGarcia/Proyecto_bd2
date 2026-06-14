@@ -89,6 +89,7 @@ CREATE TABLE Partido (
     EquipoVisitante VARCHAR(32) NOT NULL,
     identificadorEstadio INT NOT NULL,
     fechaHora DATETIME NOT NULL,
+    precio INT NOT NULL,
     FOREIGN KEY (EquipoLocal) REFERENCES Equipo(nombre),
     FOREIGN KEY (EquipoVisitante) REFERENCES Equipo(nombre),
     FOREIGN KEY (identificadorEstadio) REFERENCES Estadio(identificador)
@@ -158,7 +159,7 @@ CREATE TABLE Gestiona(
 
 CREATE TABLE Venta(
     identificador INT PRIMARY KEY AUTO_INCREMENT,
-    fecha DATE NOT NULL,
+    fecha DATE NOT NULL DEFAULT(CURRENT_DATE),
     porcentakeComision INT NOT NULL,
     montoTotal INT NOT NULL,
     mailUsuarioComprado VARCHAR(200) NOT NULL,
@@ -271,40 +272,49 @@ INSERT INTO Equipo VALUES
 ('estados unidos', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Flag_of_the_United_States.svg/960px-Flag_of_the_United_States.svg.png'),
 ('canada', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Flag_of_Canada.svg/960px-Flag_of_Canada.svg.png');
 
-INSERT INTO Estadio (imagen, nombre, nombrePais, direccionLocalidad, direccionCalle, direccionNumero, direccionCodigoPostal) VALUES
-(NULL, 'MetLife Stadium', 'estados unidos', 'New Jersey', 'MetLife Dr', 1, 7032),
-(NULL, 'SoFi Stadium', 'estados unidos', 'Los Angeles', 'Stadium Dr', 1001, 90301),
-(NULL, 'AT&T Stadium', 'estados unidos', 'Arlington', 'Legends Way', 1, 76011),
-(NULL, 'BMO Field', 'canada', 'Toronto', 'Princes Blvd', 170, 10001),
-(NULL, 'BC Place', 'canada', 'Vancouver', 'Pacific Blvd', 777, 20001),
-(NULL, 'Estadio Azteca', 'mexico', 'Ciudad de Mexico', 'Calzada Tlalpan', 3465, 14370),
-(NULL, 'Estadio Akron', 'mexico', 'Guadalajara', 'Circuito JVC', 2800, 45019),
-(NULL, 'BBVA Stadium', 'mexico', 'Monterrey', 'Pablo Livas', 2011, 67140);
+INSERT INTO Estadio (imagen,nombre,nombrePais,direccionLocalidad,direccionCalle,direccionNumero,direccionCodigoPostal) VALUES
+('https://visitmexico.com/media/usercontent/68ed273a99de4-WhatsApp-Image-2025-10-10-at-11_gmxdot_22_gmxdot_26-AM_gmxdot_jpeg','Estadio Azteca','mexico','Ciudad de Mexico','Calzada de Tlalpan',3465,14370),
+('https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Estadio_BBVA.jpg/1920px-Estadio_BBVA.jpg','Estadio BBVA','mexico','Monterrey','Pablo Livas',2011,67140),
+('https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Estadio_Akron_02-07-2022_cabecera_sur_lado_derecho.jpg/1280px-Estadio_Akron_02-07-2022_cabecera_sur_lado_derecho.jpg','Estadio Akron','mexico','Circuito JVC',2800,45019,10000),
+('https://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/BC_Place_Stadium_-_panoramio.jpg/1280px-BC_Place_Stadium_-_panoramio.jpg','BC Place','canada','Vancouver','Pacific Blvd',777,20001),
+('https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Bmo_Field_2016_East_Stand.jpg/1920px-Bmo_Field_2016_East_Stand.jpg','BMO Field','canada','Toronto','Princes Blvd',170,10001),
+('https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Mercedes_Benz_Stadium_time_lapse_capture_2017-08-13.jpg/1920px-Mercedes_Benz_Stadium_time_lapse_capture_2017-08-13.jpg','Mercedes-Benz Stadium','estados unidos','Atlanta','Northside Dr NW',1,30313);
 
-INSERT INTO Partido (fase, EquipoLocal, EquipoVisitante, identificadorEstadio, fechaHora) VALUES
-('Fase de Grupos', 'argentina', 'canada', 1, '2026-06-11 20:00:00'),
-('Fase de Grupos', 'mexico', 'uruguay', 2, '2026-06-12 18:00:00'),
-('Fase de Grupos', 'brasil', 'estados unidos', 3, '2026-06-13 21:00:00'),
-('Fase de Grupos', 'chile', 'paraguay', 4, '2026-06-14 17:00:00'),
-('Fase de Grupos', 'colombia', 'peru', 5, '2026-06-15 19:00:00'),
-('Fase de Grupos', 'españa', 'mexico', 6, '2026-06-16 20:30:00'),
+INSERT INTO Partido (fase, EquipoLocal, EquipoVisitante, identificadorEstadio, precio, fechaHora) VALUES
+('Grupos', 'argentina', 'canada', 1, 100, '2026-06-11 20:00:00'),
+('Grupos', 'mexico', 'uruguay', 2, 100, '2026-06-12 18:00:00'),
+('Grupos', 'brasil', 'estados unidos', 3, 100, '2026-06-13 21:00:00'),
+('Grupos', 'chile', 'paraguay', 4, 100, '2026-06-14 17:00:00'),
+('Grupos', 'colombia', 'peru', 5, 100, '2026-06-15 19:00:00'),
+('Grupos', 'españa', 'mexico', 6, 100, '2026-06-16 20:30:00');
 
--- Octavos
-('Octavos de Final', 'argentina', 'mexico', 1, '2026-06-28 20:00:00'),
-('Octavos de Final', 'brasil', 'uruguay', 2, '2026-06-29 21:00:00'),
-('Octavos de Final', 'españa', 'canada', 3, '2026-06-30 18:00:00'),
-('Octavos de Final', 'colombia', 'estados unidos', 4, '2026-07-01 19:00:00'),
+INSERT INTO Sector (identificador, identificadorEstadio, nombre, capMax, tarifaExtra) VALUES
+(1, 1, 'Sector A', 3, 1000),
+(2, 1, 'Sector B', 2, 500),
+(3, 1, 'Sector C', 1, 0),
 
--- Cuartos
-('Cuartos de Final', 'argentina', 'brasil', 5, '2026-07-04 21:00:00'),
-('Cuartos de Final', 'españa', 'colombia', 6, '2026-07-05 21:00:00'),
+(1, 2, 'Sector A', 3, 1000),
+(2, 2, 'Sector B', 2, 500),
+(3, 2, 'Sector C', 1, 0),
 
--- Semifinales
-('Semifinal', 'argentina', 'españa', 1, '2026-07-10 20:00:00'),
-('Semifinal', 'brasil', 'colombia', 2, '2026-07-11 20:00:00'),
+(1, 3, 'Sector A', 3, 1000),
+(2, 3, 'Sector B', 2, 500),
+(3, 3, 'Sector C', 1, 0),
 
--- Tercer puesto
-('Tercer Puesto', 'españa', 'colombia', 3, '2026-07-14 18:00:00'),
+(1, 4, 'Sector A', 3, 1000),
+(2, 4, 'Sector B', 2, 500),
+(3, 4, 'Sector C', 1, 0),
 
--- Final
-('Final', 'argentina', 'brasil', 1, '2026-07-19 21:00:00');
+(1, 5, 'Sector A', 3, 1000),
+(2, 5, 'Sector B', 2, 500),
+(3, 5, 'Sector C', 1, 0),
+
+(1, 6, 'Sector A', 3, 1000),
+(2, 6, 'Sector B', 2, 500),
+(3, 6, 'Sector C', 1, 0);
+
+INSERT INTO Habilita VALUES
+(1, 1, 1),
+(1, 2, 1),
+(2, 2, 2),
+(3, 3, 3);

@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react'
 import getPartidos from '../../../../services/PartidoService/getPartidos'
+import ModalBuy from './Modals/ModalBuy'
 
 export default function AvailableMatchs() {
     const [data, setData] = useState([])
+    const [open, setOpen] = useState(false)
+    const [identificadorEstadio, setIdentificadorEstadio] = useState(1)
+    const [identificadorPartido, setIdentificadorPartido] = useState(1)
 
     useEffect(() => {
         async function loadPartidos() {
@@ -85,16 +89,23 @@ export default function AvailableMatchs() {
                                             </div>
                                         </div>
                                         <div className="flex gap-1.5 shrink-0 ">
-                                            <button className="inline-flex items-center gap-1.5 px-3 py-4 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
+                                            <button onClick={() => { setOpen(true); setIdentificadorEstadio(partido.identificadorEstadio); }} className="inline-flex items-center gap-1.5 px-3 py-4 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
                                                 <i className="fa-solid fa-plus" /> Comprar Entrada
                                             </button>
                                         </div>
                                     </div>
                                 </div>
                             )
-                        }))}
+                        })
+                    )}
                 </div>
             </div >
+            <ModalBuy
+                open={open}
+                onClose={() => setOpen(false)}
+                identificadorEstadio={identificadorEstadio}
+                identificadorPartido={identificadorPartido}
+            />
         </>
     )
 }

@@ -118,5 +118,6 @@ app.MapPaisEndpoints();
 app.MapTelefonoEndpoints();
 app.MapEquipoEndpoints();
 app.MapPartidoEndpoints();
+app.MapHabilitaEndpoints();
 
 app.Run();
