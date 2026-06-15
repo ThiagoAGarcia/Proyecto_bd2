@@ -122,5 +122,7 @@ app.MapGrupoEndpoints();
 app.MapEquipoPerteneceGrupoEndpoints();
 app.MapHabilitaEndpoints();
 app.MapTransferenciaEndpoints();
+app.MapVentaEndpoints();
+app.MapEntradaEndpoints();
 
 app.Run();
