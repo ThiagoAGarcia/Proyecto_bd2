@@ -160,7 +160,7 @@ CREATE TABLE Gestiona(
 CREATE TABLE Venta(
     identificador INT PRIMARY KEY AUTO_INCREMENT,
     fecha DATE NOT NULL DEFAULT(CURRENT_DATE),
-    porcentakeComision INT NOT NULL,
+    porcentajeComision INT NOT NULL,
     montoTotal INT NOT NULL,
     mailUsuarioComprado VARCHAR(200) NOT NULL,
     FOREIGN KEY (mailUsuarioComprado) REFERENCES Usuario(mailPerfil)
@@ -177,7 +177,7 @@ CREATE TABLE Entrada(
     mailFuncionario VARCHAR(200) DEFAULT NULL,
     identificadorDispositivo INT DEFAULT NULL,
     codigoQRAceptado VARCHAR(200) DEFAULT NULL,
-    fechaHoraIngreso DATETIME DEFAULT NULL, # Habria que poner que si pueda ser null
+    fechaHoraIngreso DATETIME DEFAULT NULL,
     FOREIGN KEY (mailUsuarioTiene) REFERENCES Usuario(mailPerfil),
     FOREIGN KEY (identificadorPartido) REFERENCES Partido(identificador),
     FOREIGN KEY (identificadorEstadio, identificadorSector) REFERENCES Sector(identificadorEstadio, identificador),
@@ -249,7 +249,6 @@ INSERT INTO Funcionario VALUES
 ('func1@mundial.com',1001),
 ('func2@mundial.com',1002);
 
-
 INSERT INTO Usuario VALUES
 ('user1@gmail.com','2026-06-01','verificado'),
 ('user2@gmail.com','2026-06-02','verificado'),
@@ -314,7 +313,3 @@ INSERT INTO Habilita VALUES
 (1, 2, 1),
 (2, 2, 2),
 (3, 3, 3);
-
-INSERT INTO Entrada (identificadorVenta, identificadorPartido, MailUsuarioTiene, estadoEntrada, identificadorSector, identificadorEstadio) VALUES
-(1, 1, 'user1@gmail.com', 'No registrada', 1, 1),
-(1, 1, 'user1@gmail.com', 'No registrada', 1, 2);
