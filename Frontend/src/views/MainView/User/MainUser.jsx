@@ -1,6 +1,7 @@
 import NavBar from '../../../components/navBar'
 import Footer from '../../../components/footer'
-import Tickets from '../../MainView/User/Tabs/Tickets'
+import Tickets from './Tabs/Tickets'
+import Transfers from './Tabs/Transfers'
 import AvailableMatchs from './Tabs/AvailableMatchs'
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -32,6 +33,7 @@ export default function MainUser() {
                     <div className="sm:p-8 p-4 text-gray-700 text-lg overflow-y-auto scrollbar">
                         {activeTab === "Mis entradas" && <Tickets />}
                         {activeTab === "Partidos disponibles" && <AvailableMatchs />}
+                        {activeTab === "Transferencias" && <Transfers />}
                     </div>
                 </div>
             </section>

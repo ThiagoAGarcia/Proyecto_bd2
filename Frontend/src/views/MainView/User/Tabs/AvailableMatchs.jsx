@@ -57,7 +57,7 @@ export default function AvailableMatchs() {
                                                 <img className="w-8 h-auto" src={partido.banderaEquipoVisitante} alt={partido.equipoVisitante} />
                                             </div>
                                             <div className="min-w-0">
-                                                <div className="text-sm font-semibold text-[#0a1628] truncate">{capitalize(partido.equipoLocal)} vs {capitalize(partido.equipoVisitante)}</div>
+                                                <div className="text-base font-semibold text-[#0a1628] truncate">{capitalize(partido.equipoLocal)} vs {capitalize(partido.equipoVisitante)}</div>
                                                 <div className="text-xs text-[#7a8fa6] mt-0.5">
                                                     <i className="fa-solid fa-location-dot text-[10px]" /> {partido.nombreEstadio}
                                                 </div>
@@ -68,7 +68,7 @@ export default function AvailableMatchs() {
                                         </div>
 
                                         <div className="flex gap-2 border-t border-[#eaf0f8] pt-2.5">
-                                            <button className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
+                                            <button onClick={() => { setOpen(true); setIdentificadorEstadio(partido.identificadorEstadio); setIdentificadorPartido(partido.identificador); }} className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
                                                 <i className="fa-solid fa-plus" /> Comprar Entrada
                                             </button>
                                         </div>
@@ -89,7 +89,7 @@ export default function AvailableMatchs() {
                                             </div>
                                         </div>
                                         <div className="flex gap-1.5 shrink-0 ">
-                                            <button onClick={() => { setOpen(true); setIdentificadorEstadio(partido.identificadorEstadio); }} className="inline-flex items-center gap-1.5 px-3 py-4 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
+                                            <button onClick={() => { setOpen(true); setIdentificadorEstadio(partido.identificadorEstadio); setIdentificadorPartido(partido.identificador); }} className="inline-flex items-center gap-1.5 px-3 py-4 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
                                                 <i className="fa-solid fa-plus" /> Comprar Entrada
                                             </button>
                                         </div>

@@ -121,5 +121,6 @@ app.MapPartidoEndpoints();
 app.MapGrupoEndpoints();
 app.MapEquipoPerteneceGrupoEndpoints();
 app.MapHabilitaEndpoints();
+app.MapTransferenciaEndpoints();
 
 app.Run();
