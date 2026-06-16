@@ -118,26 +118,24 @@ function Register() {
         const registerTelefono = await postTelefono(BODYTelefono);
         if (registerTelefono?.success) {
           const registerUsuario = await postUsuario(BODYUsuario);
-          console.log(registerUsuario)
           if (registerUsuario?.success) {
             const registerLogin = await postLogin(BODYLogin);
-            console.log(registerLogin)
             if (registerLogin?.success) {
               navigate('/')
             } else {
-              toast.error(registerPerfil?.description || 'Error al registrar', {
+              toast.error(registerLogin?.description || 'Error al registrar', {
                 position: 'bottom-left',
                 autoClose: 3000,
               })
             }
           } else {
-            toast.error(registerPerfil?.description || 'Error al registrar', {
+            toast.error(registerUsuario?.description || 'Error al registrar', {
               position: 'bottom-left',
               autoClose: 3000,
             })
           }
         } else {
-          toast.error(registerPerfil?.description || 'Error al registrar', {
+          toast.error(registerTelefono?.description || 'Error al registrar', {
             position: 'bottom-left',
             autoClose: 3000,
           })

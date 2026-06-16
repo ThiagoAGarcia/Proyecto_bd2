@@ -7,6 +7,7 @@ export default function AvailableMatchs() {
     const [open, setOpen] = useState(false)
     const [identificadorEstadio, setIdentificadorEstadio] = useState(1)
     const [identificadorPartido, setIdentificadorPartido] = useState(1)
+    const [precioBase, setPrecioBase] = useState(null)
 
     useEffect(() => {
         async function loadPartidos() {
@@ -23,8 +24,6 @@ export default function AvailableMatchs() {
 
         loadPartidos()
     }, [])
-
-    console.log(data)
 
     return (
         <>
@@ -45,8 +44,7 @@ export default function AvailableMatchs() {
                             const [fecha, hora] = partido.fechaHora.split('T')
                             const [anio, mes, dia] = fecha.split('-')
                             const horaFormateada = hora.slice(0, 5)
-                            const capitalize = (texto) =>
-                                texto.charAt(0).toUpperCase() + texto.slice(1);
+                            const capitalize = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1);
                             return (
                                 < div key={partido.identificador} className="border border-[#d0dcea] rounded-xl p-3.5 transition-all duration-150 hover:border-[#a0b8d8] hover:shadow-[0_2px_10px_rgba(0,107,182,0.08)]" >
                                     <div className="flex md:hidden flex-col gap-3">
@@ -58,17 +56,17 @@ export default function AvailableMatchs() {
                                             </div>
                                             <div className="min-w-0">
                                                 <div className="text-base font-semibold text-[#0a1628] truncate">{capitalize(partido.equipoLocal)} vs {capitalize(partido.equipoVisitante)}</div>
-                                                <div className="text-xs text-[#7a8fa6] mt-0.5">
-                                                    <i className="fa-solid fa-location-dot text-[10px]" /> {partido.nombreEstadio}
+                                                <div className="text-sm text-[#7a8fa6] mt-0.5">
+                                                    <i className="fa-solid fa-location-dot" /> {partido.nombreEstadio}
                                                 </div>
-                                                <div className="text-xs text-[#7a8fa6]">
-                                                    <i className="fa-solid fa-calendar text-[10px]" /> {dia}-{mes} · {horaFormateada}
+                                                <div className="text-sm text-[#7a8fa6]">
+                                                    <i className="fa-solid fa-calendar" /> {dia}-{mes} · {horaFormateada}
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="flex gap-2 border-t border-[#eaf0f8] pt-2.5">
-                                            <button onClick={() => { setOpen(true); setIdentificadorEstadio(partido.identificadorEstadio); setIdentificadorPartido(partido.identificador); }} className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
+                                            <button onClick={() => { setOpen(true); setIdentificadorEstadio(partido.identificadorEstadio); setIdentificadorPartido(partido.identificador); setPrecioBase(partido.precio);}} className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
                                                 <i className="fa-solid fa-plus" /> Comprar Entrada
                                             </button>
                                         </div>
@@ -89,7 +87,7 @@ export default function AvailableMatchs() {
                                             </div>
                                         </div>
                                         <div className="flex gap-1.5 shrink-0 ">
-                                            <button onClick={() => { setOpen(true); setIdentificadorEstadio(partido.identificadorEstadio); setIdentificadorPartido(partido.identificador); }} className="inline-flex items-center gap-1.5 px-3 py-4 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
+                                            <button onClick={() => { setOpen(true); setIdentificadorEstadio(partido.identificadorEstadio); setIdentificadorPartido(partido.identificador); setPrecioBase(partido.precio); }} className="inline-flex items-center gap-1.5 px-3 py-4 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
                                                 <i className="fa-solid fa-plus" /> Comprar Entrada
                                             </button>
                                         </div>
@@ -105,6 +103,7 @@ export default function AvailableMatchs() {
                 onClose={() => setOpen(false)}
                 identificadorEstadio={identificadorEstadio}
                 identificadorPartido={identificadorPartido}
+                precioBase={precioBase}
             />
         </>
     )

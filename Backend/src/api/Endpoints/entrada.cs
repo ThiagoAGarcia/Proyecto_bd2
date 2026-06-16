@@ -6,8 +6,63 @@ namespace api.Endpoints;
 
 public static class EntradaEndpoints
 {
-    public static void MapEntradaEndpoints (this WebApplication app)
+    public static void MapEntradaEndpoints(this WebApplication app)
     {
+        app.MapPost("/entrada", async (EntradasRequest request, IConfiguration config, HttpContext context) =>
+        {
+            var mail = Normalizar.NormalizarMethod(Token.GetMailUser(context));
+
+            if (request.Entradas.Count > 5)
+            {
+                return Results.BadRequest("No se pueden comprar más de 5 entradas");
+            }
+
+            if (request.Entradas is null || request.Entradas.Count == 0)
+            {
+                return Results.BadRequest("Debe enviar al menos una entrada");
+            }
+
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var saleIdCommand = connection.CreateCommand();
+
+            saleIdCommand.CommandText = """
+                SELECT LAST_INSERT_ID(v.identificador)
+                FROM Venta v
+                ORDER BY v.identificador DESC
+                LIMIT 1;
+            """;
+
+            var saleId = Convert.ToInt32(await saleIdCommand.ExecuteScalarAsync());
+
+            foreach (var entrada in request.Entradas)
+            {
+                await using var ticketCommand = connection.CreateCommand();
+
+                ticketCommand.CommandText = """
+                    INSERT INTO Entrada (identificadorVenta, identificadorPartido, mailUsuarioTiene, identificadorSector, identificadorEstadio) VALUES
+                    (@saleId, @identificadorPartido, @mailUsuarioTiene, @identificadorSector, @identificadorEstadio);
+                """;
+
+                ticketCommand.Parameters.AddWithValue("@saleId", saleId);
+                ticketCommand.Parameters.AddWithValue("@identificadorPartido", entrada.IdentificadorPartido);
+                ticketCommand.Parameters.AddWithValue("@mailUsuarioTiene", mail);
+                ticketCommand.Parameters.AddWithValue("@identificadorSector", entrada.IdentificadorSector);
+                ticketCommand.Parameters.AddWithValue("@identificadorEstadio", entrada.IdentificadorEstadio);
+
+                await ticketCommand.ExecuteNonQueryAsync();
+            }
+
+            return Results.Ok(new
+            {
+                success = true,
+                message = "Entrada creada exitosamente"
+            });
+        }).RequireAuthorization("SoloUsuario");
+
         app.MapGet("/allEntradas", async (IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
@@ -36,6 +91,50 @@ public static class EntradaEndpoints
                     EstadoEntrada = reader.GetString("estadoEntrada"),
                     IdentificadorSector = reader.GetInt32("identificadorSector"),
                     IdentificadorEstadio = reader.GetInt32("identificadorEstadio")
+                });
+            }
+
+            return Results.Ok(entradas);
+        }).RequireAuthorization();
+
+        app.MapGet("/allMyEntradas", async (IConfiguration config, HttpContext context) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            var tokenMail = Normalizar.NormalizarMethod(Token.GetMailUser(context));
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT e.identificador, p.EquipoLocal, p.EquipoVisitante, el.bandera AS BanderaEquipoLocal, ev.bandera AS BanderaEquipoVisitante, p.fechaHora, e2.nombre AS NombreEstadio, s.nombre AS NombreSector
+                FROM Entrada e
+                JOIN Sector s ON e.identificadorSector = s.identificador AND e.identificadorEstadio = s.identificadorEstadio
+                JOIN Partido p ON e.identificadorPartido = p.identificador
+                JOIN Estadio e2 ON p.identificadorEstadio = e2.identificador
+                JOIN Equipo el ON p.EquipoLocal = el.nombre
+                JOIN Equipo ev ON p.EquipoVisitante = ev.nombre
+                WHERE e.mailUsuarioTiene = @mailUsuarioTiene AND e.estadoEntrada = 'No registrada';
+            """;
+
+            command.Parameters.AddWithValue("@mailUsuarioTiene", tokenMail);
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var entradas = new List<object>();
+
+            while (await reader.ReadAsync())
+            {
+                entradas.Add(new
+                {
+                    Identificador = reader.GetInt32("identificador"),
+                    EquipoLocal = reader.GetString("EquipoLocal"),
+                    EquipoVisitante = reader.GetString("EquipoVisitante"),
+                    BanderaEquipoLocal = reader.GetString("BanderaEquipoLocal"),
+                    BanderaEquipoVisitante = reader.GetString("BanderaEquipoVisitante"),
+                    FechaHora = reader.GetDateTime("fechaHora"),
+                    NombreEstadio = reader.GetString("NombreEstadio"),
+                    NombreSector = reader.GetString("NombreSector")
                 });
             }
 

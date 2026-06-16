@@ -89,7 +89,7 @@ export default function Transfers() {
                                                     {capitalize(transferencia.equipoLocal)} vs {capitalize(transferencia.equipoVisitante)}
                                                 </div>
                                                 <div className="text-sm text-[#7a8fa6] mt-0.5">
-                                                    <i className="fa-solid fa-calendar text-[11px]" /> {dia}-{mes}, {horaFormateada}
+                                                    <i className="fa-solid fa-calendar text-[11px]" /> {dia}-{mes} / <i className="fa-solid fa-clock text-[11px]" />  {horaFormateada}
                                                 </div>
                                             </div>
                                         </div>

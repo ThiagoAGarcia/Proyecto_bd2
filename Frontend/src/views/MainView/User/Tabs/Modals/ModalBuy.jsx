@@ -3,6 +3,8 @@ import Modal from './../../../../../components/modal';
 import { toast } from 'react-toastify';
 import getEstadio from './../../../../../services/EstadioService/getEstadio';
 import getAllHabilita from './../../../../../services/HabilitaService/getAllHabilita';
+import postVenta from '../../../../../services/VentaService/postVenta';
+import postEntrada from '../../../../../services/EntradaService/postEntrada';
 
 const formatCardNumber = (value) =>
     value
@@ -17,10 +19,14 @@ const formatExpiry = (value) => {
     return `${digits.slice(0, 2)}/${digits.slice(2)}`;
 };
 
-export default function ProfileModal({ open, onClose, identificadorEstadio, identificadorPartido }) {
+export default function ProfileModal({ open, onClose, identificadorEstadio, identificadorPartido, precioBase }) {
     const [estadios, setEstadios] = useState(null);
     const [selectedSector, setSelectedSector] = useState(null);
     const [sectores, setSectores] = useState([]);
+    const [cantidadEntradas, setCantidadEntradas] = useState(1);
+    const [porcentajeComision, setPorcentajeComision] = useState(5);
+    const subtotal = (precioBase + (selectedSector?.tarifaExtra || 0)) * cantidadEntradas;
+    const total = subtotal * (1 + porcentajeComision / 100);
 
     useEffect(() => {
         if (!open) return;
@@ -59,11 +65,69 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
         }
     }, [open]);
 
-    
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        if (!selectedSector) {
+            toast.error('Debe seleccionar un sector');
+            return;
+        }
+
+        if (cantidadEntradas > 5) {
+            toast.error(
+                'No se pueden comprar más de 5 entradas'
+            );
+            return;
+        }
+
+        const BODYVenta = {
+            porcentajeComision: porcentajeComision,
+            montoTotal: Math.round(total)
+        };
+
+        const BODYEntrada = {
+            entradas: Array.from(
+                { length: cantidadEntradas },
+                () => ({
+                    identificadorPartido,
+                    identificadorEstadio,
+                    identificadorSector: selectedSector.identificador
+                })
+            )
+        };
+
+        try {
+            const registerVenta = await postVenta(BODYVenta)
+            if (registerVenta?.success) {
+                const registerEntrada = await postEntrada(BODYEntrada);
+                if (registerEntrada?.success) {
+                    toast.success('Compra realizada con éxito');
+                    onClose();
+                } else {
+                    toast.error(registerEntrada?.description || 'Error al realizar la venta', {
+                        position: 'bottom-left',
+                        autoClose: 3000,
+                    })
+                }
+            } else {
+                toast.error(registerVenta?.description || 'Error al realizar la entrada', {
+                    position: 'bottom-left',
+                    autoClose: 3000,
+                })
+            }
+        } catch (error) {
+            console.error(error);
+
+            toast.error(
+                error?.response?.data ||
+                'No se pudo completar la compra'
+            );
+        }
+    };
 
     return (
         <Modal open={open} onClose={onClose}>
-            <form className="w-full flex lg:flex-row flex-col max-w-7xl">
+            <form onSubmit={handleSubmit} className="w-full flex lg:flex-row flex-col max-w-7xl">
                 <div className="lg:p-10 p-0">
                     <div className="relative h-72 w-full overflow-hidden rounded-2xl sm:h-120">
                         <img
@@ -94,6 +158,35 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                             </span>
                         </div>
                     </div>
+                    <div className="mt-4 flex items-center justify-between rounded-2xl border border-[#14315C]/10 bg-[#F8F9FB] p-4">
+                        <div>
+                            <p className="text-sm text-[#14315C]/70">
+                                Costo por entrada
+                            </p>
+
+                            <p className="text-2xl font-bold text-[#14315C]">
+                                {selectedSector ? `${(precioBase * cantidadEntradas) + selectedSector.tarifaExtra} USD` : `${precioBase * cantidadEntradas} USD`}
+                            </p>
+                        </div>
+
+                        <div className="flex flex-col items-end">
+                            <label className="mb-1 text-sm text-[#14315C]/70">
+                                Cantidad
+                            </label>
+
+                            <input
+                                type="number"
+                                min="1"
+                                value={cantidadEntradas}
+                                onChange={(e) =>
+                                    setCantidadEntradas(
+                                        Math.max(1, Number(e.target.value))
+                                    )
+                                }
+                                className="w-24 rounded-xl border-2 border-[#14315C]/15 px-3 py-2 text-center font-semibold text-[#14315C] focus:border-[#D4AF37] focus:outline-none"
+                            />
+                        </div>
+                    </div>
                 </div>
                 <div>
                     <div className="mt-8">
@@ -105,7 +198,7 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                             <select
                                 value={selectedSector?.identificador || ''}
                                 disabled={sectores.length === 0}
-                                onChange={(e) => { const sector = sectores.find( s => s.identificador === Number(e.target.value) ); setSelectedSector(sector || null); }}
+                                onChange={(e) => { const sector = sectores.find(s => s.identificador === Number(e.target.value)); setSelectedSector(sector || null); }}
                                 className="w-full appearance-none rounded-xl border-2 border-[#14315C]/15 bg-white px-5 py-4 pr-12 text-lg text-[#14315C] font-medium shadow-sm transition focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/40"
                             >
                                 {sectores.length === 0 ? (
@@ -119,10 +212,7 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                                         </option>
 
                                         {sectores.map((sector) => (
-                                            <option
-                                                key={sector.identificador}
-                                                value={sector.identificador}
-                                            >
+                                            <option key={sector.identificador} value={sector.identificador}>
                                                 {sector.nombre} — {sector.tarifaExtra} USD
                                             </option>
                                         ))}
@@ -130,6 +220,17 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                                 )}
                             </select>
                             <i className="fa-solid fa-angle-down pointer-events-none absolute right-4 top-1/2 h-6 w-6 -translate-y-1/2 text-[#14315C]/60"></i>
+                        </div>
+                        <div className="mt-4 flex items-center justify-between rounded-xl border border-[#14315C]/10 bg-linear-to-r from-[#14315C]/3 to-[#D4AF37]/6 px-5 py-4">
+                            <div>
+                                <p className="text-base font-semibold text-[#14315C]">
+                                    Porcentaje comisión
+                                </p>
+                            </div>
+
+                            <p className="text-xl font-bold text-[#D4AF37]">
+                                +{porcentajeComision}%
+                            </p>
                         </div>
 
                         {selectedSector && (
@@ -218,7 +319,7 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                             Cancelar
                         </button>
                         <button type="submit" className="mt-8 w-[50%] lg:w-full rounded-xl bg-[#14315C] px-6 py-4 text-lg font-semibold cursor-pointer text-white shadow-md transition hover:bg-[#1c4378] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:ring-offset-2">
-                            {selectedSector ? `Confirmar compra — ${ selectedSector.precioBase + selectedSector.tarifaExtra } USD` : 'Confirmar compra'}
+                            Confirmar compra — {total.toFixed(2)} USD
                         </button>
                     </div>
                 </div>

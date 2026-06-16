@@ -14,10 +14,11 @@ export default function MainUser() {
             <section className="grow flex flex-col items-start justify-center sm:px-10 py-4">
                 <div className="w-full flex justify-start overflow-x-auto overflow-y-hidden mx-0">
                     {[
-                        { id: "Mis entradas", label: "Mis entradas", icon: "fa-ticket" },
-                        { id: "Eventos disponibles", label: "Eventos Disponibles", icon: "fa-calendar-days" },
-                        { id: "Historial de compras", label: "Historial de compras", icon: "fa-receipt" },
-                        { id: "Transferencias", label: "Transferencias", icon: "fa-arrow-right-arrow-left" },
+                        { id: "Gestion partidos", label: "Gestión partidos", icon: "fa-futbol" },
+                        { id: "Gestion estadios", label: "Gestión estadios", icon: "fa-earth-americas" },
+                        { id: "Gestion funcionarios", label: "Gestión funcionarios", icon: "fa-user-gear" },
+                        { id: "Gestion dispositivo", label: "Gestión dispositivos", icon: "fa-camera" },
+                        { id: "Estadisticas", label: "Estadísticas", icon: "fa-chart-simple" }
                     ].map((tab) => (
                         <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`cursor-pointer relative border-b-white -mb-1 px-6 py-3 text-lg font-medium transition-all duration-200 rounded-t-2xl border bg-[#f0f4fa] text-[#7a8fa6] flex items-center gap-2  ${activeTab === tab.id ? "bg-white border-gray-300 border-b-white text-[#052e66] " : "hover:bg-[#e0e8f4] hover:text-[#0a1628] border-transparent  bg-[#f0f4fa] text-[#7a8fa6]"}`}>
                             <i className={`fa-solid ${tab.icon} mr-2`}></i>
