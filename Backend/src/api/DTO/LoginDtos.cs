@@ -1,4 +1,4 @@
-namespace api.DTOs;
+namespace api.DTO;
 
 public sealed record LoginRequest(string MailPerfil, string Password);
 

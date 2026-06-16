@@ -1,6 +1,6 @@
 using api.Methods;
 using MySqlConnector;
-using api.DTOs;
+using api.DTO;
 
 namespace api.Endpoints;
 
