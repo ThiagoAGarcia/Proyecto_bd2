@@ -8,5 +8,3 @@ public sealed record EquipoRequest(
 public sealed record EquipoUpdateRequest(
     string Bandera
 );
-
-

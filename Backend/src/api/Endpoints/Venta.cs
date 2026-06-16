@@ -1,4 +1,4 @@
-using api.DTOs;
+using api.DTO;
 using api.Methods;
 using MySqlConnector;
 
