@@ -63,6 +63,7 @@ public static class PartidoEndpoints
                     p.EquipoVisitante,
                     p.identificadorEstadio,
                     p.fechaHora,
+                    p.precio,
                     el.Nombre AS NombreEstadio,
                     el.Imagen AS ImagenEstadio,
                     el.DireccionLocalidad AS DireccionLocalidadEstadio,
@@ -91,6 +92,7 @@ public static class PartidoEndpoints
                 EquipoVisitante = reader.GetString("EquipoVisitante"),
                 IdentificadorEstadio = reader.GetInt32("identificadorEstadio"),
                 FechaHora = reader.GetDateTime("fechaHora"),
+                Precio = reader.GetInt32("precio"),
                 NombreEstadio = reader.GetString("NombreEstadio"),
                 ImagenEstadio = reader.GetString("ImagenEstadio"),
                 DireccionLocalidadEstadio = reader.GetString("DireccionLocalidadEstadio"),
@@ -183,6 +185,7 @@ public static class PartidoEndpoints
                     p.EquipoVisitante,
                     p.identificadorEstadio,
                     p.fechaHora,
+                    p.precio,
 
                     el.nombre AS NombreEstadio,
                     el.imagen AS ImagenEstadio,
@@ -217,6 +220,7 @@ public static class PartidoEndpoints
                     DireccionLocalidadEstadio = reader.GetString("DireccionLocalidadEstadio"),
                     DireccionCalleEstadio = reader.GetString("DireccionCalleEstadio"),
                     NombrePaisEstadio = reader.GetString("NombrePaisEstadio"),
+                    Precio = reader.GetInt32("precio"),
                     BanderaEquipoLocal = reader["BanderaEquipoLocal"] as string,
                     BanderaEquipoVisitante = reader["BanderaEquipoVisitante"] as string
                 });

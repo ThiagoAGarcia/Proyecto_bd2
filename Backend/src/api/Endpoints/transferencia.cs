@@ -153,11 +153,11 @@ public static class TransferenciaEndpoints
 
             await using var reader = await command.ExecuteReaderAsync();
 
-            var users = new List<object>();
+            var transferencias = new List<object>();
 
             while (await reader.ReadAsync())
             {
-                users.Add(new
+                transferencias.Add(new
                 {
                     Identificador = reader.GetInt32("identificador"),
                     IdentificadorEntrada = reader.GetInt32("identificadorEntrada"),
@@ -167,7 +167,7 @@ public static class TransferenciaEndpoints
                 });
             }
 
-            return Results.Ok(users);
+            return Results.Ok(transferencias);
         }).RequireAuthorization();
 
         app.MapGet("/allMyTransferencias", async (IConfiguration config, HttpContext context) =>
@@ -188,16 +188,16 @@ public static class TransferenciaEndpoints
                 JOIN Equipo el ON p.EquipoLocal = el.nombre
                 JOIN Equipo ev ON p.EquipoVisitante = ev.nombre
                 WHERE t.mailUsuarioRealiza = @mailUsuarioRealiza
-                """;
+            """;
             command.Parameters.AddWithValue("@mailUsuarioRealiza", tokenMail);
 
             await using var reader = await command.ExecuteReaderAsync();
 
-            var users = new List<object>();
+            var transferencias = new List<object>();
 
             while (await reader.ReadAsync())
             {
-                users.Add(new
+                transferencias.Add(new
                 {
                     Identificador = reader.GetInt32("identificador"),
                     IdentificadorEntrada = reader.GetInt32("identificadorEntrada"),
@@ -211,7 +211,7 @@ public static class TransferenciaEndpoints
                 });
             }
 
-            return Results.Ok(users);
+            return Results.Ok(transferencias);
         }).RequireAuthorization("soloUsuario");
     }
 }
