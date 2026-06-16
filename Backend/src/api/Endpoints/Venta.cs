@@ -85,14 +85,15 @@ public static class VentaEndpoints
 
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                SELECT v.identificador, v.fecha, p.precio, v.porcentajeComision, s.tarifaExtra, v.montoTotal, p.EquipoLocal, p.EquipoVisitante, EL.bandera as banderaEquipoLocal, EV.bandera as banderaEquipoVisitante
+                SELECT v.identificador, v.fecha, p.precio, v.porcentajeComision, s.tarifaExtra, v.montoTotal, p.EquipoLocal, p.EquipoVisitante, EL.bandera as banderaEquipoLocal, EV.bandera as banderaEquipoVisitante, COUNT(e.identificador) as cantidadEntradas
                 FROM Venta v
                 JOIN Entrada e on v.identificador = e.identificadorVenta
                 JOIN Partido p on e.identificadorPartido = p.identificador
                 JOIN Sector s on e.identificadorEstadio = s.identificadorEstadio and e.identificadorSector = s.identificador
                 JOIN Equipo EL on p.EquipoLocal = EL.nombre
                 JOIN Equipo EV on p.EquipoVisitante = EV.nombre
-                WHERE mailUsuarioComprado = @mail;
+                WHERE mailUsuarioComprado = @mail
+                GROUP BY v.identificador, v.fecha, p.precio, v.porcentajeComision, s.tarifaExtra, v.montoTotal, p.EquipoLocal, p.EquipoVisitante, EL.bandera, EV.bandera;
             """;
 
             command.Parameters.AddWithValue("@mail", tokenMail);
@@ -113,7 +114,8 @@ public static class VentaEndpoints
                     EquipoLocal = reader.GetString("EquipoLocal"),
                     EquipoVisitante = reader.GetString("EquipoVisitante"),
                     BanderaEquipoLocal = reader.GetString("banderaEquipoLocal"),
-                    BanderaEquipoVisitante = reader.GetString("banderaEquipoVisitante")
+                    BanderaEquipoVisitante = reader.GetString("banderaEquipoVisitante"),
+                    CantidadEntradas = reader.GetInt32("cantidadEntradas")
                 });
             }
 

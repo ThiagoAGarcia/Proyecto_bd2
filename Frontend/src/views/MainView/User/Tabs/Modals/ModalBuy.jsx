@@ -5,6 +5,7 @@ import getEstadio from './../../../../../services/EstadioService/getEstadio';
 import getAllHabilita from './../../../../../services/HabilitaService/getAllHabilita';
 import postVenta from '../../../../../services/VentaService/postVenta';
 import postEntrada from '../../../../../services/EntradaService/postEntrada';
+import {Oval} from 'react-loader-spinner'
 
 const formatCardNumber = (value) =>
     value
@@ -25,6 +26,11 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
     const [sectores, setSectores] = useState([]);
     const [cantidadEntradas, setCantidadEntradas] = useState(1);
     const [porcentajeComision, setPorcentajeComision] = useState(5);
+    const [cardName, setCardName] = useState('');
+    const [cardNumber, setCardNumber] = useState('');
+    const [cardExpiry, setCardExpiry] = useState('');
+    const [cardCvv, setCardCvv] = useState('');
+    const [isLoading, setIsLoading] = useState(false)
     const subtotal = (precioBase + (selectedSector?.tarifaExtra || 0)) * cantidadEntradas;
     const total = subtotal * (1 + porcentajeComision / 100);
 
@@ -62,10 +68,12 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
             setEstadios(null);
             setSectores([]);
             setSelectedSector(null);
+            setIsLoading(false)
         }
     }, [open]);
 
     const handleSubmit = async (e) => {
+        if (isLoading) return
         e.preventDefault();
 
         if (!selectedSector) {
@@ -77,6 +85,26 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
             toast.error(
                 'No se pueden comprar más de 5 entradas'
             );
+            return;
+        }
+
+        if (!cardName.trim()) {
+            toast.error('Debe ingresar el nombre del titular');
+            return;
+        }
+
+        if (cardNumber.replace(/\s/g, '').length !== 16) {
+            toast.error('Número de tarjeta inválido');
+            return;
+        }
+
+        if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
+            toast.error('Fecha de vencimiento inválida');
+            return;
+        }
+
+        if (cardCvv.length < 3) {
+            toast.error('CVV inválido');
             return;
         }
 
@@ -97,6 +125,7 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
         };
 
         try {
+            setIsLoading(true)
             const registerVenta = await postVenta(BODYVenta)
             if (registerVenta?.success) {
                 const registerEntrada = await postEntrada(BODYEntrada);
@@ -122,11 +151,26 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                 error?.response?.data ||
                 'No se pudo completar la compra'
             );
+        } finally {
+            setIsLoading(false)
         }
     };
 
     return (
         <Modal open={open} onClose={onClose}>
+            {isLoading && (
+                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-[1px] rounded-2xl">
+                    <Oval
+                        height={35}
+                        width={35}
+                        color="#052e66"
+                        secondaryColor="#e5e7eb"
+                        strokeWidth={4}
+                        strokeWidthSecondary={4}
+                        ariaLabel="loading-create-group"
+                    />
+                </div>
+            )}
             <form onSubmit={handleSubmit} className="w-full flex lg:flex-row flex-col max-w-7xl">
                 <div className="lg:p-10 p-0">
                     <div className="relative h-72 w-full overflow-hidden rounded-2xl sm:h-120">
@@ -178,11 +222,8 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                                 type="number"
                                 min="1"
                                 value={cantidadEntradas}
-                                onChange={(e) =>
-                                    setCantidadEntradas(
-                                        Math.max(1, Number(e.target.value))
-                                    )
-                                }
+                                onChange={(e) => !isLoading && setCantidadEntradas( Math.max(1, Number(e.target.value)) ) }
+                                disabled={isLoading}
                                 className="w-24 rounded-xl border-2 border-[#14315C]/15 px-3 py-2 text-center font-semibold text-[#14315C] focus:border-[#D4AF37] focus:outline-none"
                             />
                         </div>
@@ -264,6 +305,9 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                                 <input
                                     id="cardName"
                                     type="text"
+                                    value={cardName}
+                                    disabled={isLoading}
+                                    onChange={(e) => setCardName(e.target.value)}
                                     placeholder="Como figura en la tarjeta"
                                     className="w-full rounded-xl border-2 border-[#14315C]/15 bg-white px-4 py-3 text-[#14315C] placeholder:text-[#14315C]/35 shadow-sm transition focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/40"
                                 />
@@ -278,6 +322,9 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                                         id="cardNumber"
                                         type="text"
                                         inputMode="numeric"
+                                        value={cardNumber}
+                                        disabled={isLoading}
+                                        onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
                                         placeholder="0000 0000 0000 0000"
                                         className="w-full rounded-xl border-2 border-[#14315C]/15 bg-white px-4 py-3 pr-12 text-[#14315C] placeholder:text-[#14315C]/35 shadow-sm transition focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/40"
                                     />
@@ -294,6 +341,9 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                                         id="cardExpiry"
                                         type="text"
                                         inputMode="numeric"
+                                        value={cardExpiry}
+                                        disabled={isLoading}
+                                        onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
                                         placeholder="MM/AA"
                                         className="w-full rounded-xl border-2 border-[#14315C]/15 bg-white px-4 py-3 text-[#14315C] placeholder:text-[#14315C]/35 shadow-sm transition focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/40"
                                     />
@@ -307,6 +357,9 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                                         id="cardCvv"
                                         type="text"
                                         inputMode="numeric"
+                                        value={cardCvv}
+                                        disabled={isLoading}
+                                        onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
                                         placeholder="123"
                                         className="w-full rounded-xl border-2 border-[#14315C]/15 bg-white px-4 py-3 text-[#14315C] placeholder:text-[#14315C]/35 shadow-sm transition focus:border-[#D4AF37] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/40"
                                     />
@@ -315,10 +368,10 @@ export default function ProfileModal({ open, onClose, identificadorEstadio, iden
                         </div>
                     </div>
                     <div className="flex gap-4">
-                        <button type="button" onClick={onClose} className="mt-8 w-[50%] cursor-pointer lg:w-full inline lg:hidden rounded-xl bg-[#be2a2a] px-6 py-4 text-lg font-semibold text-white shadow-md transition hover:bg-[#ff1d1d] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:ring-offset-2">
+                        <button type="button" disabled={isLoading} onClick={onClose} className="mt-8 w-[50%] cursor-pointer lg:w-full inline lg:hidden rounded-xl bg-[#be2a2a] px-6 py-4 text-lg font-semibold text-white shadow-md transition hover:bg-[#ff1d1d] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:ring-offset-2">
                             Cancelar
                         </button>
-                        <button type="submit" className="mt-8 w-[50%] lg:w-full rounded-xl bg-[#14315C] px-6 py-4 text-lg font-semibold cursor-pointer text-white shadow-md transition hover:bg-[#1c4378] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:ring-offset-2">
+                        <button type="submit" disabled={isLoading} className="mt-8 w-[50%] lg:w-full rounded-xl bg-[#14315C] px-6 py-4 text-lg font-semibold cursor-pointer text-white shadow-md transition hover:bg-[#1c4378] focus:outline-none focus:ring-2 focus:ring-[#D4AF37]/50 focus:ring-offset-2">
                             Confirmar compra — {total.toFixed(2)} USD
                         </button>
                     </div>

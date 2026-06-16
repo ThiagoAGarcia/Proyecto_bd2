@@ -1,24 +1,27 @@
 import { useState, useEffect } from 'react'
 import getMyEntradas from '../../../../services/EntradaService/getMyEntradas'
+import ModalTransfer from '../Tabs/Modals/ModalTransfer'
 
 export default function Tickets() {
   const [entradas, setEntradas] = useState([])
+  const [open, setOpen] = useState(false)
+  const [identificador, setIdentificador] = useState(null)
+
+  const loadEntradas = async () => {
+    try {
+      const data = await getMyEntradas();
+
+      if (!data) return;
+
+      setEntradas(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    async function loadEntradas() {
-      try {
-        const data = await getMyEntradas()
-
-        if (!data) return
-
-        setEntradas(data)
-      } catch (error) {
-        console.error(error)
-      }
-    }
-
-    loadEntradas()
-  }, [])
+    loadEntradas();
+  }, []);
 
   return (
     <>
@@ -64,7 +67,7 @@ export default function Tickets() {
                       <button className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] bg-transparent border border-[#d0dcea] text-[#0a1628] hover:bg-[#f0f4fa]">
                         <i className="fa-solid fa-qrcode" /> Ver entrada
                       </button>
-                      <button className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] bg-transparent border border-[#d0dcea] text-[#0a1628] hover:bg-[#f0f4fa]">
+                      <button onClick={() => { setOpen(true); setIdentificador(entrada.identificador); }} className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] bg-transparent border border-[#d0dcea] text-[#0a1628] hover:bg-[#f0f4fa]">
                         <i className="fa-solid fa-paper-plane" /> Transferir
                       </button>
                     </div>
@@ -91,7 +94,7 @@ export default function Tickets() {
                       <button className="inline-flex items-center gap-1.5 px-3 py-4 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] bg-transparent border border-[#d0dcea] text-[#0a1628] hover:bg-[#f0f4fa]">
                         <i className="fa-solid fa-qrcode" /> Ver
                       </button>
-                      <button className="inline-flex items-center gap-1.5 px-3 py-4 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] bg-transparent border border-[#d0dcea] text-[#0a1628] hover:bg-[#f0f4fa]">
+                      <button onClick={() => { setOpen(true); setIdentificador(entrada.identificador); }} className="inline-flex items-center gap-1.5 px-3 py-4 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] bg-transparent border border-[#d0dcea] text-[#0a1628] hover:bg-[#f0f4fa]">
                         <i className="fa-solid fa-paper-plane" /> Transferir
                       </button>
                     </div>
@@ -102,6 +105,12 @@ export default function Tickets() {
           )}
         </div>
       </div>
+      <ModalTransfer
+        open={open}
+        onClose={() => setOpen(false)}
+        identificador={identificador}
+        onTransferSuccess={loadEntradas}
+      />
     </>
   )
 }
