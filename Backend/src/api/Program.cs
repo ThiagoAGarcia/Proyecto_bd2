@@ -127,5 +127,6 @@ app.MapEntradaEndpoints();
 app.MapEsAsignadoEndpoints();
 app.MapDispositivoEndpoints();
 app.MapDispositivoFuncionarioEndpoints();
+app.MapSectorEndpoints();
 
 app.Run();

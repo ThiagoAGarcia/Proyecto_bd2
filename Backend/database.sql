@@ -126,7 +126,7 @@ CREATE TABLE DispositivoFuncionario(
 
 CREATE TABLE Administrador(
     mailPerfil VARCHAR(200) PRIMARY KEY,
-    fechaAsignacionCargo DATE NOT NULL,
+    fechaAsignacionCargo DATE NOT NULL DEFAULT(CURRENT_DATE),
     nombrePais ENUM('estados unidos', 'canada', 'mexico') NOT NULL,
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail),
     FOREIGN KEY (nombrePais) REFERENCES Pais(nombre)
@@ -313,43 +313,3 @@ INSERT INTO Habilita VALUES
 (1, 2, 1),
 (2, 2, 2),
 (3, 3, 3);
-
-
-SELECT d.identificador
-FROM `Dispositivo` d
-LEFT JOIN `DispositivoFuncionario` dF ON dF.identificadorDispositivo = d.identificador
-WHERE dF.mailFuncionario IS NULL;
-
-SELECT d.identificador
-FROM Dispositivo d
-LEFT JOIN DispositivoFuncionario dF
-ON dF.identificadorDispositivo = d.identificador
-WHERE dF.identificadorDispositivo IS NULL;
-
-SELECT d.identificador,
-       dF.identificadorDispositivo,
-       dF.mailFuncionario
-FROM Dispositivo d
-LEFT JOIN DispositivoFuncionario dF
-    ON dF.identificadorDispositivo = d.identificador
-WHERE d.identificador = 1;
-
-SELECT *
-FROM DispositivoFuncionario
-WHERE identificadorDispositivo = 1;
-
-SELECT d.identificador,
-       dF.identificadorDispositivo,
-       dF.mailFuncionario
-FROM Dispositivo d
-LEFT JOIN DispositivoFuncionario dF
-    ON dF.identificadorDispositivo = d.identificador
-WHERE dF.mailFuncionario IS NULL;
-
-SELECT d.identificador,
-       dF.identificadorDispositivo,
-       dF.mailFuncionario
-FROM Dispositivo d
-LEFT JOIN DispositivoFuncionario dF
-    ON dF.identificadorDispositivo = d.identificador
-ORDER BY d.identificador;

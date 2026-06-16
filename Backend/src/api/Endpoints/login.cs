@@ -19,8 +19,6 @@ public static class LoginEndpoints
 
             var existingLogin = await GetLogin(connection, mail);
 
-
-
             if (existingLogin is null)
             {
                 return Results.NotFound("Login no encontrado");
@@ -77,8 +75,6 @@ public static class LoginEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
-
-
             await using var command = connection.CreateCommand();
             command.CommandText = """
                 INSERT INTO `Login` (`MailPerfil`, `Password`)
@@ -87,7 +83,6 @@ public static class LoginEndpoints
 
             command.Parameters.AddWithValue("@mail", mail);
             command.Parameters.AddWithValue("@password", hashedPassword);
-
 
             try
             {

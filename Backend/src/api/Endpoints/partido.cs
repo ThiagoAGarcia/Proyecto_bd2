@@ -47,6 +47,7 @@ public static class PartidoEndpoints
                 FechaHora = request.FechaHora
             });
         }).RequireAuthorization("SoloAdministrador");
+        
         app.MapGet("/partido/{identificador}", async (int identificador, IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
