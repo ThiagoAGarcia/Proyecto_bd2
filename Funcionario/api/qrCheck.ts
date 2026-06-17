@@ -1,5 +1,5 @@
 export async function qrCheck(token: string) {
-  const response = await fetch(`http://192.168.1.22:5001/qr/token/${token}`, {
+  const response = await fetch(`http://172.20.10.2:5001/qr/token/${token}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

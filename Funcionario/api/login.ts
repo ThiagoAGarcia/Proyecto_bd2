@@ -1,6 +1,6 @@
 export async function login(email: string, password: string) {
   const response = await fetch(
-    `http://192.168.1.22:5001/loginCheckFuncionario`,
+    `http://172.20.10.2:5001/loginCheckFuncionario`,
     {
       method: 'POST',
       headers: {

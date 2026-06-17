@@ -176,7 +176,7 @@ CREATE TABLE Entrada(
     identificadorEstadio INT NOT NULL,
     mailFuncionario VARCHAR(200) DEFAULT NULL,
     identificadorDispositivo INT DEFAULT NULL,
-    codigoQRAceptado VARCHAR(200) DEFAULT NULL,
+    codigoQRAceptado ENUM('Aceptado', 'NoAceptado') DEFAULT 'Aceptado',
     fechaHoraIngreso DATETIME DEFAULT NULL,
     FOREIGN KEY (mailUsuarioTiene) REFERENCES Usuario(mailPerfil),
     FOREIGN KEY (identificadorPartido) REFERENCES Partido(identificador),
@@ -219,6 +219,15 @@ CREATE TABLE VerificacionMail(
     FOREIGN KEY (mailPerfil) REFERENCES Usuario(mailPerfil)
 );
 
+CREATE TABLE qr(
+    identificadorEntrada INT PRIMARY KEY,
+    token VARCHAR(200) NOT NULL UNIQUE,
+    fechaVencimiento DATETIME NOT NULL,
+    identificadorDispositivo INT,
+    FOREIGN KEY (identificadorEntrada) REFERENCES Entrada(identificador),
+    FOREIGN KEY (identificadorDispositivo) REFERENCES Dispositivo(identificador)
+);
+
 SELECT * FROM login;
 
 INSERT INTO Perfil VALUES
@@ -242,6 +251,7 @@ INSERT INTO Pais VALUES
 ('estados unidos'),
 ('mexico');
 
+INSERT INTO Dispositivo VALUES (1);
 INSERT INTO Administrador VALUES
 ('admin@mundial.com','2026-01-01','canada');
 
@@ -313,3 +323,4 @@ INSERT INTO Habilita VALUES
 (1, 2, 1),
 (2, 2, 2),
 (3, 3, 3);
+
