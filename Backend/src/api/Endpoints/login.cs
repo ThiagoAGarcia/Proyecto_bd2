@@ -96,16 +96,6 @@ public static class LoginEndpoints
                 return Results.Unauthorized();
             }
 
-            var userVerified = await User.CheckUserVerificado(mail, config, context);
-
-            if (typeUser == "Usuario" && !userVerified)
-            {
-                return Results.Json(new
-                {
-                    success = false, // No sé si borrarlo por si acaso
-                    message = "Usuario no verificado"
-                }, statusCode: StatusCodes.Status401Unauthorized);
-            }
 
             Token.SetToken(config, response, Normalizar.NormalizarMethod(existingLogin.MailPerfil), typeUser);
 

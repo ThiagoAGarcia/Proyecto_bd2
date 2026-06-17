@@ -196,7 +196,11 @@ public static class QrEndpoints
             });
         });
 
-        app.MapGet("/qr/token/{token}", async (string token, IConfiguration config) =>
+        app.MapGet("/qr/token", async (
+            string token,
+            string mailPerfil,
+            IConfiguration config,
+            HttpContext context) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 
@@ -260,11 +264,17 @@ public static class QrEndpoints
             {
                 updateCommand.CommandText = """
                     UPDATE Entrada
-                    SET estadoEntrada = 'Registrada'
+                    SET estadoEntrada = 'Registrada', codigoQrAceptado = @token, fechaHoraIngreso = CURRENT_TIMESTAMP(), identificadorDispositivo = (
+                        SELECT identificadorDispositivo
+                        FROM qr
+                        WHERE identificadorEntrada = @id
+                    ), mailFuncionario = @mail
                     WHERE identificador = @id;
                 """;
 
                 updateCommand.Parameters.AddWithValue("@id", identificadorEntrada);
+                updateCommand.Parameters.AddWithValue("@token", token);
+                updateCommand.Parameters.AddWithValue("@mail", mailPerfil);
 
                 await updateCommand.ExecuteNonQueryAsync();
             }

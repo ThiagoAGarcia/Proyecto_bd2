@@ -1,12 +1,12 @@
-export async function qrCheck(token: string) {
-  const response = await fetch(`http://172.20.10.2:5001/qr/token/${token}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
+export async function qrCheck(token: string, mailPerfil: string) {
+  const response = await fetch(
+    `http://172.20.10.2:5001/qr/token?token=${encodeURIComponent(token)}&mailPerfil=${encodeURIComponent(mailPerfil)}`,
+    {
+      method: 'GET',
+      credentials: 'include',
     },
-  })
+  )
 
-  console.log(response)
   if (!response.ok) {
     throw new Error('Credenciales incorrectas')
   }

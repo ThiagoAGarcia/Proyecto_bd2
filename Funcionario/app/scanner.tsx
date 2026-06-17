@@ -2,7 +2,7 @@ import {useEffect, useState} from 'react'
 import {View, Text, Alert, StyleSheet} from 'react-native'
 import {CameraView, useCameraPermissions} from 'expo-camera'
 import {qrCheck} from '../api/qrCheck'
-
+import AsyncStorage from '@react-native-async-storage/async-storage'
 export default function Scanner() {
   const [permission, requestPermission] = useCameraPermissions()
   const [scanned, setScanned] = useState(false)
@@ -17,7 +17,10 @@ export default function Scanner() {
     setScanned(true)
 
     try {
-      const res = await qrCheck(data)
+      const res = await qrCheck(
+        data,
+        (await AsyncStorage.getItem('email')) || '',
+      )
 
       console.log(res)
 
@@ -33,7 +36,7 @@ export default function Scanner() {
     setTimeout(() => {
       setScanned(false)
       setResult('idle')
-    }, 3000)
+    }, 10000)
   }
 
   if (!permission) {
