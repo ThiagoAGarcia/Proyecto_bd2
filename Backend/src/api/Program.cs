@@ -17,10 +17,16 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:8081",
+                "http://192.168.1.22:8081",
+                "http://localhost:19006"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
     });
 });
 
@@ -124,5 +130,6 @@ app.MapHabilitaEndpoints();
 app.MapTransferenciaEndpoints();
 app.MapVentaEndpoints();
 app.MapEntradaEndpoints();
+app.MapQrEndpoints();
 
 app.Run();
