@@ -118,7 +118,7 @@ CREATE TABLE Funcionario
 CREATE TABLE DispositivoFuncionario(
     mailFuncionario VARCHAR(200),
     identificadorDispositivo INT,
-    fecha DATE NOT NULL,
+    fecha DATE NOT NULL DEFAULT(CURRENT_DATE),
     FOREIGN KEY (mailFuncionario) REFERENCES Funcionario(mailPerfil),
     FOREIGN KEY (identificadorDispositivo) REFERENCES Dispositivo(identificador),
     PRIMARY KEY (mailFuncionario, identificadorDispositivo)
@@ -126,7 +126,7 @@ CREATE TABLE DispositivoFuncionario(
 
 CREATE TABLE Administrador(
     mailPerfil VARCHAR(200) PRIMARY KEY,
-    fechaAsignacionCargo DATE NOT NULL,
+    fechaAsignacionCargo DATE NOT NULL DEFAULT(CURRENT_DATE),
     nombrePais ENUM('estados unidos', 'canada', 'mexico') NOT NULL,
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail),
     FOREIGN KEY (nombrePais) REFERENCES Pais(nombre)
@@ -136,14 +136,14 @@ CREATE TABLE EsAsignado(
     mailFuncionario VARCHAR(200),
     identificadorSector INT,
     identificadorEstadio INT,
-    fecha DATE NOT NULL,
+    fecha DATE NOT NULL DEFAULT(CURRENT_DATE),
     FOREIGN KEY (mailFuncionario) REFERENCES Funcionario(mailPerfil),
     FOREIGN KEY (identificadorEstadio, identificadorSector) REFERENCES Sector(identificadorEstadio, identificador),
     PRIMARY KEY (mailFuncionario, identificadorSector, identificadorEstadio)
 );
 
 CREATE TABLE Usuario(
-    mailPerfil VARCHAR(200) PRIMARY KEY ,
+    mailPerfil VARCHAR(200) PRIMARY KEY,
     fechaRegistro DATE NOT NULL DEFAULT(CURRENT_DATE),
     estadoVerificado ENUM('verificado', 'noVerificado') NOT NULL DEFAULT('noVerificado'),
     FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail)

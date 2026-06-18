@@ -130,6 +130,10 @@ app.MapHabilitaEndpoints();
 app.MapTransferenciaEndpoints();
 app.MapVentaEndpoints();
 app.MapEntradaEndpoints();
+app.MapEsAsignadoEndpoints();
+app.MapDispositivoEndpoints();
+app.MapDispositivoFuncionarioEndpoints();
+app.MapSectorEndpoints();
 app.MapQrEndpoints();
 
 app.Run();

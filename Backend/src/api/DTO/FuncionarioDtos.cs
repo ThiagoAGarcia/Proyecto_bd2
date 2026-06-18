@@ -1,7 +1,6 @@
-namespace api.DTOs;
+namespace api.DTO;
 
 public sealed record FuncionarioRequest(
     string MailPerfil,
     int NumeroLegajo
 );
-

@@ -1,6 +1,6 @@
 using api.Methods;
 using MySqlConnector;
-using api.DTOs;
+using api.DTO;
 
 namespace api.Endpoints;
 
@@ -18,8 +18,6 @@ public static class LoginEndpoints
             await connection.OpenAsync();
 
             var existingLogin = await GetLogin(connection, mail);
-
-
 
             if (existingLogin is null)
             {
@@ -123,8 +121,6 @@ public static class LoginEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
-
-
             await using var command = connection.CreateCommand();
             command.CommandText = """
                 INSERT INTO `Login` (`MailPerfil`, `Password`)
@@ -133,7 +129,6 @@ public static class LoginEndpoints
 
             command.Parameters.AddWithValue("@mail", mail);
             command.Parameters.AddWithValue("@password", hashedPassword);
-
 
             try
             {

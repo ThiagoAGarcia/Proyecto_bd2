@@ -1,5 +1,5 @@
 
-namespace api.DTOs;
+namespace api.DTO;
 
 public sealed record EstadioRequest(
     string Nombre,
