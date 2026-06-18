@@ -125,6 +125,7 @@ public static class TransferenciaEndpoints
 
                 return Results.Ok(new
                 {
+                    success = true,
                     Message = "Transferencia realizada con éxito"
                 });
             }

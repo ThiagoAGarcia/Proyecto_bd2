@@ -8,19 +8,23 @@ public static class UsuarioEndpoints
 {
     public static void MapUsuarioEndpoints(this WebApplication app)
     {
-        app.MapGet("/allUsers", async (IConfiguration config) =>
+        app.MapGet("/allUsuarios", async (IConfiguration config, HttpContext context) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
+            var tokenMail = Normalizar.NormalizarMethod(Token.GetMailUser(context));
+
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                SELECT `MailPerfil`, `numeroDocumento`
-                FROM `Usuario` JOIN `Perfil` ON `Usuario`.`MailPerfil` = `Perfil`.`Mail`
-                WHERE `Usuario`.`estadoVerificado` = 'verificado';
-                """;
+                SELECT `MailPerfil`
+                FROM `Usuario`
+                WHERE `estadoVerificado` = 'verificado' AND `mailPerfil` != @mail;
+            """;
+
+            command.Parameters.AddWithValue("@mail", tokenMail);
 
             await using var reader = await command.ExecuteReaderAsync();
 
@@ -30,8 +34,7 @@ public static class UsuarioEndpoints
             {
                 users.Add(new
                 {
-                    MailPerfil = Normalizar.NormalizarMethod(reader.GetString("MailPerfil")),
-                    NumeroDocumento = reader.GetInt32("numeroDocumento")
+                    MailPerfil = Normalizar.NormalizarMethod(reader.GetString("MailPerfil"))
                 });
             }
 

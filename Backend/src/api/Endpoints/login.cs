@@ -44,10 +44,56 @@ public static class LoginEndpoints
             {
                 return Results.Json(new
                 {
-                    success = false, // No sé si borrarlo por si acaso
+                    success = false,
                     message = "Usuario no verificado"
                 }, statusCode: StatusCodes.Status401Unauthorized);
             }
+
+            Token.SetToken(config, response, Normalizar.NormalizarMethod(existingLogin.MailPerfil), typeUser);
+
+            return Results.Ok(new
+            {
+                success = true,
+                message = "Login correcto",
+                role = typeUser
+            });
+        });
+        app.MapPost("/loginCheckFuncionario", async (LoginRequest request, IConfiguration config, HttpResponse response, HttpContext context) =>
+        {
+            var mail = Normalizar.NormalizarMethod(request.MailPerfil);
+
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            var existingLogin = await GetLogin(connection, mail);
+
+
+
+            if (existingLogin is null)
+            {
+                return Results.NotFound("Login no encontrado");
+            }
+
+            var isCorrect = BCrypt.Net.BCrypt.Verify(request.Password, existingLogin.Password);
+
+            if (!isCorrect)
+            {
+                return Results.Unauthorized();
+            }
+
+            var typeUser = await GetUserType(connection, mail);
+
+            if (typeUser is null)
+            {
+                return Results.Problem("No se pudo determinar el tipo de usuario");
+            }
+            if (typeUser != "Funcionario")
+            {
+                return Results.Unauthorized();
+            }
+
 
             Token.SetToken(config, response, Normalizar.NormalizarMethod(existingLogin.MailPerfil), typeUser);
 

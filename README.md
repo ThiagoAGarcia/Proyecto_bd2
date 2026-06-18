@@ -31,4 +31,7 @@ Solo si es necesario:
 
 docker compose down
 docker compose down --rmi local
+
+
+Si la pantalla de funcionario no les funciona probar fijarse su direccion ipv4 tirando el comando ipconfig en su cmd y cambiando en la ruta /Funcionario/api en los dos endpoints poniendo su direccion ipv4
 ```
