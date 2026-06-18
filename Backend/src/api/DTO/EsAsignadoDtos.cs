@@ -1,19 +1,22 @@
 namespace api.DTO;
 
 public sealed record EsAsignadoRequest(
-    string MailFuncionario,
+    int IdentificadorDispositivo,
     int IdentificadorSector,
-    int IdentificadorEstadio
+    int IdentificadorEstadio,
+    int IdentificadorPartido
 );
 
 public sealed record EsAsignadoDeleteRequest(
-    string MailFuncionario,
+    int IdentificadorDispositivo,
     int IdentificadorSector,
-    int IdentificadorEstadio
+    int IdentificadorEstadio,
+    int IdentificadorPartido
 );
 
 public sealed record EsAsignadoUpdateRequest(
-    string MailFuncionario,
+    int IdentificadorDispositivo,
     int IdentificadorSector,
-    int IdentificadorEstadio
+    int IdentificadorEstadio,
+    int IdentificadorPartido
 );

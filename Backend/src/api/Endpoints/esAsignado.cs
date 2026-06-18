@@ -49,13 +49,14 @@ public static class EsAsignadoEndpoints
 
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                INSERT INTO EsAsignado (mailFuncionario, identificadorSector, identificadorEstadio) VALUES
-                (@mailFuncionario, @identificadorSector, @identificadorEstadio);
+                INSERT INTO EsAsignado (identificadorDispositivo, identificadorSector, identificadorEstadio, identificadorPartido) VALUES
+                (@identificadorDispositivo, @identificadorSector, @identificadorEstadio, @identificadorPartido);
                 """;
 
-            command.Parameters.AddWithValue("@mailFuncionario", request.MailFuncionario);
+            command.Parameters.AddWithValue("@identificadorDispositivo", request.IdentificadorDispositivo);
             command.Parameters.AddWithValue("@identificadorSector", request.IdentificadorSector);
             command.Parameters.AddWithValue("@identificadorEstadio", request.IdentificadorEstadio);
+            command.Parameters.AddWithValue("@identificadorPartido", request.IdentificadorPartido);
 
             try
             {
@@ -87,14 +88,16 @@ public static class EsAsignadoEndpoints
             command.CommandText = """
                 DELETE FROM `EsAsignado`
                 WHERE 
-                    `mailFuncionario` = @mailFuncionario AND
+                    `identificadorDispositivo` = @identificadorDispositivo AND
                     `identificadorSector` = @identificadorSector AND
-                    `identificadorEstadio` = @identificadorEstadio;
+                    `identificadorEstadio` = @identificadorEstadio AND
+                    `identificadorPartido` = @identificadorPartido;
                 """;
 
-            command.Parameters.AddWithValue("@mailFuncionario", request.MailFuncionario);
+            command.Parameters.AddWithValue("@identificadorDispositivo", request.IdentificadorDispositivo);
             command.Parameters.AddWithValue("@identificadorSector", request.IdentificadorSector);
             command.Parameters.AddWithValue("@identificadorEstadio", request.IdentificadorEstadio);
+            command.Parameters.AddWithValue("@identificadorPartido", request.IdentificadorPartido);
 
             try
             {
