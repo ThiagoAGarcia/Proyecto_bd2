@@ -140,7 +140,8 @@ public static class PartidoEndpoints
                     `EquipoLocal` = @equipoLocal,
                     `EquipoVisitante` = @equipoVisitante,
                     `identificadorEstadio` = @identificadorEstadio,
-                    `fechaHora` = @fechaHora
+                    `fechaHora` = @fechaHora,
+                    `precio` = @precio,
                 WHERE `identificador` = @identificador;
                 """;
 
@@ -150,6 +151,7 @@ public static class PartidoEndpoints
             command.Parameters.AddWithValue("@equipoVisitante", request.EquipoVisitante);
             command.Parameters.AddWithValue("@identificadorEstadio", request.IdentificadorEstadio);
             command.Parameters.AddWithValue("@fechaHora", request.FechaHora);
+            command.Parameters.AddWithValue("@precio", request.Precio);
 
             var rowsAffected = await command.ExecuteNonQueryAsync();
 
@@ -165,7 +167,8 @@ public static class PartidoEndpoints
                 EquipoLocal = request.EquipoLocal,
                 EquipoVisitante = request.EquipoVisitante,
                 IdentificadorEstadio = request.IdentificadorEstadio,
-                FechaHora = request.FechaHora
+                FechaHora = request.FechaHora,
+                Precio = request.Precio
             });
 
         }).RequireAuthorization("SoloAdministrador");
@@ -227,7 +230,7 @@ public static class PartidoEndpoints
             }
 
             return Results.Ok(partidos);
-        }).RequireAuthorization();
+        }).RequireAuthorization("SoloUsuario");
 
         app.MapGet("/partidoFase/{fase}", async (string fase, IConfiguration config) =>
         {
@@ -280,6 +283,7 @@ public static class PartidoEndpoints
 
             return Results.Ok(partidos);
         }).RequireAuthorization();
+
         app.MapGet("/partidoEquipo/{equipo}", async (string equipo, IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
@@ -334,6 +338,80 @@ public static class PartidoEndpoints
 
         }).RequireAuthorization();
 
+        app.MapGet("/allMyPartidos", async (IConfiguration config, HttpContext context) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
 
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            var tokenMail = Normalizar.NormalizarMethod(Token.GetMailUser(context));
+
+            await using var paisMailCommand = connection.CreateCommand();
+
+            paisMailCommand.CommandText = """
+                SELECT nombrePais
+                FROM Administrador
+                WHERE mailPerfil = @mailAdministrador;
+            """;
+
+            paisMailCommand.Parameters.AddWithValue("@mailAdministrador", tokenMail);
+
+            var tokenMailPais = (await paisMailCommand.ExecuteScalarAsync()) as string;
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT p.identificador,
+                    p.fase,
+                    p.EquipoLocal,
+                    p.EquipoVisitante,
+                    p.identificadorEstadio,
+                    p.fechaHora,
+                    p.precio,
+
+                    el.nombre AS NombreEstadio,
+                    el.imagen AS ImagenEstadio,
+                    el.direccionLocalidad AS DireccionLocalidadEstadio,
+                    el.direccionCalle AS DireccionCalleEstadio,
+                    el.nombrePais AS NombrePaisEstadio,
+
+                    eql.bandera AS BanderaEquipoLocal,
+                    eqv.bandera AS BanderaEquipoVisitante
+                FROM partido p
+                JOIN estadio el ON p.identificadorEstadio = el.identificador
+                JOIN equipo eql ON p.EquipoLocal = eql.nombre
+                JOIN equipo eqv ON p.EquipoVisitante = eqv.nombre
+                WHERE el.nombrePais = @nombrePais;
+            """;
+
+            command.Parameters.AddWithValue("@nombrePais", tokenMailPais);
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var partidos = new List<object>();
+
+            while (await reader.ReadAsync())
+            {
+                partidos.Add(new
+                {
+                    Identificador = reader.GetInt32("identificador"),
+                    Fase = reader.GetString("fase"),
+                    EquipoLocal = reader.GetString("EquipoLocal"),
+                    EquipoVisitante = reader.GetString("EquipoVisitante"),
+                    IdentificadorEstadio = reader.GetInt32("identificadorEstadio"),
+                    FechaHora = reader.GetDateTime("fechaHora"),
+                    NombreEstadio = reader.GetString("NombreEstadio"),
+                    ImagenEstadio = reader["ImagenEstadio"] as string,
+                    DireccionLocalidadEstadio = reader.GetString("DireccionLocalidadEstadio"),
+                    DireccionCalleEstadio = reader.GetString("DireccionCalleEstadio"),
+                    NombrePaisEstadio = reader.GetString("NombrePaisEstadio"),
+                    Precio = reader.GetInt32("precio"),
+                    BanderaEquipoLocal = reader["BanderaEquipoLocal"] as string,
+                    BanderaEquipoVisitante = reader["BanderaEquipoVisitante"] as string
+                });
+            }
+
+            return Results.Ok(partidos);
+        }).RequireAuthorization("SoloAdministrador");
     }
 }

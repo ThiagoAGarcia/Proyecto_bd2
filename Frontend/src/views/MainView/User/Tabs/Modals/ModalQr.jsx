@@ -1,9 +1,9 @@
 import Modal from './../../../../../components/modal'
 import QRCode from 'react-qr-code'
 import actualizarQr from '../../../../../services/QrService/actualizarQr'
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 
-export default function ModalQr({open, onClose, partido, entrada}) {
+export default function ModalQr({ open, onClose, partido, entrada }) {
   const [qr, setQr] = useState(null)
   const [loading, setLoading] = useState(true)
 
@@ -38,7 +38,7 @@ export default function ModalQr({open, onClose, partido, entrada}) {
       <div className="w-full flex flex-col">
         <div className="mb-4">
           <h2 className="text-2xl font-bold text-[#14315C]">
-            Tu <span className="text-[#c8a84b]">entrada</span>
+            Escanear <span className="text-[#c8a84b]">entrada</span>
           </h2>
 
           <p className="mt-1 text-sm text-[#14315C]/70">
@@ -50,7 +50,7 @@ export default function ModalQr({open, onClose, partido, entrada}) {
           <div className="bg-[#14315C] p-4 text-white">
             <h3 className="text-xl font-bold">{partido.nombre}</h3>
 
-            <div className="mt-3 flex flex-col gap-1 text-sm text-white/80">
+            <div className=" flex flex-col gap-1 text-sm text-white/80">
               <p>
                 <i className="fa-regular fa-calendar mr-2" />
                 {partido.fecha}
@@ -86,10 +86,10 @@ export default function ModalQr({open, onClose, partido, entrada}) {
           </div>
         </div>
 
-        <div className="mt-5">
+        <div className="mt-5 lg:mt-0">
           <button
             onClick={onClose}
-            className="w-full cursor-pointer rounded-xl bg-[#14315C] px-6 py-3 font-semibold text-white transition hover:bg-[#0f2748]">
+            className="w-full lg:hidden inline cursor-pointer rounded-xl bg-[#14315C] px-6 py-3 font-semibold text-white transition hover:bg-[#0f2748]">
             Cerrar
           </button>
         </div>

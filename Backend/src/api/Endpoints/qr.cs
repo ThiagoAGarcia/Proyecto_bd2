@@ -196,9 +196,8 @@ public static class QrEndpoints
             });
         });
 
-        app.MapGet("/qr/token", async (
+        app.MapGet("/qr/token/{token}", async (
             string token,
-            string mailPerfil,
             IConfiguration config,
             HttpContext context) =>
         {
@@ -268,13 +267,12 @@ public static class QrEndpoints
                         SELECT identificadorDispositivo
                         FROM qr
                         WHERE identificadorEntrada = @id
-                    ), mailFuncionario = @mail
+                    )
                     WHERE identificador = @id;
                 """;
 
                 updateCommand.Parameters.AddWithValue("@id", identificadorEntrada);
                 updateCommand.Parameters.AddWithValue("@token", token);
-                updateCommand.Parameters.AddWithValue("@mail", mailPerfil);
 
                 await updateCommand.ExecuteNonQueryAsync();
             }

@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import getMyEntradas from '../../../../services/EntradaService/getMyEntradas'
 import ModalTransfer from '../Tabs/Modals/ModalTransfer'
 import ModalQr from '../Tabs/Modals/ModalQr'
@@ -27,6 +27,8 @@ export default function Tickets() {
     loadEntradas()
   }, [])
 
+  const capitalize = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1)
+
   return (
     <>
       <div className="text-xl">
@@ -46,8 +48,6 @@ export default function Tickets() {
               const [fecha, hora] = entrada.fechaHora.split('T')
               const [anio, mes, dia] = fecha.split('-')
               const horaFormateada = hora.slice(0, 5)
-              const capitalize = (texto) =>
-                texto.charAt(0).toUpperCase() + texto.slice(1)
               return (
                 <div
                   key={entrada.identificador}
@@ -86,7 +86,10 @@ export default function Tickets() {
                     </div>
 
                     <div className="flex gap-2 border-t border-[#eaf0f8] pt-2.5">
-                      <button className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] bg-transparent border border-[#d0dcea] text-[#0a1628] hover:bg-[#f0f4fa]">
+                      <button className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] bg-transparent border border-[#d0dcea] text-[#0a1628] hover:bg-[#f0f4fa]" onClick={() => {
+                          setEntradaSeleccionada(entrada)
+                          setOpenQr(true)
+                        }}>
                         <i className="fa-solid fa-qrcode" /> Ver entrada
                       </button>
                       <button
@@ -168,9 +171,16 @@ export default function Tickets() {
         onClose={() => setOpenQr(false)}
         partido={{
           nombre: entradaSeleccionada
-            ? `${entradaSeleccionada.equipoLocal} vs ${entradaSeleccionada.equipoVisitante}`
+            ? `${capitalize(entradaSeleccionada.equipoLocal)} vs ${capitalize(entradaSeleccionada.equipoVisitante)}`
             : '',
-          fecha: entradaSeleccionada?.fechaHora,
+          fecha: entradaSeleccionada
+            ? (() => {
+              const [fecha, hora] = entradaSeleccionada.fechaHora.split('T')
+              const [anio, mes, dia] = fecha.split('-')
+
+              return `${dia}-${mes} ${hora.slice(0, 5)}`
+            })()
+            : '',
           estadio: entradaSeleccionada
             ? `${entradaSeleccionada.nombreEstadio} (${entradaSeleccionada.nombreSector})`
             : '',

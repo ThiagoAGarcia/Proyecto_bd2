@@ -56,20 +56,15 @@ CREATE TABLE Equipo(
     bandera VARCHAR(256)
 );
 
-CREATE TABLE Pais(
-    nombre ENUM('estados unidos', 'canada', 'mexico') PRIMARY KEY
-);
-
 CREATE TABLE Estadio (
     identificador INT PRIMARY KEY AUTO_INCREMENT,
     imagen VARCHAR(256),
     nombre VARCHAR(32) NOT NULL,
-    nombrePais ENUM('estados unidos', 'canada', 'mexico') NOT NULL, # cambio para que lo estadios solo puedan pertenecer a los paises anfitriones del mundial
+    nombrePais ENUM('estados unidos', 'canada', 'mexico') NOT NULL,
     direccionLocalidad VARCHAR(200) NOT NULL,
     direccionCalle VARCHAR(20) NOT NULL,
     direccionNumero INT NOT NULL,
-    direccionCodigoPostal INT NOT NULL,
-    FOREIGN KEY (nombrePais) REFERENCES Pais(nombre)
+    direccionCodigoPostal INT NOT NULL
 );
 
 CREATE TABLE Sector (
@@ -82,7 +77,7 @@ CREATE TABLE Sector (
     PRIMARY KEY (identificadorEstadio, identificador)
 );
 
-CREATE TABLE Partido (  # que hacer con fase aca
+CREATE TABLE Partido (
     identificador INT AUTO_INCREMENT PRIMARY KEY,
     fase VARCHAR(30) NOT NULL,
     EquipoLocal VARCHAR(32) NOT NULL,
@@ -104,43 +99,35 @@ CREATE TABLE Habilita(
     PRIMARY KEY (identificadorEstadio, identificadorPartido, identificadorSector)
 );
 
-CREATE TABLE Dispositivo(
-    identificador INT PRIMARY KEY
-);
-
-CREATE TABLE Funcionario
-(
+CREATE TABLE Funcionario (
     mailPerfil VARCHAR(200) PRIMARY KEY,
     numeroLegajo INT UNIQUE NOT NULL,
     FOREIGN KEY (mailPerfil) REFERENCES Perfil (mail)
 );
 
-CREATE TABLE DispositivoFuncionario(
+CREATE TABLE Dispositivo (
+    identificador INT PRIMARY KEY,
     mailFuncionario VARCHAR(200),
-    identificadorDispositivo INT,
-    fecha DATE NOT NULL DEFAULT(CURRENT_DATE),
-    FOREIGN KEY (mailFuncionario) REFERENCES Funcionario(mailPerfil),
-    FOREIGN KEY (identificadorDispositivo) REFERENCES Dispositivo(identificador),
-    PRIMARY KEY (mailFuncionario, identificadorDispositivo)
+    fechaAsignacion DATE DEFAULT(CURRENT_DATE),
+    FOREIGN KEY (mailFuncionario) REFERENCES Funcionario(mailPerfil)
 );
 
 CREATE TABLE Administrador(
     mailPerfil VARCHAR(200) PRIMARY KEY,
     fechaAsignacionCargo DATE NOT NULL DEFAULT(CURRENT_DATE),
     nombrePais ENUM('estados unidos', 'canada', 'mexico') NOT NULL,
-    FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail),
-    FOREIGN KEY (nombrePais) REFERENCES Pais(nombre)
+    FOREIGN KEY (mailPerfil) REFERENCES Perfil(mail)
 );
 
 CREATE TABLE EsAsignado(
-    mailFuncionario VARCHAR(200),
-    identificadorSector INT,
+    identificadorDispositivo INT,
     identificadorEstadio INT,
+    identificadorPartido INT,
+    identificadorSector INT,
     fecha DATE NOT NULL DEFAULT(CURRENT_DATE),
-    FOREIGN KEY (mailFuncionario) REFERENCES Funcionario(mailPerfil),
-    FOREIGN KEY (identificadorEstadio, identificadorSector) REFERENCES Sector(identificadorEstadio, identificador),
-    PRIMARY KEY (mailFuncionario, identificadorSector, identificadorEstadio)
-);
+    FOREIGN KEY (identificadorDispositivo) REFERENCES Dispositivo(identificador),
+    FOREIGN KEY (identificadorEstadio, identificadorPartido, identificadorSector) REFERENCES Habilita(identificadorEstadio,identificadorPartido,identificadorSector),
+    PRIMARY KEY (identificadorDispositivo, identificadorEstadio, identificadorPartido, identificadorSector));
 
 CREATE TABLE Usuario(
     mailPerfil VARCHAR(200) PRIMARY KEY,
@@ -174,15 +161,12 @@ CREATE TABLE Entrada(
     estadoEntrada ENUM('Registrada', 'No registrada', 'Cancelada') DEFAULT('No registrada') NOT NULL,
     identificadorSector INT NOT NULL,
     identificadorEstadio INT NOT NULL,
-    mailFuncionario VARCHAR(200) DEFAULT NULL,
     identificadorDispositivo INT DEFAULT NULL,
     codigoQRAceptado ENUM('Aceptado', 'NoAceptado') DEFAULT 'Aceptado',
     fechaHoraIngreso DATETIME DEFAULT NULL,
     FOREIGN KEY (mailUsuarioTiene) REFERENCES Usuario(mailPerfil),
-    FOREIGN KEY (identificadorPartido) REFERENCES Partido(identificador),
-    FOREIGN KEY (identificadorEstadio, identificadorSector) REFERENCES Sector(identificadorEstadio, identificador),
-    FOREIGN KEY (mailFuncionario) REFERENCES  Funcionario(mailPerfil),
-    FOREIGN KEY (identificadorDispositivo) REFERENCES  Dispositivo(identificador)
+    FOREIGN KEY (identificadorEstadio, identificadorPartido, identificadorSector) REFERENCES Habilita(identificadorEstadio, identificadorPartido, identificadorSector),
+    FOREIGN KEY (identificadorDispositivo) REFERENCES Dispositivo(identificador)
 );
 
 CREATE TABLE Transferencia(
@@ -246,18 +230,16 @@ INSERT INTO Login VALUES
 ('user2@gmail.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
 ('user3@gmail.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06');
 
-INSERT INTO Pais VALUES
-('canada'),
-('estados unidos'),
-('mexico');
-
-INSERT INTO Dispositivo VALUES (1);
 INSERT INTO Administrador VALUES
-('admin@mundial.com','2026-01-01','canada');
+('admin@mundial.com','2026-01-01','mexico');
 
 INSERT INTO Funcionario VALUES
 ('func1@mundial.com',1001),
 ('func2@mundial.com',1002);
+
+INSERT INTO Dispositivo (identificador, mailFuncionario) VALUES
+(1, 'func1@mundial.com'),
+(2, 'func2@mundial.com');
 
 INSERT INTO Usuario VALUES
 ('user1@gmail.com','2026-06-01','verificado'),
@@ -296,7 +278,8 @@ INSERT INTO Partido (fase, EquipoLocal, EquipoVisitante, identificadorEstadio, p
 INSERT INTO Sector (identificador, identificadorEstadio, nombre, capMax, tarifaExtra) VALUES
 (1, 1, 'Sector A', 3, 1000),
 (2, 1, 'Sector B', 2, 500),
-(3, 1, 'Sector C', 1, 0),
+(3, 1, 'Sector C', 1, 250),
+(4, 1, 'Sector D', 4, 0),
 
 (1, 2, 'Sector A', 3, 1000),
 (2, 2, 'Sector B', 2, 500),
@@ -324,3 +307,5 @@ INSERT INTO Habilita VALUES
 (2, 2, 2),
 (3, 3, 3);
 
+SELECT identificador, mailFuncionario, fechaAsignacion
+FROM `Dispositivo`;

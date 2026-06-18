@@ -177,7 +177,7 @@ export default function ModalTransfer({ open, onClose, identificador, onTransfer
                 )}
 
                 <div className="mt-8 flex md:flex-row flex-col gap-4">
-                    <button type="button" disabled={isLoading} onClick={onClose} className="lg:hidden inline flex-1 cursor-pointer rounded-xl bg-red-600 px-6 py-4 font-semibold text-white hover:bg-red-700">
+                    <button type="button" disabled={isLoading} onClick={onClose} className="lg:hidden inline flex-1 cursor-pointer rounded-xl px-6 py-4 font-semibold border-none bg-[#f0f4fa] text-[#0a1628] hover:bg-[#c2c8d1]/80">
                         Cancelar
                     </button>
 

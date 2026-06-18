@@ -20,7 +20,7 @@ const formatExpiry = (value) => {
     return `${digits.slice(0, 2)}/${digits.slice(2)}`;
 };
 
-export default function ProfileModal({ open, onClose, identificadorEstadio, identificadorPartido, precioBase }) {
+export default function ModalBuy({ open, onClose, identificadorEstadio, identificadorPartido, precioBase }) {
     const [estadios, setEstadios] = useState(null);
     const [selectedSector, setSelectedSector] = useState(null);
     const [sectores, setSectores] = useState([]);

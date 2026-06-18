@@ -17,7 +17,7 @@ public static class DispositivoEndpoints
 
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                SELECT `identificador`
+                SELECT `identificador`, `mailFuncionario`, `fechaAsignacion`
                 FROM `Dispositivo`;
                 """;
 
@@ -29,7 +29,9 @@ public static class DispositivoEndpoints
             {
                 dispositivos.Add(new
                 {
-                    Identificador = reader.GetInt32("identificador")
+                    Identificador = reader.GetInt32("identificador"),
+                    MailFuncionario = reader.GetString("mailFuncionario"),
+                    FechaAsignacion = reader.GetDateTime("fechaAsignacion")
                 });
             }
 

@@ -50,7 +50,7 @@ public static class HabilitaEndpoints
                 JOIN sector s ON h.identificadorSector = s.identificador AND h.identificadorEstadio = s.identificadorEstadio
                 JOIN partido p ON h.identificadorPartido = p.identificador
                 WHERE h.identificadorEstadio = @estadio AND h.identificadorPartido = @partido
-                """;
+            """;
 
             command.Parameters.AddWithValue("@estadio", estadio);
             command.Parameters.AddWithValue("@partido", partido);

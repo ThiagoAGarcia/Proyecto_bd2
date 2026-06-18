@@ -8,6 +8,38 @@ public static class EsAsignadoEndpoints
 {
     public static void MapEsAsignadoEndpoints(this WebApplication app)
     {
+        app.MapGet("/asignados", async (IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT identificadorDispositivo, identificadorEstadio, identificadorPartido, identificadorSector, fecha
+                FROM EsAsignado;
+            """;
+
+            var asignados = new List<object>();
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            while (await reader.ReadAsync())
+            {
+                asignados.Add(new
+                {
+                    IdentificadorDispositivo = reader.GetInt32("identificadorDispositivo"),
+                    IdentificadorEstadio = reader.GetInt32("identificadorEstadio"),
+                    IdentificadorPartido = reader.GetInt32("identificadorPartido"),
+                    IdentificadorSector = reader.GetInt32("identificadorSector"),
+                    Fecha = reader.GetDateTime("fecha")
+                });
+            }
+
+            return Results.Ok(asignados);
+        }).RequireAuthorization("SoloAdministrador");
+
         app.MapPost("/nuevoAsignado", async (IConfiguration config, EsAsignadoRequest request) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
@@ -31,7 +63,8 @@ public static class EsAsignadoEndpoints
             }
             catch (MySqlException ex)
             {
-                return Results.Conflict(new{
+                return Results.Conflict(new
+                {
                     success = false
                 });
             }

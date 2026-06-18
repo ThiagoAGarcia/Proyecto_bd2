@@ -127,7 +127,7 @@ public static class EquipoEndpoints
             });
         }).RequireAuthorization();
 
-        app.MapGet("/allEquipo", async (IConfiguration config) =>
+        app.MapGet("/allEquipos", async (IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 

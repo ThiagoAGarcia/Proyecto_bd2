@@ -120,7 +120,6 @@ app.MapAdministradorEndpoints();
 app.MapFuncionarioEndpoints();
 app.MapVerificarMailEndpoints();
 app.MapEstadioEndpoints();
-app.MapPaisEndpoints();
 app.MapTelefonoEndpoints();
 app.MapEquipoEndpoints();
 app.MapPartidoEndpoints();
@@ -132,7 +131,6 @@ app.MapVentaEndpoints();
 app.MapEntradaEndpoints();
 app.MapEsAsignadoEndpoints();
 app.MapDispositivoEndpoints();
-app.MapDispositivoFuncionarioEndpoints();
 app.MapSectorEndpoints();
 app.MapQrEndpoints();
 

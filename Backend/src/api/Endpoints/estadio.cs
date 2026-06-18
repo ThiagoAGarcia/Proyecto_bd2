@@ -122,6 +122,65 @@ public static class EstadioEndpoints
             });
         }).RequireAuthorization();
 
+        app.MapGet("/allMyEstadios", async (IConfiguration config, HttpContext context) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            var tokenMail = Normalizar.NormalizarMethod(Token.GetMailUser(context));
+
+            await using var paisMailCommand = connection.CreateCommand();
+
+            paisMailCommand.CommandText = """
+                SELECT nombrePais
+                FROM Administrador
+                WHERE mailPerfil = @mailAdministrador;
+            """;
+
+            paisMailCommand.Parameters.AddWithValue("@mailAdministrador", tokenMail);
+
+            var tokenMailPais = (await paisMailCommand.ExecuteScalarAsync()) as string;
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT e.identificador,
+                    e.nombre,
+                    e.imagen,
+                    e.direccionLocalidad,
+                    e.direccionCalle,
+                    e.direccionNumero,
+                    e.direccionCodigoPostal,
+                    e.nombrePais
+                FROM estadio e
+                WHERE e.nombrePais = @nombrePais;
+            """;
+
+            command.Parameters.AddWithValue("@nombrePais", tokenMailPais);
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var estadios = new List<object>();
+
+            while (await reader.ReadAsync())
+            {
+                estadios.Add(new
+                {
+                    Identificador = reader.GetInt32("identificador"),
+                    Nombre = reader.GetString("Nombre"),
+                    Imagen = reader["Imagen"] as string,
+                    DireccionLocalidad = reader.GetString("DireccionLocalidad"),
+                    DireccionCalle = reader.GetString("DireccionCalle"),
+                    DireccionNumero = reader.GetInt32("DireccionNumero"),
+                    DireccionCodigoPostal = reader.GetInt32("DireccionCodigoPostal"),
+                    NombrePais = reader.GetString("NombrePais")
+                });
+            }
+
+            return Results.Ok(estadios);
+        }).RequireAuthorization("SoloAdministrador");
+
         app.MapDelete("/estadioDelete/{identificador}", async (int identificador, IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
