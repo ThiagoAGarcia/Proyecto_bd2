@@ -8,21 +8,21 @@ export default function MatchManagement() {
     const [identificadorPartido, setIdentificadorPartido] = useState(null)
     const [precioBase, setPrecioBase] = useState(null)
 
-    useEffect(() => {
-        async function loadPartidos() {
-            try {
-                setIdentificadorPartido(null)
-                const data = await getMyPartidos()
+    const loadPartidos = async () => {
+        try {
+            setIdentificadorPartido(null)
+            const data = await getMyPartidos()
 
-                if (!data) return
+            if (!data) return
 
-                setData(data)
-            } catch (error) {
-                console.error(error)
-                setIdentificadorPartido(null)
-            }
+            setData(data)
+        } catch (error) {
+            console.error(error)
+            setIdentificadorPartido(null)
         }
+    }
 
+    useEffect(() => {
         loadPartidos()
     }, [])
 
@@ -70,7 +70,7 @@ export default function MatchManagement() {
                                         </div>
 
                                         <div className="flex gap-2 border-t border-[#eaf0f8] pt-2.5">
-                                            <button className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] border-none bg-[#f0f4fa] text-[#0a1628] hover:bg-[#c2c8d1]/80">
+                                            <button onClick={() => { setIdentificadorPartido(partido.identificador); setOpen(true) }} className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] border-none bg-[#f0f4fa] text-[#0a1628] hover:bg-[#c2c8d1]/80">
                                                 <i className="fa-solid fa-pencil" /> Editar
                                             </button>
                                             <button className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] border-none bg-[#0a1628] text-[#c8a84b]/60 hover:bg-[#0a1628]/90">
@@ -94,7 +94,7 @@ export default function MatchManagement() {
                                             </div>
                                         </div>
                                         <div className="flex gap-1.5 shrink-0 ">
-                                            <button onClick={() => {setIdentificadorPartido(partido.identificador); setOpen(true)}} className="inline-flex items-center gap-1.5 px-3 py-3 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border border-[#d0dcea] text-[#0a1628] hover:bg-[#f0f4fa]">
+                                            <button onClick={() => { setIdentificadorPartido(partido.identificador); setOpen(true) }} className="inline-flex items-center gap-1.5 px-3 py-3 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border border-[#d0dcea] text-[#0a1628] hover:bg-[#f0f4fa]">
                                                 <i className="fa-solid fa-pencil" /> Editar
                                             </button>
                                             <button className="inline-flex items-center gap-1.5 px-3 py-3 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border-none bg-[#0a1628] text-[#c8a84b]/60 hover:bg-[#0a1628]/90">
@@ -108,10 +108,11 @@ export default function MatchManagement() {
                     )}
                 </div>
             </div >
-            <ModalEditMatch 
+            <ModalEditMatch
                 open={open}
                 onClose={() => setOpen(false)}
                 identificador={identificadorPartido}
+                onUpdateSuccess={loadPartidos}
             />
         </>
     )

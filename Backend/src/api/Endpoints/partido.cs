@@ -141,7 +141,7 @@ public static class PartidoEndpoints
                     `EquipoVisitante` = @equipoVisitante,
                     `identificadorEstadio` = @identificadorEstadio,
                     `fechaHora` = @fechaHora,
-                    `precio` = @precio,
+                    `precio` = @precio
                 WHERE `identificador` = @identificador;
                 """;
 

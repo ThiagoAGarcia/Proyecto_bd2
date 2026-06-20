@@ -165,6 +165,7 @@ CREATE TABLE Entrada(
     codigoQRAceptado ENUM('Aceptado', 'NoAceptado') DEFAULT 'Aceptado',
     fechaHoraIngreso DATETIME DEFAULT NULL,
     FOREIGN KEY (mailUsuarioTiene) REFERENCES Usuario(mailPerfil),
+    FOREIGN KEY (identificadorVenta) REFERENCES Venta(identificador),
     FOREIGN KEY (identificadorEstadio, identificadorPartido, identificadorSector) REFERENCES Habilita(identificadorEstadio, identificadorPartido, identificadorSector),
     FOREIGN KEY (identificadorDispositivo) REFERENCES Dispositivo(identificador)
 );
@@ -306,6 +307,3 @@ INSERT INTO Habilita VALUES
 (1, 2, 1),
 (2, 2, 2),
 (3, 3, 3);
-
-SELECT identificador, mailFuncionario, fechaAsignacion
-FROM `Dispositivo`;

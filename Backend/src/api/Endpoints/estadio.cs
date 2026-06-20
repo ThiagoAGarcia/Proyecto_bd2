@@ -8,14 +8,28 @@ public static class EstadioEndpoints
 {
     public static void MapEstadioEndpoints(this WebApplication app)
     {
-        app.MapPost("/estadio", async (EstadioRequest request, IConfiguration config) =>
+        app.MapPost("/estadio", async (EstadioRequest request, IConfiguration config, HttpContext context) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
-            var NombrePais = Normalizar.NormalizarMethod(request.NombrePais);
+            var tokenMail = Normalizar.NormalizarMethod(Token.GetMailUser(context));
+
+            await using var paisMailCommand = connection.CreateCommand();
+
+            paisMailCommand.CommandText = """
+                SELECT nombrePais
+                FROM Administrador
+                WHERE mailPerfil = @mailAdministrador;
+            """;
+
+            paisMailCommand.Parameters.AddWithValue("@mailAdministrador", tokenMail);
+
+            var tokenMailPais = (await paisMailCommand.ExecuteScalarAsync()) as string;
+
+            var NombrePais = Normalizar.NormalizarMethod(tokenMailPais);
             if (NombrePais != "estados unidos" && NombrePais != "canada" && NombrePais != "mexico")
             {
                 return Results.BadRequest(new
@@ -41,6 +55,7 @@ public static class EstadioEndpoints
 
             return Results.Created($"/estadio", new
             {
+                Success = true,
                 Nombre = request.Nombre,
                 Imagen = request.Imagen,
                 NombrePais = NombrePais,
@@ -205,18 +220,33 @@ public static class EstadioEndpoints
 
             return Results.Ok(new
             {
+                success = true,
                 message = "Estadio eliminado"
             });
         }).RequireAuthorization("SoloAdministrador");
 
-        app.MapPut("/estadioUpdate/{identificador}", async (int identificador, EstadioUpdateRequest request, IConfiguration config) =>
+        app.MapPut("/estadioUpdate/{identificador}", async (int identificador, EstadioUpdateRequest request, IConfiguration config, HttpContext context) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
-            var NombrePais = Normalizar.NormalizarMethod(request.NombrePais);
+            var tokenMail = Normalizar.NormalizarMethod(Token.GetMailUser(context));
+
+            await using var paisMailCommand = connection.CreateCommand();
+
+            paisMailCommand.CommandText = """
+                SELECT nombrePais
+                FROM Administrador
+                WHERE mailPerfil = @mailAdministrador;
+            """;
+
+            paisMailCommand.Parameters.AddWithValue("@mailAdministrador", tokenMail);
+
+            var tokenMailPais = (await paisMailCommand.ExecuteScalarAsync()) as string;
+
+            var NombrePais = Normalizar.NormalizarMethod(tokenMailPais);
 
             await using var command = connection.CreateCommand();
             command.CommandText = """
@@ -249,6 +279,7 @@ public static class EstadioEndpoints
 
             return Results.Ok(new
             {
+                success = true,
                 message = "Estadio actualizado"
             });
         }).RequireAuthorization("SoloAdministrador");

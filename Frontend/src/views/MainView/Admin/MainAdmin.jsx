@@ -1,6 +1,7 @@
 import NavBar from '../../../components/navBar'
 import Footer from '../../../components/footer'
 import MatchManagement from './Tabs/MatchManagement'
+import StadiumManagement from './Tabs/StadiumManagement'
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -31,7 +32,7 @@ export default function MainUser() {
                 <div className="w-full sm:max-w-9xl bg-white border border-gray-300 rounded-b-2xl rounded-tr-2xl shadow-md flex flex-col h-[68vh] relative z-10">
                     <div className="sm:p-8 p-4 text-gray-700 text-lg overflow-y-auto scrollbar">
                         {activeTab === "Gestion partidos" && <MatchManagement />}
-                        {/*activeTab === "Eventos disponibles" && <AvailableRooms />*/}
+                        {activeTab === "Gestion estadios" && <StadiumManagement />}
                     </div>
                 </div>
             </section>
