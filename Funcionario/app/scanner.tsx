@@ -1,12 +1,14 @@
 import {useEffect, useState} from 'react'
-import {View, Text, Alert, StyleSheet} from 'react-native'
+import {View, Text, StyleSheet} from 'react-native'
 import {CameraView, useCameraPermissions} from 'expo-camera'
 import {qrCheck} from '../api/qrCheck'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+
 export default function Scanner() {
   const [permission, requestPermission] = useCameraPermissions()
   const [scanned, setScanned] = useState(false)
   const [result, setResult] = useState<'idle' | 'ok' | 'fail'>('idle')
+  const [response, setResponse] = useState('')
 
   useEffect(() => {
     if (!permission) return
@@ -25,17 +27,21 @@ export default function Scanner() {
       console.log(res)
 
       if (res?.valido) {
+        setResponse('El QR es válido')
         setResult('ok')
       } else {
+        setResponse(res?.motivo ?? 'QR no válido')
         setResult('fail')
       }
     } catch (e) {
+      setResponse('Error al verificar el QR')
       setResult('fail')
     }
 
     setTimeout(() => {
       setScanned(false)
       setResult('idle')
+      setResponse('')
     }, 10000)
   }
 
@@ -58,9 +64,7 @@ export default function Scanner() {
           {result === 'ok' ? 'ACCESO PERMITIDO' : 'ACCESO DENEGADO'}
         </Text>
 
-        <Text style={styles.subText}>
-          {result === 'ok' ? 'El QR es válido' : 'El QR no es válido o expiró'}
-        </Text>
+        <Text style={styles.subText}>{response}</Text>
       </View>
     )
   }
@@ -83,6 +87,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+
   camera: {
     flex: 1,
   },

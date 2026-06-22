@@ -196,8 +196,9 @@ public static class QrEndpoints
             });
         });
 
-        app.MapGet("/qr/token/{token}", async (
+        app.MapGet("/qr/token", async (
             string token,
+            string mailPerfil,
             IConfiguration config,
             HttpContext context) =>
         {
@@ -208,6 +209,55 @@ public static class QrEndpoints
 
             int identificadorEntrada;
             DateTime fechaVencimiento;
+            int idDisp;
+            int identificadorSector;
+            int identificadorPartido;
+            int identificadorEstadio;
+
+            await using (var checkDispositivo = connection.CreateCommand())
+            {
+                checkDispositivo.CommandText = """
+                    SELECT identificador
+                    FROM Dispositivo
+                    WHERE mailFuncionario = @mailPerfil
+                    LIMIT 1;
+                """;
+
+                checkDispositivo.Parameters.AddWithValue("@mailPerfil", mailPerfil);
+
+                await using var reader = await checkDispositivo.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    idDisp = reader.GetInt32(0);
+                }
+                else
+                {
+                    return Results.Ok(new { valido = false, motivo = "dispositivo no autorizado" });
+                }
+
+            }
+
+            await using (var checkDispAvaliable = connection.CreateCommand())
+            {
+                checkDispAvaliable.CommandText = """
+                    SELECT identificadorSector, identificadorPartido, identificadorEstadio
+                    FROM EsAsignado
+                    WHERE identificadorDispositivo = @idDisp
+                    LIMIT 1;
+                """;
+
+                checkDispAvaliable.Parameters.AddWithValue("@idDisp", idDisp);
+                await using var reader = await checkDispAvaliable.ExecuteReaderAsync();
+
+                if (!await reader.ReadAsync())
+                {
+                    return Results.Ok(new { valido = false, motivo = "este dispositivo no esta asignado para este sector" });
+                }
+                identificadorSector = reader.GetInt32(0);
+                identificadorPartido = reader.GetInt32(1);
+                identificadorEstadio = reader.GetInt32(2);
+            }
 
             await using (var command = connection.CreateCommand())
             {
@@ -224,7 +274,7 @@ public static class QrEndpoints
 
                 if (!await reader.ReadAsync())
                 {
-                    return Results.Ok(new { valido = false });
+                    return Results.Ok(new { valido = false, motivo = "token no válido" });
                 }
 
                 identificadorEntrada = reader.GetInt32(0);
@@ -257,6 +307,29 @@ public static class QrEndpoints
             if (fechaVencimiento <= DateTime.UtcNow)
             {
                 return Results.Ok(new { valido = false, motivo = "expirado" });
+            }
+
+            await using (var checkSector = connection.CreateCommand())
+            {
+                checkSector.CommandText = """
+                    SELECT identificadorSector
+                    FROM Entrada
+                    WHERE identificador = @id;
+                """;
+
+                checkSector.Parameters.AddWithValue("@id", identificadorEntrada);
+
+                await using var reader = await checkSector.ExecuteReaderAsync();
+
+                if (await reader.ReadAsync())
+                {
+                    var idEntradaSector = reader.GetInt32(0);
+
+                    if (idEntradaSector != identificadorSector)
+                    {
+                        return Results.Ok(new { valido = false, motivo = "dispositivo no autorizado para este sector" });
+                    }
+                }
             }
 
             await using (var updateCommand = connection.CreateCommand())
