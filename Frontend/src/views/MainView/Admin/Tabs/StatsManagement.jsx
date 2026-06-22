@@ -30,28 +30,35 @@ const StatsManagement = () => {
           <span className="text-[#c8a84b]">Estadisticas</span>
         </h1>
       </div>
-      <div className="flex flex-col gap-5">
-        <h2 className="font-sans text-3xl font-bold text-[#0a1628] mt-8 uppercase tracking-wide leading-none sm:pb-0 pb-4">
-          Mayores Compradores
-        </h2>
-        <BarChart width={800} height={300} data={ranking}>
-          <XAxis dataKey="usuarioComprador" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="ventas" />
-        </BarChart>
+      <div className="flex gap-5">
+        <div className="flex flex-col gap-5">
+          <h2 className="font-sans text-2xl font-bold text-[#0a1628] mt-8 uppercase tracking-wide leading-none sm:pb-0 pb-4">
+            Mayores Compradores
+          </h2>
+          <BarChart
+            data={ranking}
+            className="width-[50%] border border-[#d0dcea] rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5">
+            <XAxis dataKey="usuarioComprador" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="ventas" />
+          </BarChart>
+        </div>
+        <div className="flex flex-col gap-5">
+          <h2 className="font-sans text-2xl font-bold text-[#0a1628] mt-8 uppercase tracking-wide leading-none sm:pb-0 pb-4">
+            Mayores Partidos Vendidos
+          </h2>
+          <BarChart
+            data={rankingPartidos}
+            className="width-[50%] border border-[#d0dcea] rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5">
+            <XAxis dataKey="partido" />
+            <YAxis />
+            <Tooltip />
+            <Bar dataKey="cant_ventas" />
+          </BarChart>
+        </div>
       </div>
-      <div className="flex flex-col gap-5">
-        <h2 className="font-sans text-3xl font-bold text-[#0a1628] mt-8 uppercase tracking-wide leading-none sm:pb-0 pb-4">
-          Mayores Partidos Vendidos
-        </h2>
-        <BarChart width={800} height={300} data={rankingPartidos}>
-          <XAxis dataKey="partido" />
-          <YAxis />
-          <Tooltip />
-          <Bar dataKey="cant_ventas" />
-        </BarChart>
-      </div>
+      <div className="flex flex-col gap-5"></div>
     </div>
   )
 }
