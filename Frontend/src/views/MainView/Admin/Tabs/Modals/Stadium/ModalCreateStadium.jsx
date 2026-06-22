@@ -18,6 +18,11 @@ export default function ModalCreateStadium({ open, onClose, onCreateSuccess }) {
         if (!open) {
             setIsLoading(false);
             setImagen('');
+            setNombre('');
+            setCiudad('');
+            setCalle('');
+            setNumero('');
+            setCodigoPostal('');
         }
     }, [open]);
 
@@ -61,7 +66,7 @@ export default function ModalCreateStadium({ open, onClose, onCreateSuccess }) {
     return (
         <Modal open={open} onClose={onClose}>
             {isLoading && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-[1px] rounded-2xl">
+                <div className="absolute inset-0 z-[300] flex items-center justify-center bg-black/20 backdrop-blur-[1px] rounded-2xl">
                     <Oval height={35} width={35} color="#052e66" secondaryColor="#e5e7eb" strokeWidth={4} strokeWidthSecondary={4} ariaLabel="loading-create-group" />
                 </div>
             )}

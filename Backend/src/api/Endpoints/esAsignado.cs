@@ -8,7 +8,7 @@ public static class EsAsignadoEndpoints
 {
     public static void MapEsAsignadoEndpoints(this WebApplication app)
     {
-        app.MapGet("/asignados", async (IConfiguration config) =>
+        app.MapGet("/allAsignados/{identificadorEstadio}/{identificadorSector}/{identificadorPartido}", async (IConfiguration config, int identificadorEstadio, int identificadorSector, int identificadorPartido) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 
@@ -17,13 +17,19 @@ public static class EsAsignadoEndpoints
 
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                SELECT identificadorDispositivo, identificadorEstadio, identificadorPartido, identificadorSector, fecha
-                FROM EsAsignado;
+                SELECT e.identificadorDispositivo, e.identificadorEstadio, e.identificadorPartido, e.identificadorSector, e.fecha, d.mailFuncionario
+                FROM EsAsignado e
+                JOIN Dispositivo d ON e.identificadorDispositivo = d.identificador
+                WHERE e.identificadorEstadio = @identificadorEstadio AND e.identificadorSector = @identificadorSector AND e.identificadorPartido = @identificadorPartido;
             """;
 
-            var asignados = new List<object>();
+            command.Parameters.AddWithValue("@identificadorEstadio", identificadorEstadio);
+            command.Parameters.AddWithValue("@identificadorSector", identificadorSector);
+            command.Parameters.AddWithValue("@identificadorPartido", identificadorPartido);
 
             await using var reader = await command.ExecuteReaderAsync();
+
+            var asignados = new List<object>();
 
             while (await reader.ReadAsync())
             {
@@ -33,11 +39,42 @@ public static class EsAsignadoEndpoints
                     IdentificadorEstadio = reader.GetInt32("identificadorEstadio"),
                     IdentificadorPartido = reader.GetInt32("identificadorPartido"),
                     IdentificadorSector = reader.GetInt32("identificadorSector"),
-                    Fecha = reader.GetDateTime("fecha")
+                    Fecha = reader.GetDateTime("fecha"),
+                    MailFuncionario = reader.GetString("mailFuncionario")
                 });
             }
 
             return Results.Ok(asignados);
+        }).RequireAuthorization("SoloAdministrador");
+
+        app.MapGet("/allNoAsignados", async (IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT d.mailFuncionario, d.identificador
+                FROM EsAsignado e
+                RIGHT JOIN Dispositivo d ON e.identificadorDispositivo = d.identificador
+                WHERE e.identificadorSector is null AND e.identificadorEstadio is null AND e.identificadorPartido is null;
+            """;
+
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var noAsignados = new List<object>();
+
+            while (await reader.ReadAsync())
+            {
+                noAsignados.Add(new
+                {
+                    MailFuncionario = reader.GetString("mailFuncionario")
+                });
+            }
+
+            return Results.Ok(noAsignados);
         }).RequireAuthorization("SoloAdministrador");
 
         app.MapPost("/nuevoAsignado", async (IConfiguration config, EsAsignadoRequest request) =>

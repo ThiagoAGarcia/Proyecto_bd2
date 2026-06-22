@@ -7,7 +7,6 @@ export default async function getPerfilPorMail(mail) {
             method: "GET",
             credentials: "include"
         });
-        if (!res.ok) throw new Error(`GET ${PATH}/${mail} -> ${res.status}`);
         return await res.json();
     } catch (error) {
         console.log(error.message);

@@ -17,6 +17,7 @@ export default function ModalUpdateStadium({ open, onClose, onUpdateSuccess, ide
     const [data, setData] = useState([]);
 
     const loadEstadios = async () => {
+        if (!identificador) return;
         try {
             const data = await getEstadio(identificador)
 
@@ -48,8 +49,6 @@ export default function ModalUpdateStadium({ open, onClose, onUpdateSuccess, ide
             setIsLoading(false);
         }
     }, [open]);
-
-    console.log(data)
 
     const handleUpdate = async (e) => {
         e.preventDefault()

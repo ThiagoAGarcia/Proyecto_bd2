@@ -69,8 +69,6 @@ public static class LoginEndpoints
 
             var existingLogin = await GetLogin(connection, mail);
 
-
-
             if (existingLogin is null)
             {
                 return Results.NotFound("Login no encontrado");
@@ -105,6 +103,56 @@ public static class LoginEndpoints
             });
         });
 
+        app.MapPost("/loginFuncionario", async (LoginRequest request, IConfiguration config) =>
+        {
+            var mail = Normalizar.NormalizarMethod(request.MailPerfil);
+            var passwordError = PerfilValidation.ValidarPassword(request.Password);
+
+            if (passwordError is not null)
+            {
+                return Results.BadRequest(new
+                {
+                    message = passwordError
+                });
+            }
+
+            var connectionString = config.GetConnectionString("DefaultConnection");
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                INSERT INTO `Login` (`MailPerfil`, `Password`)
+                VALUES (@mail, @password);
+                """;
+
+            command.Parameters.AddWithValue("@mail", mail);
+            command.Parameters.AddWithValue("@password", hashedPassword);
+
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (MySqlException ex) when (ex.Number == 1062)
+            {
+                var message = ex.Message.Contains("PRIMARY")
+                    ? "Correo ya usado"
+                    : "Error de clave duplicada";
+
+                return Results.Conflict(new
+                {
+                    message
+                });
+            }
+
+            return Results.Ok(new
+            {
+                success = true
+            });
+        }).RequireAuthorization("SoloAdministrador");
+
         app.MapPost("/login", async (LoginRequest request, IConfiguration config) =>
         {
             var mail = Normalizar.NormalizarMethod(request.MailPerfil);
@@ -112,7 +160,10 @@ public static class LoginEndpoints
 
             if (passwordError is not null)
             {
-                return Results.BadRequest(passwordError);
+                return Results.BadRequest(new
+                {
+                    message = passwordError
+                });
             }
 
             var connectionString = config.GetConnectionString("DefaultConnection");

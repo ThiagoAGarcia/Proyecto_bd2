@@ -1,13 +1,13 @@
 const API = "http://localhost:5001";
-const PATH = "/perfil"
+const PATH = "/nuevoDispositivo"
 
-export default async function postPerfil(BODY) {
+export default async function postDispositivo() {
     try {
         const res = await fetch(`${API}${PATH}`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(BODY)
+            credentials: "include"
         });
+        if (!res.ok) throw new Error(`POST ${PATH} -> ${res.status}`);
         const login = await res.json();
         return login;
     } catch (error) {

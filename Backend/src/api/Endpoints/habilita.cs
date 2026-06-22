@@ -36,6 +36,90 @@ public static class HabilitaEndpoints
 
         }).RequireAuthorization("SoloAdministrador");
 
+        app.MapPut("/updateHabilita", async (UpdateHabilitaRequest request, IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var transaction = await connection.BeginTransactionAsync();
+
+            try
+            {
+                await using (var checkCommand = connection.CreateCommand())
+                {
+                    checkCommand.Transaction = transaction;
+
+                    checkCommand.CommandText = """
+                        SELECT COUNT(*)
+                        FROM entrada
+                        WHERE identificadorEstadio = @estadio AND identificadorPartido = @partido
+                    """;
+
+                    checkCommand.Parameters.AddWithValue("@estadio", request.IdentificadorEstadio);
+                    checkCommand.Parameters.AddWithValue("@partido", request.IdentificadorPartido);
+
+                    var cantidadEntradas = Convert.ToInt32(
+                        await checkCommand.ExecuteScalarAsync()
+                    );
+
+                    if (cantidadEntradas > 0)
+                    {
+                        return Results.BadRequest(new
+                        {
+                            message = "No se pueden modificar los sectores porque existen entradas asociadas."
+                        });
+                    }
+                }
+
+                await using (var deleteCommand = connection.CreateCommand())
+                {
+                    deleteCommand.Transaction = transaction;
+
+                    deleteCommand.CommandText = """
+                        DELETE FROM habilita
+                        WHERE identificadorEstadio = @estadio AND identificadorPartido = @partido
+                    """;
+
+                    deleteCommand.Parameters.AddWithValue("@estadio", request.IdentificadorEstadio);
+                    deleteCommand.Parameters.AddWithValue("@partido", request.IdentificadorPartido);
+
+                    await deleteCommand.ExecuteNonQueryAsync();
+                }
+
+                foreach (var sector in request.Sectores)
+                {
+                    await using var insertCommand = connection.CreateCommand();
+
+                    insertCommand.Transaction = transaction;
+
+                    insertCommand.CommandText = """
+                        INSERT INTO habilita ( identificadorEstadio, identificadorPartido, identificadorSector ) VALUES
+                        ( @estadio, @partido, @sector )
+                    """;
+
+                    insertCommand.Parameters.AddWithValue("@estadio", request.IdentificadorEstadio);
+                    insertCommand.Parameters.AddWithValue("@partido", request.IdentificadorPartido);
+                    insertCommand.Parameters.AddWithValue("@sector", sector);
+
+                    await insertCommand.ExecuteNonQueryAsync();
+                }
+
+                await transaction.CommitAsync();
+
+                return Results.Ok(new
+                {
+                    message = "Habilitaciones actualizadas correctamente"
+                });
+            }
+            catch
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
+        }).RequireAuthorization("SoloAdministrador");
+
         app.MapGet("/allHabilita/{estadio}/{partido}", async (int estadio, int partido, IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");

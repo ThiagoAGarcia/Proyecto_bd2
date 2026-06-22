@@ -6,3 +6,8 @@ public sealed record HabilitaRequest(
     int IdentificadorEstadio
 );
 
+public record UpdateHabilitaRequest(
+    int IdentificadorEstadio,
+    int IdentificadorPartido,
+    List<int> Sectores
+);

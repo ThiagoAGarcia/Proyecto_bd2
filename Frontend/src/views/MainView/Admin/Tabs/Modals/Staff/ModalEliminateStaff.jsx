@@ -1,26 +1,26 @@
 import Modal from '../../../../../../components/modal';
 import { useState, useEffect } from 'react';
-import deleteEstadio from '../../../../../../services/EstadioService/deleteEstadio';
+import deleteFuncionario from '../../../../../../services/FuncionarioService/deleteFuncionario';
 import { toast } from 'react-toastify';
 import { Oval } from 'react-loader-spinner';
 
-export default function ModalEliminateStadium({ open, onClose, onCreateSuccess, identificador }) {
+export default function ModalEliminateStaff({ open, onClose, onDeleteSuccess, identificador }) {
     const [isLoading, setIsLoading] = useState(false);
 
-    async function handleDeleteEstadio() {
+    async function handleDeleteFuncionario() {
         try {
             setIsLoading(true);
 
-            await deleteEstadio(identificador);
+            await deleteFuncionario(identificador);
 
-            toast.success("Estadio eliminado correctamente");
+            toast.success("Funcionario eliminado correctamente");
 
-            await onCreateSuccess();
+            await onDeleteSuccess();
 
             onClose();
         } catch (error) {
             console.error(error);
-            toast.error("No se pudo eliminar el estadio");
+            toast.error("No se pudo eliminar el funcionario");
         } finally {
             setIsLoading(false);
         }
@@ -39,12 +39,12 @@ export default function ModalEliminateStadium({ open, onClose, onCreateSuccess, 
                 </div>
 
                 <h3 className="text-2xl font-semibold text-[#14315C]">
-                    Eliminar estadio
+                    Eliminar funcionario
                 </h3>
             </div>
 
             <p className="text-xl text-gray-600 mb-6">
-                ¿Estás seguro de que querés eliminar el estadio?
+                ¿Estás seguro de que querés eliminar al funcionario {identificador}?
             </p>
 
             <div className="flex justify-end gap-3">
@@ -52,7 +52,7 @@ export default function ModalEliminateStadium({ open, onClose, onCreateSuccess, 
                     Cancelar
                 </button>
 
-                <button onClick={handleDeleteEstadio} disabled={isLoading} className="px-4 py-2 rounded-lg text-xl bg-red-600 text-white hover:bg-red-700 cursor-pointer">
+                <button onClick={handleDeleteFuncionario} disabled={isLoading} className="px-4 py-2 rounded-lg text-xl bg-red-600 text-white hover:bg-red-700 cursor-pointer">
                     Eliminar
                 </button>
             </div>

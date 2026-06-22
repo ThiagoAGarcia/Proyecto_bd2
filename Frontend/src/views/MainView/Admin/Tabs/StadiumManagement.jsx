@@ -45,7 +45,7 @@ export default function StadiumManagement() {
                 <div className="flex flex-col gap-2.5">
                     {data.length === 0 ? (
                         <p className="px-7 py-12 text-base text-[#8A93A6] text-center">
-                            No tenés hay estadios creados.
+                            No hay estadios creados.
                         </p>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">

@@ -83,7 +83,10 @@ public static class PerfilEndpoints
 
             if (!Documento.ValidarDocumento(request.PaisDocumento, request.TipoDocumento, request.NumeroDocumento))
             {
-                return Results.BadRequest("El documento no es válido");
+                return Results.BadRequest(new
+                {
+                    message = "El documento no es válido"
+                });
             }
 
             await using var command = connection.CreateCommand();
@@ -121,7 +124,13 @@ public static class PerfilEndpoints
                 });
             }
 
-            return Results.Created($"/perfiles/{Normalizar.NormalizarMethod(request.Mail)}", request);
+            return Results.Created($"/perfiles/{Normalizar.NormalizarMethod(request.Mail)}", new
+            {
+                success = true,
+                message = "Perfil creado correctamente",
+                data = request
+            }
+            );
         });
 
         app.MapGet("/perfil/me", (HttpContext context) =>
@@ -147,7 +156,7 @@ public static class PerfilEndpoints
             });
         }).RequireAuthorization();
 
-        app.MapPut("/perfil/{mail}", async (string mail, PerfilUpdateRequest request, IConfiguration config) =>
+        app.MapPut("/perfilPut/{mail}", async (string mail, PerfilUpdateRequest request, IConfiguration config) =>
         {
             mail = Normalizar.NormalizarMethod(mail);
 
@@ -182,10 +191,8 @@ public static class PerfilEndpoints
 
             var affectedRows = await command.ExecuteNonQueryAsync();
 
-            return affectedRows == 0
-                ? Results.NotFound()
-                : Results.NoContent();
-        });
+            return affectedRows == 0 ? Results.NotFound() : Results.NoContent();
+        }).RequireAuthorization();
 
         app.MapDelete("/perfil/{mail}", async (string mail, IConfiguration config) =>
         {

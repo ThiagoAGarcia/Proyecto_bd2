@@ -106,10 +106,10 @@ CREATE TABLE Funcionario (
 );
 
 CREATE TABLE Dispositivo (
-    identificador INT PRIMARY KEY,
+    identificador INT PRIMARY KEY AUTO_INCREMENT,
     mailFuncionario VARCHAR(200),
-    fechaAsignacion DATE DEFAULT(CURRENT_DATE),
-    FOREIGN KEY (mailFuncionario) REFERENCES Funcionario(mailPerfil)
+    fechaAsignacion DATE DEFAULT NULL,
+    FOREIGN KEY (mailFuncionario) REFERENCES Funcionario(mailPerfil) ON DELETE SET NULL
 );
 
 CREATE TABLE Administrador(
@@ -238,9 +238,9 @@ INSERT INTO Funcionario VALUES
 ('func1@mundial.com',1001),
 ('func2@mundial.com',1002);
 
-INSERT INTO Dispositivo (identificador, mailFuncionario) VALUES
-(1, 'func1@mundial.com'),
-(2, 'func2@mundial.com');
+INSERT INTO Dispositivo (identificador, mailFuncionario, fechaAsignacion) VALUES
+(1, 'func1@mundial.com', current_date()),
+(2, null, null);
 
 INSERT INTO Usuario VALUES
 ('user1@gmail.com','2026-06-01','verificado'),
@@ -307,3 +307,18 @@ INSERT INTO Habilita VALUES
 (1, 2, 1),
 (2, 2, 2),
 (3, 3, 3);
+
+INSERT INTO EsAsignado (identificadorDispositivo, identificadorEstadio, identificadorPartido, identificadorSector) VALUES
+(1, 1, 1, 1);
+
+SELECT D.*
+FROM Dispositivo D
+LEFT JOIN Funcionario F on D.mailFuncionario = F.mailPerfil
+WHERE D.mailFuncionario is null;
+
+SELECT *
+FROM Dispositivo
+
+SELECT COUNT(*)
+                FROM EsAsignado
+                WHERE identificadorDispositivo = 2;

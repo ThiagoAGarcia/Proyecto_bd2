@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import getMyPartidos from '../../../../services/PartidoService/getMyPartidos'
-import ModalEditMatch from './Modals/ModalEditMatch'
+import ModalEditMatch from './Modals/Match/ModalEditMatch'
 
 export default function MatchManagement() {
     const [data, setData] = useState([])
