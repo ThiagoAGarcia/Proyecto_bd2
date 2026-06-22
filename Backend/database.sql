@@ -162,7 +162,7 @@ CREATE TABLE Entrada(
     identificadorSector INT NOT NULL,
     identificadorEstadio INT NOT NULL,
     identificadorDispositivo INT DEFAULT NULL,
-    codigoQRAceptado ENUM('Aceptado', 'NoAceptado') DEFAULT 'Aceptado',
+    codigoQRAceptado VARCHAR(200) DEFAULT NULL,
     fechaHoraIngreso DATETIME DEFAULT NULL,
     FOREIGN KEY (mailUsuarioTiene) REFERENCES Usuario(mailPerfil),
     FOREIGN KEY (identificadorVenta) REFERENCES Venta(identificador),
