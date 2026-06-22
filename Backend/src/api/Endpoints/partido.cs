@@ -47,7 +47,7 @@ public static class PartidoEndpoints
                 FechaHora = request.FechaHora
             });
         }).RequireAuthorization("SoloAdministrador");
-        
+
         app.MapGet("/partido/{identificador}", async (int identificador, IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
@@ -201,7 +201,7 @@ public static class PartidoEndpoints
                 FROM partido p
                 JOIN estadio el ON p.identificadorEstadio = el.identificador
                 JOIN equipo eql ON p.EquipoLocal = eql.nombre
-                JOIN equipo eqv ON p.EquipoVisitante = eqv.nombre;
+                JOIN equipo eqv ON p.EquipoVisitante = eqv.nombre WHERE p.fechaHora >= CURRENT_TIMESTAMP();
             """;
 
             await using var reader = await command.ExecuteReaderAsync();

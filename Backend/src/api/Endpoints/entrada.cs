@@ -37,6 +37,19 @@ public static class EntradaEndpoints
             """;
 
             var saleId = Convert.ToInt32(await saleIdCommand.ExecuteScalarAsync());
+            await using var checkPartidoCommando = connection.CreateCommand();
+            checkPartidoCommando.CommandText = """
+                SELECT p.identificador
+                FROM Partido p
+                WHERE p.identificador = @identificadorPartido AND p.fechaHora >= CURRENT_TIMESTAMP();
+            """;
+
+            checkPartidoCommando.Parameters.AddWithValue("@identificadorPartido", request.Entradas[0].IdentificadorPartido);
+            var partidoExists = await checkPartidoCommando.ExecuteScalarAsync();
+            if (partidoExists == null)
+            {
+                return Results.BadRequest("El partido no existe o ya ha terminado");
+            }
 
             foreach (var entrada in request.Entradas)
             {
