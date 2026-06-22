@@ -32,6 +32,19 @@ Solo si es necesario:
 docker compose down
 docker compose down --rmi local
 
+Para runnear el Frontend ir a /Frontend y ejecutar el comando
+docker compose up dev --watch
+
+Para runnear la pagina de expo del funcionario:
+
+Librerias usadas:
+npx expo install @react-native-async-storage/async-storage
+npx expo install expo-camera
+npm install react-native-modal
+npm install react-qr-code 
+
+npx expo start (para esto en sus dispositivos tienen que instalar la aplicacion de expo)
+IMPORTANTE leer lo siguiente si no les funciona
 
 Si la pantalla de funcionario no les funciona probar fijarse su direccion ipv4 tirando el comando ipconfig en su cmd y cambiando en la ruta /Funcionario/api en los dos endpoints poniendo su direccion ipv4
 ```
