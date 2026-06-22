@@ -133,5 +133,6 @@ app.MapEsAsignadoEndpoints();
 app.MapDispositivoEndpoints();
 app.MapSectorEndpoints();
 app.MapQrEndpoints();
+app.MapFixtureEndpoints();
 
 app.Run();
