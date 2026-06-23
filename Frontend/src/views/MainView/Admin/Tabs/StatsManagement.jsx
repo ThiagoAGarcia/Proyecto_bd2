@@ -37,8 +37,15 @@ const StatsManagement = () => {
           </h2>
           <BarChart
             data={ranking}
+            width={500}
+            height={400}
             className="width-[50%] border border-[#d0dcea] rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5">
-            <XAxis dataKey="usuarioComprador" />
+            <XAxis
+              dataKey="usuarioComprador"
+              angle={-45}
+              textAnchor="end"
+              height={190}
+            />
             <YAxis />
             <Tooltip />
             <Bar dataKey="ventas" />
@@ -50,8 +57,15 @@ const StatsManagement = () => {
           </h2>
           <BarChart
             data={rankingPartidos}
+            width={500}
+            height={400}
             className="width-[50%] border border-[#d0dcea] rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 p-5">
-            <XAxis dataKey="partido" />
+            <XAxis
+              dataKey="partido"
+              angle={-45}
+              textAnchor="end"
+              height={190}
+            />
             <YAxis />
             <Tooltip />
             <Bar dataKey="cant_ventas" />
