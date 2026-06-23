@@ -48,11 +48,6 @@ function Login() {
           return
         }
 
-        if (logged.role.includes('Funcionario')) {
-          navigate('/main-librarian')
-          return
-        }
-
         if (logged.role.includes('Usuario')) {
           navigate('/main-user')
           return
@@ -157,7 +152,7 @@ function Login() {
         </form>
         <button
           onClick={() => navigate('/grupos')}
-          className="absolute bottom-2 right-2 w-50 border-2 border-cyan-700 text-cyan-700 rounded-full p-2 font-semibold hover:bg-cyan-700 hover:text-white transition-colors">
+          className="cursor-pointer absolute bottom-2 right-2 w-50 border-2 border-cyan-700 text-cyan-700 rounded-full p-2 font-semibold hover:bg-cyan-700 hover:text-white transition-colors">
           VER FIXTURE
         </button>
       </div>

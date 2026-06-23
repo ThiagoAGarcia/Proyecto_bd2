@@ -57,9 +57,9 @@ public static class EsAsignadoEndpoints
             await using var command = connection.CreateCommand();
             command.CommandText = """
                 SELECT d.mailFuncionario, d.identificador
-                FROM EsAsignado e
-                RIGHT JOIN Dispositivo d ON e.identificadorDispositivo = d.identificador
-                WHERE e.identificadorSector is null AND e.identificadorEstadio is null AND e.identificadorPartido is null;
+                FROM Dispositivo d
+                LEFT JOIN EsAsignado e ON d.identificador = e.identificadorDispositivo
+                WHERE e.identificadorDispositivo IS NULL AND d.mailFuncionario IS NOT NULL;
             """;
 
             await using var reader = await command.ExecuteReaderAsync();
@@ -70,7 +70,8 @@ public static class EsAsignadoEndpoints
             {
                 noAsignados.Add(new
                 {
-                    MailFuncionario = reader.GetString("mailFuncionario")
+                    MailFuncionario = reader.GetString("mailFuncionario"),
+                    Identificador = reader.GetInt32("identificador")
                 });
             }
 
@@ -84,22 +85,38 @@ public static class EsAsignadoEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
-            await using var command = connection.CreateCommand();
-            command.CommandText = """
-                INSERT INTO EsAsignado (identificadorDispositivo, identificadorSector, identificadorEstadio, identificadorPartido) VALUES
-                (@identificadorDispositivo, @identificadorSector, @identificadorEstadio, @identificadorPartido);
-                """;
-
-            command.Parameters.AddWithValue("@identificadorDispositivo", request.IdentificadorDispositivo);
-            command.Parameters.AddWithValue("@identificadorSector", request.IdentificadorSector);
-            command.Parameters.AddWithValue("@identificadorEstadio", request.IdentificadorEstadio);
-            command.Parameters.AddWithValue("@identificadorPartido", request.IdentificadorPartido);
-
             try
             {
-                await command.ExecuteNonQueryAsync();
+                await using (var deleteCommand = connection.CreateCommand())
+                {
+                    deleteCommand.CommandText = """
+                        DELETE FROM EsAsignado
+                        WHERE identificadorSector = @identificadorSector AND identificadorEstadio = @identificadorEstadio AND identificadorPartido = @identificadorPartido;
+                    """;
+
+                    deleteCommand.Parameters.AddWithValue("@identificadorSector", request.IdentificadorSector);
+                    deleteCommand.Parameters.AddWithValue("@identificadorEstadio", request.IdentificadorEstadio);
+                    deleteCommand.Parameters.AddWithValue("@identificadorPartido", request.IdentificadorPartido);
+
+                    await deleteCommand.ExecuteNonQueryAsync();
+                }
+
+                await using (var insertCommand = connection.CreateCommand())
+                {
+                    insertCommand.CommandText = """
+                        INSERT INTO EsAsignado ( identificadorDispositivo, identificadorSector, identificadorEstadio, identificadorPartido ) 
+                        VALUES ( @identificadorDispositivo, @identificadorSector, @identificadorEstadio, @identificadorPartido);
+                    """;
+
+                    insertCommand.Parameters.AddWithValue("@identificadorDispositivo", request.IdentificadorDispositivo);
+                    insertCommand.Parameters.AddWithValue("@identificadorSector", request.IdentificadorSector);
+                    insertCommand.Parameters.AddWithValue("@identificadorEstadio", request.IdentificadorEstadio);
+                    insertCommand.Parameters.AddWithValue("@identificadorPartido", request.IdentificadorPartido);
+
+                    await insertCommand.ExecuteNonQueryAsync();
+                }
             }
-            catch (MySqlException ex)
+            catch (MySqlException)
             {
                 return Results.Conflict(new
                 {

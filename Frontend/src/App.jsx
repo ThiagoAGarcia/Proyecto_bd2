@@ -1,4 +1,4 @@
-import {BrowserRouter, Routes, Route} from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
 import Protected from './components/protected.jsx'
 import Login from './views/IntroductionView/Login.jsx'
@@ -9,7 +9,7 @@ import Profile from './views/Profile.jsx'
 import SinToken from './components/sinToken.jsx'
 import GruposView from './views/IntroductionView/GrupoView.jsx'
 import PartidosView from './views/IntroductionView/partidoView.jsx'
-import {ToastContainer} from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   return (
@@ -26,18 +26,13 @@ function App() {
           <Route element={<Protected allowedRoles={'Usuario'} />}>
             <Route element={<MainUser />} path="/main-user" />
           </Route>
-          <Route
-            element={
-              <Protected
-                allowedRoles={['Administrador', 'Usuario', 'Funcionario']}
-              />
-            }>
+          <Route element={<Protected allowedRoles={['Administrador', 'Usuario']} />}>
             <Route element={<Profile />} path="/profile" />
           </Route>
           <Route element={<SinToken />} path="/sin-token" />
         </Routes>
       </BrowserRouter>
-      <ToastContainer position="bottom-left" style={{zIndex: 1000}} />
+      <ToastContainer position="bottom-left" style={{ zIndex: 1000 }} />
     </>
   )
 }

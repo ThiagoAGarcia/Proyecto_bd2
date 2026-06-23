@@ -166,7 +166,8 @@
         fechaHoraIngreso DATETIME DEFAULT NULL,
         FOREIGN KEY (mailUsuarioTiene) REFERENCES Usuario(mailPerfil),
         FOREIGN KEY (identificadorEstadio, identificadorPartido, identificadorSector) REFERENCES Habilita(identificadorEstadio, identificadorPartido, identificadorSector),
-        FOREIGN KEY (identificadorDispositivo) REFERENCES Dispositivo(identificador)
+        FOREIGN KEY (identificadorDispositivo) REFERENCES Dispositivo(identificador),
+        FOREIGN KEY (identificadorVenta) REFERENCES Venta(identificador)
     );
 
     CREATE TABLE Transferencia(
@@ -211,8 +212,6 @@
         FOREIGN KEY (identificadorEntrada) REFERENCES Entrada(identificador),
         FOREIGN KEY (identificadorDispositivo) REFERENCES Dispositivo(identificador)
     );
-
-    SELECT * FROM login;
 
     INSERT INTO Perfil VALUES
     ('admin@mundial.com','uruguay','ci','12345678','Uruguay','Montevideo','18 de Julio',1000,11000),
@@ -305,6 +304,7 @@
     ('croacia','https://upload.wikimedia.org/wikipedia/commons/1/1b/Flag_of_Croatia.svg'),
     ('ghana','https://upload.wikimedia.org/wikipedia/commons/1/19/Flag_of_Ghana.svg'),
     ('panama','https://upload.wikimedia.org/wikipedia/commons/a/ab/Flag_of_Panama.svg');
+
     INSERT INTO Grupo VALUES
     ('A','Grupos'),
     ('B','Grupos'),
@@ -318,6 +318,7 @@
     ('J','Grupos'),
     ('K','Grupos'),
     ('L','Grupos');
+
     INSERT INTO Pertenece VALUES
     -- GROUP A
     ('mexico','A','Grupos'),
@@ -399,129 +400,126 @@
     ('https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Bmo_Field_2016_East_Stand.jpg/1920px-Bmo_Field_2016_East_Stand.jpg','BMO Field','canada','Toronto','Princes Blvd',170,10001),
     ('https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Mercedes_Benz_Stadium_time_lapse_capture_2017-08-13.jpg/1920px-Mercedes_Benz_Stadium_time_lapse_capture_2017-08-13.jpg','Mercedes-Benz Stadium','estados unidos','Atlanta','Northside Dr NW',1,30313);
 
+    INSERT INTO Partido (fase, EquipoLocal, EquipoVisitante, identificadorEstadio, precio, fechaHora) VALUES
+    -- =====================
+    -- GRUPO A
+    -- =====================
+    ('Grupos','mexico','sudafrica',1,100,'2026-06-11 10:00:00'),
+    ('Grupos','mexico','corea del sur',2,100,'2026-06-11 13:00:00'),
+    ('Grupos','mexico','republica checa',3,100,'2026-06-11 16:00:00'),
+    ('Grupos','sudafrica','corea del sur',4,100,'2026-06-12 10:00:00'),
+    ('Grupos','sudafrica','republica checa',5,100,'2026-06-12 13:00:00'),
+    ('Grupos','corea del sur','republica checa',6,100,'2026-06-12 16:00:00'),
 
+    -- =====================
+    -- GRUPO B
+    -- =====================
+    ('Grupos','canada','bosnia y herzegovina',1,100,'2026-06-13 10:00:00'),
+    ('Grupos','canada','qatar',2,100,'2026-06-13 13:00:00'),
+    ('Grupos','canada','suiza',3,100,'2026-06-13 16:00:00'),
+    ('Grupos','bosnia y herzegovina','qatar',4,100,'2026-06-14 10:00:00'),
+    ('Grupos','bosnia y herzegovina','suiza',5,100,'2026-06-14 13:00:00'),
+    ('Grupos','qatar','suiza',6,100,'2026-06-14 16:00:00'),
 
-INSERT INTO Partido (fase, EquipoLocal, EquipoVisitante, identificadorEstadio, precio, fechaHora) VALUES
+    -- =====================
+    -- GRUPO C
+    -- =====================
+    ('Grupos','brasil','marruecos',1,100,'2026-06-15 10:00:00'),
+    ('Grupos','brasil','haiti',2,100,'2026-06-15 13:00:00'),
+    ('Grupos','brasil','escocia',3,100,'2026-06-15 16:00:00'),
+    ('Grupos','marruecos','haiti',4,100,'2026-06-16 10:00:00'),
+    ('Grupos','marruecos','escocia',5,100,'2026-06-16 13:00:00'),
+    ('Grupos','haiti','escocia',6,100,'2026-06-16 16:00:00'),
 
--- =====================
--- GRUPO A
--- =====================
-('Grupos','mexico','sudafrica',1,100,'2026-06-11 10:00:00'),
-('Grupos','mexico','corea del sur',2,100,'2026-06-11 13:00:00'),
-('Grupos','mexico','republica checa',3,100,'2026-06-11 16:00:00'),
-('Grupos','sudafrica','corea del sur',4,100,'2026-06-12 10:00:00'),
-('Grupos','sudafrica','republica checa',5,100,'2026-06-12 13:00:00'),
-('Grupos','corea del sur','republica checa',6,100,'2026-06-12 16:00:00'),
+    -- =====================
+    -- GRUPO D
+    -- =====================
+    ('Grupos','estados unidos','paraguay',1,100,'2026-06-17 10:00:00'),
+    ('Grupos','estados unidos','australia',2,100,'2026-06-17 13:00:00'),
+    ('Grupos','estados unidos','turquia',3,100,'2026-06-17 16:00:00'),
+    ('Grupos','paraguay','australia',4,100,'2026-06-18 10:00:00'),
+    ('Grupos','paraguay','turquia',5,100,'2026-06-18 13:00:00'),
+    ('Grupos','australia','turquia',6,100,'2026-06-18 16:00:00'),
 
--- =====================
--- GRUPO B
--- =====================
-('Grupos','canada','bosnia y herzegovina',1,100,'2026-06-13 10:00:00'),
-('Grupos','canada','qatar',2,100,'2026-06-13 13:00:00'),
-('Grupos','canada','suiza',3,100,'2026-06-13 16:00:00'),
-('Grupos','bosnia y herzegovina','qatar',4,100,'2026-06-14 10:00:00'),
-('Grupos','bosnia y herzegovina','suiza',5,100,'2026-06-14 13:00:00'),
-('Grupos','qatar','suiza',6,100,'2026-06-14 16:00:00'),
+    -- =====================
+    -- GRUPO E
+    -- =====================
+    ('Grupos','alemania','curazao',1,100,'2026-06-19 10:00:00'),
+    ('Grupos','alemania','costa de marfil',2,100,'2026-06-19 13:00:00'),
+    ('Grupos','alemania','ecuador',3,100,'2026-06-19 16:00:00'),
+    ('Grupos','curazao','costa de marfil',4,100,'2026-06-20 10:00:00'),
+    ('Grupos','curazao','ecuador',5,100,'2026-06-20 13:00:00'),
+    ('Grupos','costa de marfil','ecuador',6,100,'2026-06-20 16:00:00'),
 
--- =====================
--- GRUPO C
--- =====================
-('Grupos','brasil','marruecos',1,100,'2026-06-15 10:00:00'),
-('Grupos','brasil','haiti',2,100,'2026-06-15 13:00:00'),
-('Grupos','brasil','escocia',3,100,'2026-06-15 16:00:00'),
-('Grupos','marruecos','haiti',4,100,'2026-06-16 10:00:00'),
-('Grupos','marruecos','escocia',5,100,'2026-06-16 13:00:00'),
-('Grupos','haiti','escocia',6,100,'2026-06-16 16:00:00'),
+    -- =====================
+    -- GRUPO F
+    -- =====================
+    ('Grupos','paises bajos','japon',1,100,'2026-06-21 10:00:00'),
+    ('Grupos','paises bajos','suecia',2,100,'2026-06-21 13:00:00'),
+    ('Grupos','paises bajos','tunez',3,100,'2026-06-21 16:00:00'),
+    ('Grupos','japon','suecia',4,100,'2026-06-22 10:00:00'),
+    ('Grupos','japon','tunez',5,100,'2026-06-22 13:00:00'),
+    ('Grupos','suecia','tunez',6,100,'2026-06-22 16:00:00'),
 
--- =====================
--- GRUPO D
--- =====================
-('Grupos','estados unidos','paraguay',1,100,'2026-06-17 10:00:00'),
-('Grupos','estados unidos','australia',2,100,'2026-06-17 13:00:00'),
-('Grupos','estados unidos','turquia',3,100,'2026-06-17 16:00:00'),
-('Grupos','paraguay','australia',4,100,'2026-06-18 10:00:00'),
-('Grupos','paraguay','turquia',5,100,'2026-06-18 13:00:00'),
-('Grupos','australia','turquia',6,100,'2026-06-18 16:00:00'),
+    -- =====================
+    -- GRUPO G
+    -- =====================
+    ('Grupos','belgica','egipto',1,100,'2026-06-23 10:00:00'),
+    ('Grupos','belgica','iran',2,100,'2026-06-23 13:00:00'),
+    ('Grupos','belgica','nueva zelanda',3,100,'2026-06-23 16:00:00'),
+    ('Grupos','egipto','iran',4,100,'2026-06-24 10:00:00'),
+    ('Grupos','egipto','nueva zelanda',5,100,'2026-06-24 13:00:00'),
+    ('Grupos','iran','nueva zelanda',6,100,'2026-06-24 16:00:00'),
 
--- =====================
--- GRUPO E
--- =====================
-('Grupos','alemania','curazao',1,100,'2026-06-19 10:00:00'),
-('Grupos','alemania','costa de marfil',2,100,'2026-06-19 13:00:00'),
-('Grupos','alemania','ecuador',3,100,'2026-06-19 16:00:00'),
-('Grupos','curazao','costa de marfil',4,100,'2026-06-20 10:00:00'),
-('Grupos','curazao','ecuador',5,100,'2026-06-20 13:00:00'),
-('Grupos','costa de marfil','ecuador',6,100,'2026-06-20 16:00:00'),
+    -- =====================
+    -- GRUPO H
+    -- =====================
+    ('Grupos','españa','cabo verde',1,100,'2026-06-25 10:00:00'),
+    ('Grupos','españa','arabia saudita',2,100,'2026-06-25 13:00:00'),
+    ('Grupos','españa','uruguay',3,100,'2026-06-25 16:00:00'),
+    ('Grupos','cabo verde','arabia saudita',4,100,'2026-06-26 10:00:00'),
+    ('Grupos','cabo verde','uruguay',5,100,'2026-06-26 13:00:00'),
+    ('Grupos','arabia saudita','uruguay',6,100,'2026-06-26 16:00:00'),
 
--- =====================
--- GRUPO F
--- =====================
-('Grupos','paises bajos','japon',1,100,'2026-06-21 10:00:00'),
-('Grupos','paises bajos','suecia',2,100,'2026-06-21 13:00:00'),
-('Grupos','paises bajos','tunez',3,100,'2026-06-21 16:00:00'),
-('Grupos','japon','suecia',4,100,'2026-06-22 10:00:00'),
-('Grupos','japon','tunez',5,100,'2026-06-22 13:00:00'),
-('Grupos','suecia','tunez',6,100,'2026-06-22 16:00:00'),
+    -- =====================
+    -- GRUPO I
+    -- =====================
+    ('Grupos','francia','senegal',1,100,'2026-06-27 10:00:00'),
+    ('Grupos','francia','iraq',2,100,'2026-06-27 13:00:00'),
+    ('Grupos','francia','noruega',3,100,'2026-06-27 16:00:00'),
+    ('Grupos','senegal','iraq',4,100,'2026-06-28 10:00:00'),
+    ('Grupos','senegal','noruega',5,100,'2026-06-28 13:00:00'),
+    ('Grupos','iraq','noruega',6,100,'2026-06-28 16:00:00'),
 
--- =====================
--- GRUPO G
--- =====================
-('Grupos','belgica','egipto',1,100,'2026-06-23 10:00:00'),
-('Grupos','belgica','iran',2,100,'2026-06-23 13:00:00'),
-('Grupos','belgica','nueva zelanda',3,100,'2026-06-23 16:00:00'),
-('Grupos','egipto','iran',4,100,'2026-06-24 10:00:00'),
-('Grupos','egipto','nueva zelanda',5,100,'2026-06-24 13:00:00'),
-('Grupos','iran','nueva zelanda',6,100,'2026-06-24 16:00:00'),
+    -- =====================
+    -- GRUPO J
+    -- =====================
+    ('Grupos','argentina','algeria',1,100,'2026-06-29 10:00:00'),
+    ('Grupos','argentina','austria',2,100,'2026-06-29 13:00:00'),
+    ('Grupos','argentina','jordania',3,100,'2026-06-29 16:00:00'),
+    ('Grupos','algeria','austria',4,100,'2026-06-30 10:00:00'),
+    ('Grupos','algeria','jordania',5,100,'2026-06-30 13:00:00'),
+    ('Grupos','austria','jordania',6,100,'2026-06-30 16:00:00'),
 
--- =====================
--- GRUPO H
--- =====================
-('Grupos','españa','cabo verde',1,100,'2026-06-25 10:00:00'),
-('Grupos','españa','arabia saudita',2,100,'2026-06-25 13:00:00'),
-('Grupos','españa','uruguay',3,100,'2026-06-25 16:00:00'),
-('Grupos','cabo verde','arabia saudita',4,100,'2026-06-26 10:00:00'),
-('Grupos','cabo verde','uruguay',5,100,'2026-06-26 13:00:00'),
-('Grupos','arabia saudita','uruguay',6,100,'2026-06-26 16:00:00'),
+    -- =====================
+    -- GRUPO K
+    -- =====================
+    ('Grupos','portugal','republica democratica del congo',1,100,'2026-07-01 10:00:00'),
+    ('Grupos','portugal','uzbekistan',2,100,'2026-07-01 13:00:00'),
+    ('Grupos','portugal','colombia',3,100,'2026-07-01 16:00:00'),
+    ('Grupos','republica democratica del congo','uzbekistan',4,100,'2026-07-02 10:00:00'),
+    ('Grupos','republica democratica del congo','colombia',5,100,'2026-07-02 13:00:00'),
+    ('Grupos','uzbekistan','colombia',6,100,'2026-07-02 16:00:00'),
 
--- =====================
--- GRUPO I
--- =====================
-('Grupos','francia','senegal',1,100,'2026-06-27 10:00:00'),
-('Grupos','francia','iraq',2,100,'2026-06-27 13:00:00'),
-('Grupos','francia','noruega',3,100,'2026-06-27 16:00:00'),
-('Grupos','senegal','iraq',4,100,'2026-06-28 10:00:00'),
-('Grupos','senegal','noruega',5,100,'2026-06-28 13:00:00'),
-('Grupos','iraq','noruega',6,100,'2026-06-28 16:00:00'),
-
--- =====================
--- GRUPO J
--- =====================
-('Grupos','argentina','algeria',1,100,'2026-06-29 10:00:00'),
-('Grupos','argentina','austria',2,100,'2026-06-29 13:00:00'),
-('Grupos','argentina','jordania',3,100,'2026-06-29 16:00:00'),
-('Grupos','algeria','austria',4,100,'2026-06-30 10:00:00'),
-('Grupos','algeria','jordania',5,100,'2026-06-30 13:00:00'),
-('Grupos','austria','jordania',6,100,'2026-06-30 16:00:00'),
-
--- =====================
--- GRUPO K
--- =====================
-('Grupos','portugal','republica democratica del congo',1,100,'2026-07-01 10:00:00'),
-('Grupos','portugal','uzbekistan',2,100,'2026-07-01 13:00:00'),
-('Grupos','portugal','colombia',3,100,'2026-07-01 16:00:00'),
-('Grupos','republica democratica del congo','uzbekistan',4,100,'2026-07-02 10:00:00'),
-('Grupos','republica democratica del congo','colombia',5,100,'2026-07-02 13:00:00'),
-('Grupos','uzbekistan','colombia',6,100,'2026-07-02 16:00:00'),
-
--- =====================
--- GRUPO L
--- =====================
-('Grupos','inglaterra','croacia',1,100,'2026-07-03 10:00:00'),
-('Grupos','inglaterra','ghana',2,100,'2026-07-03 13:00:00'),
-('Grupos','inglaterra','panama',3,100,'2026-07-03 16:00:00'),
-('Grupos','croacia','ghana',4,100,'2026-07-04 10:00:00'),
-('Grupos','croacia','panama',5,100,'2026-07-04 13:00:00'),
-('Grupos','ghana','panama',6,100,'2026-07-04 16:00:00');
+    -- =====================
+    -- GRUPO L
+    -- =====================
+    ('Grupos','inglaterra','croacia',1,100,'2026-07-03 10:00:00'),
+    ('Grupos','inglaterra','ghana',2,100,'2026-07-03 13:00:00'),
+    ('Grupos','inglaterra','panama',3,100,'2026-07-03 16:00:00'),
+    ('Grupos','croacia','ghana',4,100,'2026-07-04 10:00:00'),
+    ('Grupos','croacia','panama',5,100,'2026-07-04 13:00:00'),
+    ('Grupos','ghana','panama',6,100,'2026-07-04 16:00:00');
 
     INSERT INTO Sector (identificador, identificadorEstadio, nombre, capMax, tarifaExtra) VALUES
     (1, 1, 'Sector A', 3, 1000),
@@ -555,27 +553,11 @@ INSERT INTO Partido (fase, EquipoLocal, EquipoVisitante, identificadorEstadio, p
     (2, 2, 2),
     (3, 3, 3);
 
-    SELECT identificador, mailFuncionario, fechaAsignacion
-    FROM `Dispositivo`;
+    INSERT INTO EsAsignado ( identificadorDispositivo, identificadorEstadio, identificadorPartido, identificadorSector)
+    VALUES (1, 1, 1, 1), (2, 1, 1, 2), (1, 2, 2, 2), (2, 3, 3, 3);
 
-    SELECT identificadorSector, identificadorPartido, identificadorEstadio
-                        FROM EsAsignado
-                        WHERE identificadorDispositivo = 1
-                        LIMIT 1;
-
-
-    INSERT INTO Dispositivo (identificador, mailFuncionario) VALUES
-    (null, 'func1@mundial.com'),
-    (null, 'func2@mundial.com');
-
-    INSERT INTO EsAsignado (
-        identificadorDispositivo,
-        identificadorEstadio,
-        identificadorPartido,
-        identificadorSector
-    )
-    VALUES
-    (1, 1, 1, 1),
-    (2, 1, 1, 2),
-    (1, 2, 2, 2),
-    (2, 3, 3, 3);
+SELECT CONCAT(p.EquipoLocal, ' vs ', p.EquipoVisitante) as partido, COUNT(*) as cant_ventas
+            FROM Entrada e
+            JOIN Partido p ON p.identificador = e.identificadorPartido
+            GROUP BY p.identificador
+            ORDER BY cant_ventas DESC;

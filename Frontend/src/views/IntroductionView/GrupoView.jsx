@@ -21,7 +21,7 @@ function GruposView() {
       <div className="flex items-center justify-between mb-10">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-white bg-[#16233c] hover:bg-[#223557] transition px-4 py-2 rounded-full shadow-md">
+          className="cursor-pointer flex items-center gap-2 text-white bg-[#16233c] hover:bg-[#223557] transition px-4 py-2 rounded-full shadow-md">
           <IoArrowBack size={18} />
           Volver
         </button>

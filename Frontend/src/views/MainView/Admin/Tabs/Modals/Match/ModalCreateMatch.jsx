@@ -1,31 +1,32 @@
 import { useState, useEffect } from 'react';
 import Modal from '../../../../../../components/modal';
 import { toast } from 'react-toastify';
-import getPartido from '../../../../../../services/PartidoService/getPartido'
 import getAllEquipos from '../../../../../../services/EquipoService/getAllEquipos';
 import getAllMyEstadios from '../../../../../../services/EstadioService/getAllMyEstadios';
+import postPartido from '../../../../../../services/PartidoService/postPartido';
 import { Oval } from 'react-loader-spinner'
-
-import putPartido from '../../../../../../services/PartidoService/putPartido'
 
 const fases = ['Grupos', 'Octavos', 'Cuartos', 'Semifinales', 'Final'];
 
-export default function ModalEditMatch({ open, onClose, identificador, onUpdateSuccess }) {
-    const [partido, setPartido] = useState({});
+export default function ModalCreateMatch({ open, onClose, onCreateSuccess }) {
     const [equipos, setEquipos] = useState([]);
     const [estadios, setEstadios] = useState([]);
-    const [fase, setFase] = useState('');
-
     const [isLoading, setIsLoading] = useState(false);
 
-    const [estadio, setEstadio] = useState(null);
+    const [form, setForm] = useState({
+        fase: '',
+        equipoLocal: '',
+        equipoVisitante: '',
+        identificadorEstadio: '',
+        fechaHora: '',
+        precio: '',
+    })
 
     useEffect(() => {
         if (!open) return;
 
         async function loadData() {
             try {
-                setPartido({});
                 setEquipos([]);
                 setEstadios([]);
 
@@ -33,52 +34,67 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
 
                 const dataEstadio = await getAllMyEstadios();
 
-                const data = await getPartido(identificador);
-
                 setEquipos(dataEquipo || []);
                 setEstadios(dataEstadio || []);
-                setPartido(data || {});
-                setEstadio(data?.identificadorEstadio);
-
             } catch (error) {
                 console.error(error);
-                setPartido({});
                 setEquipos([]);
                 setEstadios([]);
             }
         }
 
         loadData();
-    }, [open, identificador]);
+    }, [open]);
 
     useEffect(() => {
         if (!open) {
-            setPartido({});
             setEquipos([]);
             setEstadios([]);
-            setIsLoading(false);
-            setEstadio(null);
+            setForm({
+                fase: '',
+                equipoLocal: '',
+                equipoVisitante: '',
+                identificadorEstadio: '',
+                fechaHora: '',
+                precio: '',
+            });
         }
     }, [open]);
 
-    const handleChangeEstadio = async (idEstadio) => {
-        setEstadio(idEstadio);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+
+        setForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (partido.equipoLocal === partido.equipoVisitante) {
+        if (
+            !form.fase || !form.equipoLocal ||
+            !form.equipoVisitante ||
+            !form.identificadorEstadio ||
+            !form.fechaHora ||
+            !form.precio
+        ) {
+            toast.error("Complete todos los campos.");
+            return;
+        }
+
+        if (form.equipoLocal === form.equipoVisitante) {
             toast.error("Los equipos no pueden ser iguales.");
             return;
         }
 
-        if (Number(partido.precio) < 0) {
+        if (Number(form.precio) < 0) {
             toast.error("El precio no puede ser menor a 0.");
             return;
         }
 
-        const fechaPartido = new Date(partido.fechaHora);
+        const fechaPartido = new Date(form.fechaHora);
         const hoy = new Date();
 
         if (fechaPartido < hoy) {
@@ -86,24 +102,24 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
             return;
         }
 
+        const BODY = {
+            fase: form.fase,
+            equipoLocal: form.equipoLocal,
+            equipoVisitante: form.equipoVisitante,
+            identificadorEstadio: Number(form.identificadorEstadio),
+            fechaHora: new Date(form.fechaHora).toISOString(),
+            precio: Number(form.precio),
+        }
+
         try {
-            setIsLoading(true);
-
-            const editarPartido = await putPartido(identificador, {
-                fase: fase || partido.fase,
-                equipoLocal: partido.equipoLocal,
-                equipoVisitante: partido.equipoVisitante,
-                identificadorEstadio: estadio,
-                fechaHora: partido.fechaHora,
-                precio: partido.precio
-            });
-
-            if (editarPartido?.success) {
+            setIsLoading(true)
+            const crearPartido = await postPartido(BODY)
+            if (crearPartido?.success) {
                 toast.success('Partido creado');
-                await onUpdateSuccess();
+                await onCreateSuccess();
                 onClose()
             } else {
-                toast.error(editarPartido?.message || 'Error al crear partido', {
+                toast.error(crearPartido?.message || 'Error al crear partido', {
                     position: 'bottom-left',
                     autoClose: 3000,
                 })
@@ -114,9 +130,9 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
                 autoClose: 3000,
             })
         } finally {
-            setIsLoading(false);
+            setIsLoading(false)
         }
-    };
+    }
 
     const capitalize = (texto = '') => texto.charAt(0).toUpperCase() + texto.slice(1);
 
@@ -141,8 +157,10 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
                 <div className="grid gap-6 md:grid-cols-2">
 
                     <div>
-                        <select value={partido.equipoLocal || ''} onChange={(e) => setPartido({ ...partido, equipoLocal: e.target.value })} className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none">
-                            {equipos.filter((equipo) => equipo.nombre !== partido.equipoVisitante).map((equipo) => (
+                        <select name="equipoLocal" value={form.equipoLocal} onChange={handleChange} className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none">
+                            <option value="">Seleccionar equipo local...</option>
+
+                            {equipos.filter(equipo => equipo.nombre !== form.equipoVisitante).map((equipo) => (
                                 <option key={equipo.nombre} value={equipo.nombre}>
                                     {capitalize(equipo.nombre)}
                                 </option>
@@ -151,8 +169,10 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
                     </div>
 
                     <div>
-                        <select value={partido.equipoVisitante || ''} onChange={(e) => setPartido({ ...partido, equipoVisitante: e.target.value })} className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none">
-                            {equipos.filter((equipo) => equipo.nombre !== partido.equipoLocal).map((equipo) => (
+                        <select name="equipoVisitante" value={form.equipoVisitante} onChange={handleChange} className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none">
+                            <option value="">Seleccionar equipo visitante...</option>
+
+                            {equipos.filter(equipo => equipo.nombre !== form.equipoLocal).map((equipo) => (
                                 <option key={equipo.nombre} value={equipo.nombre}>
                                     {capitalize(equipo.nombre)}
                                 </option>
@@ -166,14 +186,12 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
                             <div className="flex-1 h-px bg-[#045694]/20" />
                         </div>
 
-                        <select value={fase || partido.fase || ''} onChange={(e) => setFase(e.target.value)} className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none">
-                            <option value={partido.fase}>
-                                {partido.fase}
+                        <select name="fase" value={form.fase} onChange={handleChange} className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none">
+                            <option value="">
+                                Seleccionar fase...
                             </option>
 
-
-
-                            {fases.filter(f => f !== partido.fase).map(fase => (
+                            {fases.map((fase) => (
                                 <option key={fase} value={fase}>
                                     {fase}
                                 </option>
@@ -187,17 +205,7 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
                             <div className="flex-1 h-px bg-[#045694]/20" />
                         </div>
 
-                        <input
-                            type="datetime-local"
-                            value={partido.fechaHora || ''}
-                            onChange={(e) =>
-                                setPartido({
-                                    ...partido,
-                                    fechaHora: e.target.value
-                                })
-                            }
-                            className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none"
-                        />
+                        <input type="datetime-local" name="fechaHora" value={form.fechaHora} onChange={handleChange} className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none" />
                     </div>
 
                     <div>
@@ -206,17 +214,7 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
                             <div className="flex-1 h-px bg-[#045694]/20" />
                         </div>
 
-                        <input
-                            type="number"
-                            value={partido.precio || ''}
-                            onChange={(e) =>
-                                setPartido({
-                                    ...partido,
-                                    precio: Number(e.target.value)
-                                })
-                            }
-                            className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none"
-                        />
+                        <input type="number" name="precio" value={form.precio} onChange={handleChange} min="0" className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none" />
                     </div>
 
 
@@ -226,19 +224,14 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
                             <div className="flex-1 h-px bg-[#045694]/20" />
                         </div>
 
-                        <select value={estadio || partido.identificadorEstadio || ''} onChange={(e) => handleChangeEstadio(Number(e.target.value))} className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none" >
-                            <option value={partido.identificadorEstadio}>{partido.nombreEstadio}</option>
-                            {estadios.map((estadio) => {
-                                if (estadio.nombre === partido.nombreEstadio) {
-                                    return null;
-                                }
+                        <select name="identificadorEstadio" value={form.identificadorEstadio} onChange={handleChange} className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-[#D4AF37] focus:outline-none">
+                            <option value="">Seleccionar estadio...</option>
 
-                                return (
-                                    <option key={estadio.identificador} value={estadio.identificador}>
-                                        {estadio.nombre}
-                                    </option>
-                                );
-                            })}
+                            {estadios.map((estadio) => (
+                                <option key={estadio.identificador} value={estadio.identificador}>
+                                    {estadio.nombre}
+                                </option>
+                            ))}
                         </select>
                     </div>
                 </div>
@@ -249,7 +242,7 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
                     </button>
 
                     <button type="submit" className="cursor-pointer transition-all rounded-xl bg-[#14315C] px-6 py-3 font-semibold text-white hover:bg-[#1c4378]">
-                        Guardar cambios
+                        Crear partido
                     </button>
                 </div>
             </form>

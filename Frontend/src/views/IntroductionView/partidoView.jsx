@@ -43,7 +43,7 @@ function PartidosView() {
     <div className="min-h-screen bg-[#0a1628] p-8">
       <button
         onClick={() => navigate('/grupos')}
-        className="flex items-center gap-2 text-white bg-[#16233c] hover:bg-[#223557] transition px-4 py-2 rounded-full shadow-md mb-6">
+        className="cursor-pointer flex items-center gap-2 text-white bg-[#16233c] hover:bg-[#223557] transition px-4 py-2 rounded-full shadow-md mb-6">
         <IoArrowBack size={18} />
         Volver a grupos
       </button>

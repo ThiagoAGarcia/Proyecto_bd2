@@ -1,24 +1,41 @@
 import { useEffect, useState } from 'react'
 import getMyPartidos from '../../../../services/PartidoService/getMyPartidos'
+import getMyPartidosSectores from '../../../../services/PartidoService/getMyPartidosSectores'
 import ModalEditMatch from './Modals/Match/ModalEditMatch'
+import ModalCreateMatch from './Modals/Match/ModalCreateMatch'
+import ModalSectorMatch from './Modals/Match/ModalSectorMatch'
+import ModalAsignarMatch from './Modals/Match/ModalAsignarMatch'
+import ModalEliminateMatch from './Modals/Match/ModalEliminateMatch'
 
 export default function MatchManagement() {
-    const [data, setData] = useState([])
-    const [open, setOpen] = useState(false)
-    const [identificadorPartido, setIdentificadorPartido] = useState(null)
-    const [precioBase, setPrecioBase] = useState(null)
+    const [data, setData] = useState([]);
+    const [dataSectores, setDataSectores] = useState([]);
+
+    const [open, setOpen] = useState(false);
+    const [identificadorSector, setIdentificadorSector] = useState(null);
+    const [openCreate, setOpenCreate] = useState(false);
+    const [openUpdate, setOpenUpdate] = useState(false);
+    const [openAsignar, setOpenAsignar] = useState(false);
+    const [openDelete, setOpenDelete] = useState(false);
+
+    const [identificadorPartido, setIdentificadorPartido] = useState(null);
+
+    const [estadio, setEstadio] = useState(null);
 
     const loadPartidos = async () => {
         try {
             setIdentificadorPartido(null)
-            const data = await getMyPartidos()
+            const data = await getMyPartidos();
+            const dataSec = await getMyPartidosSectores();
 
             if (!data) return
+            if (!dataSec) return
 
-            setData(data)
+            setData(data);
+            setDataSectores(dataSec);
         } catch (error) {
             console.error(error)
-            setIdentificadorPartido(null)
+            setIdentificadorPartido(null);
         }
     }
 
@@ -33,7 +50,7 @@ export default function MatchManagement() {
                     <h1 className="font-sans text-3xl font-bold text-[#0a1628] uppercase tracking-wide leading-none sm:pb-0 pb-4">
                         Gestión <span className="text-[#c8a84b]">Partidos</span>
                     </h1>
-                    <button className="inline-flex items-center gap-1.5 px-2 py-2 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
+                    <button onClick={() => { setOpenCreate(true); }} className="inline-flex items-center gap-1.5 px-2 py-2 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
                         <i className="fa-solid fa-plus" /> Crear partido
                     </button>
                 </div>
@@ -44,75 +61,185 @@ export default function MatchManagement() {
                             No tenés partidos registrados.
                         </p>
                     ) : (
-                        data.map((partido) => {
-                            const [fecha, hora] = partido.fechaHora.split('T')
-                            const [anio, mes, dia] = fecha.split('-')
-                            const horaFormateada = hora.slice(0, 5)
-                            const capitalize = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1);
-                            return (
-                                < div key={partido.identificador} className="border border-[#d0dcea] rounded-xl p-3.5 transition-all duration-150 hover:border-[#a0b8d8] hover:shadow-[0_2px_10px_rgba(0,107,182,0.08)]" >
-                                    <div className="flex md:hidden flex-col gap-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="p-2.5 rounded-lg bg-[#0a1628] flex items-center justify-center shrink-0">
-                                                <img className="w-8 h-auto" src={partido.banderaEquipoLocal} alt={partido.equipoLocal} />
-                                                <span className="px-2 font-extrabold text-[#e0c472] font-['Barlow_Condensed']">-</span>
-                                                <img className="w-8 h-auto" src={partido.banderaEquipoVisitante} alt={partido.equipoVisitante} />
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                            {data.map((partido) => {
+                                const [fecha, hora] = partido.fechaHora.split("T");
+                                const [, mes, dia] = fecha.split("-");
+                                const horaFormateada = hora.slice(0, 5);
+
+                                const capitalize = (texto) => texto.charAt(0).toUpperCase() + texto.slice(1);
+
+                                const sectoresPartido = dataSectores.filter((sector) => sector.identificadorPartido === partido.identificador);
+
+                                return (
+                                    <div key={partido.identificador} className="bg-white border border-[#d0dcea] rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300">
+                                        <div className="relative bg-[#0a1628] h-52 flex flex-col items-center justify-center">
+                                            <div className="absolute inset-0 bg-linear-to-br from-[#0a1628] via-[#12223d] to-[#0a1628]" />
+
+                                            <div className="relative flex items-center gap-6">
+                                                <img src={partido.banderaEquipoLocal} alt={partido.equipoLocal} className="w-20 h-20 object-contain drop-shadow-lg" />
+
+                                                <span className="text-4xl font-black text-[#c8a84b]">
+                                                    VS
+                                                </span>
+
+                                                <img src={partido.banderaEquipoVisitante} alt={partido.equipoVisitante} className="w-20 h-20 object-contain drop-shadow-lg" />
                                             </div>
-                                            <div className="min-w-0">
-                                                <div className="text-base font-semibold text-[#0a1628] truncate">{capitalize(partido.equipoLocal)} vs {capitalize(partido.equipoVisitante)}</div>
-                                                <div className="text-sm text-[#7a8fa6] mt-0.5">
-                                                    <i className="fa-solid fa-location-dot" /> {partido.nombreEstadio}
-                                                </div>
-                                                <div className="text-sm text-[#7a8fa6]">
-                                                    <i className="fa-solid fa-calendar" /> {dia}-{mes} · <i className="fa-solid fa-clock" /> {horaFormateada}
-                                                </div>
-                                            </div>
+
+                                            <h3 className="relative mt-5 text-white text-xl font-bold text-center px-4">
+                                                {capitalize(partido.equipoLocal)} vs{" "}
+                                                {capitalize(partido.equipoVisitante)}
+                                            </h3>
                                         </div>
 
-                                        <div className="flex gap-2 border-t border-[#eaf0f8] pt-2.5">
-                                            <button onClick={() => { setIdentificadorPartido(partido.identificador); setOpen(true) }} className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] border-none bg-[#f0f4fa] text-[#0a1628] hover:bg-[#c2c8d1]/80">
-                                                <i className="fa-solid fa-pencil" /> Editar
-                                            </button>
-                                            <button className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] border-none bg-[#0a1628] text-[#c8a84b]/60 hover:bg-[#0a1628]/90">
-                                                <i className="fa-solid fa-trash-can text-[#c8a84b]" /> Eliminar
-                                            </button>
-                                        </div>
-                                    </div>
+                                        <div className="p-5">
 
-                                    <div className="hidden md:flex items-center justify-between gap-3">
-                                        <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                                            <div className="p-3 rounded-lg bg-[#0a1628] flex items-center justify-center shrink-0">
-                                                <img className="w-10 h-auto" src={partido.banderaEquipoLocal} alt={partido.equipoLocal} />
-                                                <span className="px-3 font-extrabold text-[#e0c472] font-['Barlow_Condensed']">-</span>
-                                                <img className="w-10 h-auto" src={partido.banderaEquipoVisitante} alt={partido.equipoVisitante} />
-                                            </div>
-                                            <div className="min-w-0">
-                                                <div className="font-semibold text-[#0a1628] truncate">{capitalize(partido.equipoLocal)} vs {capitalize(partido.equipoVisitante)}</div>
-                                                <div className="text-sm text-[#7a8fa6] mt-0.5">
-                                                    <i className="fa-solid fa-location-dot text-[11px]" /> {partido.nombreEstadio} · <i className="fa-solid fa-calendar text-sm" /> {dia}-{mes} · <i className="fa-solid fa-clock text-[11px]" /> {horaFormateada}
+                                            <div className={`gap-y-6 ${sectoresPartido.length > 0 ? "flex flex-col" : ""}`}>
+
+                                                <div className="flex-1 space-y-3 text-sm text-[#5f6f86]">
+
+                                                    <p className="flex items-center gap-2">
+                                                        <i className="fa-solid fa-location-dot text-[#c8a84b]" />
+                                                        Estadio:
+                                                        <span className="font-bold text-[#0a1628]">
+                                                            {partido.nombreEstadio}
+                                                        </span>
+                                                    </p>
+
+                                                    <p className="flex items-center gap-2">
+                                                        <i className="fa-solid fa-calendar text-[#c8a84b]" />
+                                                        Fecha:
+                                                        <span className="font-bold text-[#0a1628]">
+                                                            {dia}/{mes}
+                                                        </span>
+                                                    </p>
+
+                                                    <p className="flex items-center gap-2">
+                                                        <i className="fa-solid fa-clock text-[#c8a84b]" />
+                                                        Hora:
+                                                        <span className="font-bold text-[#0a1628]">
+                                                            {horaFormateada}
+                                                        </span>
+                                                    </p>
+
+                                                    <p className="flex items-center gap-2">
+                                                        <i className="fa-solid fa-ticket text-[#c8a84b]" />
+                                                        Precio base:
+                                                        <span className="font-bold text-[#0a1628]">
+                                                            ${partido.precio}
+                                                        </span>
+                                                    </p>
+
+                                                    <p className="flex items-center gap-2">
+                                                        <i className="fa-solid fa-users text-[#c8a84b]" />
+                                                        Sectores disponibles:
+                                                    </p>
+
                                                 </div>
+
+                                                {sectoresPartido.length > 0 ? (
+                                                    <div className="flex-1">
+                                                        <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
+
+                                                            {sectoresPartido.map((sector, index) => (
+                                                                <div key={index} className="bg-[#f8fafc] border border-[#e4e8ef] rounded-xl p-3 flex items-center justify-between">
+                                                                    <div>
+                                                                        <div className="font-semibold text-[#0a1628]">
+                                                                            {sector.nombreSector}
+                                                                        </div>
+
+                                                                        {sector.mailFuncionario ? (
+                                                                            <div className="text-sm text-[#5f6f86] mt-1 font-bold">
+                                                                                <i className="fa-solid fa-user-gear text-[#c8a84b] mr-1" />
+                                                                                {sector.mailFuncionario}
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div className="text-base text-[#5f6f86] mt-1">
+                                                                                No hay funcionario asignado
+                                                                            </div>
+                                                                        )}
+                                                                    </div>
+
+                                                                    <button onClick={() => { setIdentificadorSector(sector.identificadorSector); setIdentificadorPartido(partido.identificador); setEstadio(partido.identificadorEstadio); setOpenAsignar(true); }} className="cursor-pointer ml-4 px-3 py-1 bg-[#c8a84b] text-[#0a1628] rounded-lg hover:opacity-90 transition">
+                                                                        Asignar
+                                                                    </button>
+                                                                </div>
+                                                            ))}
+
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex-1">
+                                                        <div className="flex space-y-2 items-center justify-center text-center max-h-46 min-h-46 overflow-y-auto">
+                                                            <span>No hay sectores habilitados</span>
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                             </div>
-                                        </div>
-                                        <div className="flex gap-1.5 shrink-0 ">
-                                            <button onClick={() => { setIdentificadorPartido(partido.identificador); setOpen(true) }} className="inline-flex items-center gap-1.5 px-3 py-3 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border border-[#d0dcea] text-[#0a1628] hover:bg-[#f0f4fa]">
-                                                <i className="fa-solid fa-pencil" /> Editar
-                                            </button>
-                                            <button className="inline-flex items-center gap-1.5 px-3 py-3 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border-none bg-[#0a1628] text-[#c8a84b]/60 hover:bg-[#0a1628]/90">
-                                                <i className="fa-solid fa-trash-can text-[#c8a84b]" /> Eliminar
-                                            </button>
+
+                                            <div className="flex gap-2 mt-6 flex-col">
+
+                                                <button onClick={() => { setIdentificadorPartido(partido.identificador); setEstadio(partido.identificadorEstadio); setOpenUpdate(true); }} className="cursor-pointer flex-1 bg-[#0a1628] text-[#c8a84b] py-2.5 rounded-lg font-medium hover:bg-[#13203a] transition">
+                                                    <i className="fa-solid fa-door-open mr-2" />
+                                                    Editar sectores
+                                                </button>
+
+                                                <button onClick={() => { setIdentificadorPartido(partido.identificador); setOpen(true); }} className="flex-1 inline-flex items-center justify-center font-medium py-2.5 rounded-lg cursor-pointer transition-all bg-transparent border border-[#d0dcea] text-[#0a1628] hover:bg-[#dce6f5]">
+                                                    <i className="fa-solid fa-pen mr-2" />
+                                                    Editar partido
+                                                </button>
+
+                                                <button onClick={() => { setIdentificadorPartido(partido.identificador); setOpenDelete(true); }} className="cursor-pointer px-4 py-2.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">
+                                                    <i className="fa-solid fa-trash-can mr-2" />
+                                                    Eliminar partido
+                                                </button>
+
+                                            </div>
+
                                         </div>
                                     </div>
-                                </div>
-                            )
-                        })
+                                );
+                            })}
+                        </div>
                     )}
                 </div>
-            </div >
+            </div>
             <ModalEditMatch
                 open={open}
                 onClose={() => setOpen(false)}
                 identificador={identificadorPartido}
                 onUpdateSuccess={loadPartidos}
+            />
+
+            <ModalAsignarMatch
+                open={openAsignar}
+                onClose={() => setOpenAsignar(false)}
+                onAsignarSuccess={loadPartidos}
+                identificadorPartido={identificadorPartido}
+                identificadorSector={identificadorSector}
+                identificadorEstadio={estadio}
+            />
+
+            <ModalSectorMatch
+                open={openUpdate}
+                onClose={() => setOpenUpdate(false)}
+                estadio={estadio}
+                identificador={identificadorPartido}
+                onSectorSuccess={loadPartidos}
+            />
+
+            <ModalCreateMatch
+                open={openCreate}
+                onClose={() => setOpenCreate(false)}
+                onCreateSuccess={loadPartidos}
+            />
+
+            <ModalEliminateMatch
+                open={openDelete}
+                onClose={() => setOpenDelete(false)}
+                onDeleteSuccess={loadPartidos}
+                identificador={identificadorPartido}
             />
         </>
     )

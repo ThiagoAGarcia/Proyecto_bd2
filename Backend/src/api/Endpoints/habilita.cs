@@ -110,6 +110,7 @@ public static class HabilitaEndpoints
 
                 return Results.Ok(new
                 {
+                    success = true,
                     message = "Habilitaciones actualizadas correctamente"
                 });
             }

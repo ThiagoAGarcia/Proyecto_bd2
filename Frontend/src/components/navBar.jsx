@@ -92,12 +92,6 @@ export default function NavBar() {
         <img src={logo} alt="FifaUcu" className="w-10 h-auto" />
       </button>
 
-      <button
-        onClick={() => navigate('/grupos')}
-        className="hidden sm:inline-flex text-white rounded-full px-4 py-2 font-semibold hover:bg-cyan-700 hover:text-white transition-colors">
-        VER FIXTURE
-      </button>
-
       <div className="flex items-center gap-4">
         <div className="text-right hidden sm:block">
           <div className="text-xl font-medium text-white leading-tight">
@@ -126,13 +120,14 @@ export default function NavBar() {
                 </div>
               </div>
 
-              <button
-                onClick={() => {
-                  setIsOpen(false)
-                  navigate('/profile')
-                }}
+              <button onClick={() => { setIsOpen(false); navigate('/profile');}}
                 className="flex items-center gap-2.5 px-4 py-3 text-white/75 text-base cursor-pointer hover:bg-white/5 hover:text-white transition-colors border-none bg-transparent w-full text-left">
                 <i className="fa-solid fa-user w-4 text-center"></i> Mi perfil
+              </button>
+
+              <button onClick={() => navigate('/grupos')}
+                className="flex items-center gap-2.5 px-4 py-3 text-white/75 text-base cursor-pointer hover:bg-white/5 hover:text-white transition-colors border-none bg-transparent w-full text-left">
+                <i className="fa-regular fa-futbol w-4 text-center"></i> Ver fixture
               </button>
 
               <button

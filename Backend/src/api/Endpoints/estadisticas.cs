@@ -53,8 +53,9 @@ public static class EstadisticasEndpoints
             await using var command = connection.CreateCommand();
 
             command.CommandText = """
-            SELECT mailUsuarioComprado as usuarioComprador, COUNT(*) as ventas FROM venta GROUP BY mailUsuarioComprado ORDER BY ventas DESC LIMIT 3;
-
+            SELECT mailUsuarioComprado as usuarioComprador, COUNT(*) as ventas 
+            FROM venta 
+            GROUP BY mailUsuarioComprado ORDER BY ventas DESC LIMIT 3;
             """;
 
             var rankingCompradores = new List<object>();
@@ -82,8 +83,11 @@ public static class EstadisticasEndpoints
             await using var command = connection.CreateCommand();
 
             command.CommandText = """
-            SELECT CONCAT(p.EquipoLocal, ' vs ', p.EquipoVisitante) as partido, COUNT(*) as cant_ventas FROM Entrada e JOIN Partido p ON p.identificador = e.identificadorPartido GROUP BY p.identificador ORDER BY cant_ventas DESC;
-
+            SELECT CONCAT(p.EquipoLocal, ' vs ', p.EquipoVisitante) as partido, COUNT(*) as cant_ventas 
+            FROM Entrada e 
+            JOIN Partido p ON p.identificador = e.identificadorPartido 
+            GROUP BY p.identificador 
+            ORDER BY cant_ventas DESC;
             """;
 
             var rankingPartidos = new List<object>();

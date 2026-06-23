@@ -5,7 +5,8 @@ public sealed record PartidoRequest(
     string EquipoLocal,
     string EquipoVisitante,
     int IdentificadorEstadio,
-    DateTime FechaHora
+    DateTime FechaHora,
+    int Precio
 );
 
 public sealed record PartidoUpdateRequest(
