@@ -244,6 +244,7 @@
     ('user1@gmail.com','2026-06-01','verificado'),
     ('user2@gmail.com','2026-06-02','verificado'),
     ('user3@gmail.com','2026-06-03','noVerificado');
+
     INSERT INTO Equipo VALUES
     ('mexico','https://upload.wikimedia.org/wikipedia/commons/f/fc/Flag_of_Mexico.svg'),
     ('sudafrica','https://upload.wikimedia.org/wikipedia/commons/a/af/Flag_of_South_Africa.svg'),
@@ -556,6 +557,38 @@
     INSERT INTO EsAsignado ( identificadorDispositivo, identificadorEstadio, identificadorPartido, identificadorSector)
     VALUES (1, 1, 1, 1), (2, 1, 1, 2), (1, 2, 2, 2), (2, 3, 3, 3);
 
+INSERT INTO Venta (porcentajeComision, montoTotal, mailUsuarioComprado) VALUES
+(10, 1100, 'user1@gmail.com'),
+(10, 1600, 'user1@gmail.com'),
+(10, 600,  'user2@gmail.com'),
+(10, 2100, 'user1@gmail.com'),
+(10, 1100, 'user3@gmail.com');
+
+INSERT INTO Entrada
+(
+    identificadorVenta,
+    identificadorPartido,
+    mailUsuarioTiene,
+    estadoEntrada,
+    identificadorSector,
+    identificadorEstadio
+)
+VALUES
+
+
+(1, 1, 'user1@gmail.com', 'Registrada', 1, 1),
+
+(2, 1, 'user1@gmail.com', 'No registrada', 2, 1),
+(2, 1, 'user1@gmail.com', 'No registrada', 2, 1),
+
+
+(3, 2, 'user2@gmail.com', 'Registrada', 2, 2),
+
+(4, 3, 'user1@gmail.com', 'Registrada', 3, 3),
+(4, 3, 'user1@gmail.com', 'No registrada', 3, 3),
+(4, 3, 'user1@gmail.com', 'No registrada', 3, 3),
+
+(5, 1, 'user3@gmail.com', 'Cancelada', 1, 1);
 SELECT CONCAT(p.EquipoLocal, ' vs ', p.EquipoVisitante) as partido, COUNT(*) as cant_ventas
             FROM Entrada e
             JOIN Partido p ON p.identificador = e.identificadorPartido
