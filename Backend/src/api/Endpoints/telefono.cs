@@ -20,10 +20,8 @@ public static class TelefonoEndpoints
                 await using var command = connection.CreateCommand();
 
                 command.CommandText = """
-                    INSERT INTO Telefono
-                        (MailPerfil, Telefono)
-                    VALUES
-                        (@mail, @telefono);
+                    INSERT INTO Telefono (MailPerfil, Telefono)
+                    VALUES (@mail, @telefono);
                     """;
 
                 command.Parameters.AddWithValue("@mail", telefono.MailPerfil);

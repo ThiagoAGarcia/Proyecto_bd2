@@ -9,7 +9,6 @@ export default async function postLoginService(BODY) {
             headers: {"Content-Type":"application/json"},
             body: JSON.stringify(BODY)
         });
-    if (!res.ok) throw new Error(`POST ${PATH} -> ${res.status}`);
     const login = await res.json();
     return login;
     } catch(error) {

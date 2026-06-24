@@ -11,20 +11,35 @@ export default function ModalAsignarMatch({ open, onClose, onAsignarSuccess, ide
     const [funcionarioSeleccionado, setFuncionarioSeleccionado] = useState('')
 
     const loadDispositivos = async () => {
+        if (!identificadorPartido) {
+            console.log("identificadorPartido es", identificadorPartido);
+            return;
+        }
+
         try {
             setData([]);
 
-            const dispositivos = await getAllNoAsignados();
+            const dispositivos = await getAllNoAsignados(identificadorPartido);
 
-            setData(dispositivos);
+            setData(dispositivos ?? []);
         } catch (error) {
             console.error(error);
+            setData([]);
         }
     };
 
     useEffect(() => {
-        if (open && identificadorEstadio && identificadorSector && identificadorPartido) {
+        if (
+            open &&
+            identificadorPartido &&
+            identificadorSector &&
+            identificadorEstadio
+        ) {
+            setFuncionarioSeleccionado('');
             loadDispositivos();
+        } else {
+            setData([]);
+            setIsLoading(false);
         }
     }, [open, identificadorPartido, identificadorSector, identificadorEstadio]);
 
@@ -96,7 +111,7 @@ export default function ModalAsignarMatch({ open, onClose, onAsignarSuccess, ide
                     <div className="flex-1 h-px bg-[#045694]/20" />
                 </div>
 
-                <div className="max-h-[420px] overflow-y-auto rounded-2xl border border-gray-200 bg-gray-50 p-3 space-y-3">
+                <div className="max-h-105 overflow-y-auto rounded-2xl border border-gray-200 bg-gray-50 p-3 space-y-3">
 
                     {data.length === 0 && (
                         <div className="flex h-40 items-center justify-center text-gray-500">

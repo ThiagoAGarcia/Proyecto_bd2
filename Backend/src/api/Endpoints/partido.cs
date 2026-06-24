@@ -200,7 +200,10 @@ public static class PartidoEndpoints
                 }
             }
 
-            return Results.NoContent();
+            return Results.Ok(new
+            {
+                success = true, message = "El partido ha sido eliminado correctamente."
+            });
         }).RequireAuthorization("SoloAdministrador");
 
         app.MapPut("/partidos/{identificador}", async (int identificador, PartidoUpdateRequest request, IConfiguration config) =>
@@ -484,7 +487,8 @@ public static class PartidoEndpoints
                 JOIN estadio el ON p.identificadorEstadio = el.identificador
                 JOIN equipo eql ON p.EquipoLocal = eql.nombre
                 JOIN equipo eqv ON p.EquipoVisitante = eqv.nombre
-                WHERE el.nombrePais = @nombrePais;
+                WHERE el.nombrePais = @nombrePais
+                ORDER BY p.fechaHora ASC;
             """;
 
             command.Parameters.AddWithValue("@nombrePais", tokenMailPais);

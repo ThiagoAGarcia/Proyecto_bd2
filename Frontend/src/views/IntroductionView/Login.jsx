@@ -53,7 +53,7 @@ function Login() {
           return
         }
       } else {
-        toast.error(logged?.description || 'Correo o contraseña incorrectos', {
+        toast.error(logged?.message || 'Correo o contraseña incorrectos', {
           position: 'bottom-left',
           autoClose: 3000,
         })

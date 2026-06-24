@@ -12,6 +12,17 @@ import logo from './../../assets/FifaUCULogo.png'
 
 const TIPOS_DOCUMENTO = ['CI', 'DNI', 'CPF', 'RUT', 'CC', 'CURP', 'SSN', 'SIN']
 
+const PREFIJOS_TELEFONO = {
+  CI: '+598',
+  DNI: '+54',
+  CPF: '+55',
+  RUT: '+56',
+  CC: '+57',
+  CURP: '+52',
+  SSN: '+1',
+  SIN: '+1',
+}
+
 function Register() {
   const navigate = useNavigate()
   const [verPwd, setVerPwd] = useState(false)
@@ -32,24 +43,57 @@ function Register() {
     confirmPassword: '',
   })
 
-  const [telefonos, setTelefonos] = useState([''])
+  const [telefonos, setTelefonos] = useState([
+    {
+      prefijo: '',
+      numero: '',
+    },
+  ])
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-    setErrores((prev) => ({ ...prev, [name]: undefined }))
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+
+    if (name === 'tipoDocumento') {
+      const prefijo = PREFIJOS_TELEFONO[value] || ''
+
+      setTelefonos((prev) =>
+        prev.map((t) => ({
+          ...t,
+          prefijo,
+        }))
+      )
+    }
+
+    setErrores((prev) => ({
+      ...prev,
+      [name]: undefined,
+    }))
   }
 
-  const handleTelefonoChange = (index, value) => {
+  const handleTelefonoChange = (index, campo, value) => {
     setTelefonos((prev) => {
       const updated = [...prev]
-      updated[index] = value
+      updated[index] = {
+        ...updated[index],
+        [campo]: value,
+      }
       return updated
     })
   }
 
   const agregarTelefono = () => {
-    setTelefonos((prev) => [...prev, ''])
+    setTelefonos((prev) => [
+      ...prev,
+      {
+        prefijo: '',
+        numero: '',
+      },
+    ])
   }
 
   const eliminarTelefono = (index) => {
@@ -72,7 +116,15 @@ function Register() {
     if (form.password.length < 8) err.password = 'La contraseña debe tener al menos 8 caracteres.'
     if (form.confirmPassword !== form.password) err.confirmPassword = 'Las contraseñas no coinciden.'
 
-    const telefonosValidos = telefonos.filter((t) => t.trim() !== '')
+    const telefonosValidos = telefonos.map((t) => `${t.prefijo}${t.numero}`.trim()).filter((t) => t !== '')
+
+    const repetidos = telefonosValidos.filter(
+      (tel, index) => telefonosValidos.indexOf(tel) !== index
+    )
+
+    if (repetidos.length > 0) {
+      err.telefonos = 'No se pueden ingresar teléfonos repetidos.'
+    }
 
     return err
   }
@@ -83,9 +135,10 @@ function Register() {
     setErrores(err)
     if (Object.keys(err).length > 0) return
 
-    const telefonosValidos = telefonos
-      .filter((t) => t.trim() !== '')
-      .map((t) => ({ mailPerfil: form.mail, telefono: t }))
+    const telefonosValidos = telefonos.filter((t) => t.numero.trim() !== '').map((t) => ({
+      mailPerfil: form.mail,
+      telefono: `${t.prefijo}${t.numero}`,
+    }))
 
     const BODY = {
       mail: form.mail,
@@ -187,7 +240,10 @@ function Register() {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-1">
 
-            <SectionLabel>Datos de cuenta</SectionLabel>
+            <div className="flex items-center gap-3 mt-5 mb-2">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#045694]">Datos de cuenta</span>
+              <div className="flex-1 h-px bg-[#045694]/20" />
+            </div>
 
             <Field label="Correo electrónico" error={errores.mail}>
               <input
@@ -241,7 +297,10 @@ function Register() {
               </Field>
             </div>
 
-            <SectionLabel>Documento de identidad</SectionLabel>
+            <div className="flex items-center gap-3 mt-5 mb-2">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#045694]">Documento de identidad</span>
+              <div className="flex-1 h-px bg-[#045694]/20" />
+            </div>
 
             <div className="flex gap-4">
               <Field label="Tipo de documento" error={errores.tipoDocumento} className="flex-1">
@@ -286,7 +345,10 @@ function Register() {
               />
             </Field>
 
-            <SectionLabel>Dirección</SectionLabel>
+            <div className="flex items-center gap-3 mt-5 mb-2">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#045694]">Dirección</span>
+              <div className="flex-1 h-px bg-[#045694]/20" />
+            </div>
 
             <div className="flex gap-4">
               <Field label="País" error={errores.direccionPais} className="flex-1">
@@ -349,26 +411,44 @@ function Register() {
               </Field>
             </div>
 
-            <SectionLabel>Teléfonos (opcional)</SectionLabel>
+            <div className="flex items-center gap-3 mt-5 mb-2">
+              <span className="text-xs font-semibold uppercase tracking-widest text-[#045694]">Teléfonos (opcional)</span>
+              <div className="flex-1 h-px bg-[#045694]/20" />
+            </div>
 
             <div className="flex flex-col gap-2 mb-1">
               {telefonos.map((tel, i) => (
                 <div key={i} className="flex items-center gap-2">
+
+                  <select
+                    value={tel.prefijo}
+                    onChange={(e) => handleTelefonoChange(i, 'prefijo', e.target.value)}
+                    disabled={isLoading}
+                    className="w-28 border-b border-gray-400 rounded-2xl p-2 focus:outline-none focus:border-cyan-700 bg-transparent"
+                  >
+                    {Object.entries(PREFIJOS_TELEFONO).map(([tipo, prefijo]) => (
+                      <option key={tipo} value={prefijo}>
+                        {prefijo}
+                      </option>
+                    ))}
+                  </select>
+
                   <input
                     type="tel"
-                    value={tel}
-                    onChange={(e) => handleTelefonoChange(i, e.target.value)}
+                    value={tel.numero}
+                    onChange={(e) => handleTelefonoChange(i, 'numero', e.target.value)}
                     disabled={isLoading}
-                    placeholder={`ej. +598 99 123 456`}
+                    placeholder="99 123 456"
                     className={inputCls(i === 0 && errores.telefonos) + ' flex-1'}
                   />
+
                   {telefonos.length > 1 && (
                     <button
                       type="button"
                       onClick={() => eliminarTelefono(i)}
                       disabled={isLoading}
                       className="text-red-400 hover:text-red-600 transition-colors p-1 cursor-pointer"
-                      title="Eliminar teléfono">
+                    >
                       <IoTrashOutline size={20} />
                     </button>
                   )}
@@ -408,16 +488,6 @@ function Register() {
         </div>
       </div>
     </>
-  )
-}
-
-
-function SectionLabel({ children }) {
-  return (
-    <div className="flex items-center gap-3 mt-5 mb-2">
-      <span className="text-xs font-semibold uppercase tracking-widest text-[#045694]">{children}</span>
-      <div className="flex-1 h-px bg-[#045694]/20" />
-    </div>
   )
 }
 

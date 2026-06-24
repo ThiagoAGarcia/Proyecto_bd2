@@ -133,13 +133,13 @@ export default function ModalBuy({ open, onClose, identificadorEstadio, identifi
                     toast.success('Compra realizada con éxito');
                     onClose();
                 } else {
-                    toast.error(registerEntrada?.description || 'Error al realizar la venta', {
+                    toast.error(registerEntrada?.message || 'Error al realizar la venta', {
                         position: 'bottom-left',
                         autoClose: 3000,
                     })
                 }
             } else {
-                toast.error(registerVenta?.description || 'Error al realizar la entrada', {
+                toast.error(registerVenta?.message || 'Error al realizar la entrada', {
                     position: 'bottom-left',
                     autoClose: 3000,
                 })

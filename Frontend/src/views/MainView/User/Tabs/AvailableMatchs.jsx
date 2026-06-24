@@ -8,6 +8,7 @@ export default function AvailableMatchs() {
     const [identificadorEstadio, setIdentificadorEstadio] = useState(1)
     const [identificadorPartido, setIdentificadorPartido] = useState(1)
     const [precioBase, setPrecioBase] = useState(null)
+    const [filtro, setFiltro] = useState("fechaAsc")
 
     useEffect(() => {
         async function loadPartidos() {
@@ -25,13 +26,43 @@ export default function AvailableMatchs() {
         loadPartidos()
     }, [])
 
+    const partidosFiltrados = [...data].sort((a, b) => {
+        switch (filtro) {
+            case "fechaDesc":
+                return new Date(b.fechaHora) - new Date(a.fechaHora)
+
+            case "precioAsc":
+                return a.precio - b.precio
+
+            case "precioDesc":
+                return b.precio - a.precio
+
+            case "fechaAsc":
+            default:
+                return new Date(a.fechaHora) - new Date(b.fechaHora)
+        }
+    })
+
     return (
         <>
             <div className="text-xl">
-                <div className="sm:flex justify-between sm:items-end items-start w-full pb-4">
+                <div className="sm:flex justify-between sm:items-end items-start w-full pb-4 gap-3">
                     <h1 className="font-sans text-3xl font-bold text-[#0a1628] uppercase tracking-wide leading-none">
                         Partidos <span className="text-[#c8a84b]">Disponibles</span>
                     </h1>
+
+                    <div className="flex items-center gap-2">
+                        <span className="text-base text-[#7a8fa6] font-medium">
+                            Ordenar por:
+                        </span>
+
+                        <select value={filtro} onChange={(e) => setFiltro(e.target.value)} className="px-3 py-2 rounded-lg border border-[#d0dcea] bg-white text-[#0a1628] text-base outline-none focus:border-[#c8a84b] cursor-pointer">
+                            <option value="fechaDesc">Fecha: más antigua</option>
+                            <option value="fechaAsc">Fecha: más reciente</option>
+                            <option value="precioAsc">Precio: menor a mayor</option>
+                            <option value="precioDesc">Precio: mayor a menor</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div className="flex flex-col gap-2.5">
@@ -40,7 +71,7 @@ export default function AvailableMatchs() {
                             No tenés partidos registrados.
                         </p>
                     ) : (
-                        data.map((partido) => {
+                        partidosFiltrados.map((partido) => {
                             const [fecha, hora] = partido.fechaHora.split('T')
                             const [anio, mes, dia] = fecha.split('-')
                             const horaFormateada = hora.slice(0, 5)
@@ -66,7 +97,7 @@ export default function AvailableMatchs() {
                                         </div>
 
                                         <div className="flex gap-2 border-t border-[#eaf0f8] pt-2.5">
-                                            <button onClick={() => { setOpen(true); setIdentificadorEstadio(partido.identificadorEstadio); setIdentificadorPartido(partido.identificador); setPrecioBase(partido.precio);}} className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
+                                            <button onClick={() => { setOpen(true); setIdentificadorEstadio(partido.identificadorEstadio); setIdentificadorPartido(partido.identificador); setPrecioBase(partido.precio); }} className="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-semibold cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
                                                 <i className="fa-solid fa-plus" /> Comprar Entrada
                                             </button>
                                         </div>

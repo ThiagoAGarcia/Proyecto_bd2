@@ -47,7 +47,7 @@ public static class EsAsignadoEndpoints
             return Results.Ok(asignados);
         }).RequireAuthorization("SoloAdministrador");
 
-        app.MapGet("/allNoAsignados", async (IConfiguration config) =>
+        app.MapGet("/allNoAsignados/{identificadorPartido}", async (int identificadorPartido, IConfiguration config) =>
         {
             var connectionString = config.GetConnectionString("DefaultConnection");
 
@@ -58,9 +58,17 @@ public static class EsAsignadoEndpoints
             command.CommandText = """
                 SELECT d.mailFuncionario, d.identificador
                 FROM Dispositivo d
-                LEFT JOIN EsAsignado e ON d.identificador = e.identificadorDispositivo
-                WHERE e.identificadorDispositivo IS NULL AND d.mailFuncionario IS NOT NULL;
+                WHERE d.mailFuncionario IS NOT NULL
+                AND NOT EXISTS (
+                    SELECT 1
+                    FROM EsAsignado e
+                    INNER JOIN Partido pAsignado ON e.identificadorPartido = pAsignado.identificador
+                    INNER JOIN Partido pNuevo ON pNuevo.identificador = @identificadorPartido
+                    WHERE e.identificadorDispositivo = d.identificador AND DATE(pAsignado.fechaHora) = DATE(pNuevo.fechaHora)
+                );
             """;
+
+            command.Parameters.AddWithValue("@identificadorPartido", identificadorPartido);
 
             await using var reader = await command.ExecuteReaderAsync();
 

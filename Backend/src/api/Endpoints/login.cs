@@ -475,6 +475,23 @@ public static class LoginEndpoints
 
             return Results.NoContent();
         });
+
+        app.MapGet("/checkSession", (HttpContext context) =>
+        {
+            var mail = Token.GetMailUser(context);
+            var role = Token.GetRoleUser(context);
+
+            if (string.IsNullOrEmpty(mail) || string.IsNullOrEmpty(role))
+            {
+                return Results.Unauthorized();
+            }
+
+            return Results.Ok(new
+            {
+                mail,
+                role
+            });
+        }).RequireAuthorization();
     }
 
     private static async Task<LoginRow?> GetLogin(MySqlConnection connection, string mail)

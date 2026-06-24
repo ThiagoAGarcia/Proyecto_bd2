@@ -14,12 +14,12 @@ public static class EntradaEndpoints
 
             if (request.Entradas.Count > 5)
             {
-                return Results.BadRequest("No se pueden comprar más de 5 entradas");
+                return Results.BadRequest(new { success = false, message = "No se pueden comprar más de 5 entradas" });
             }
 
             if (request.Entradas is null || request.Entradas.Count == 0)
             {
-                return Results.BadRequest("Debe enviar al menos una entrada");
+                return Results.BadRequest(new { success = false, message = "Debe enviar al menos una entrada" });
             }
 
             var connectionString = config.GetConnectionString("DefaultConnection");
@@ -48,8 +48,39 @@ public static class EntradaEndpoints
             var partidoExists = await checkPartidoCommando.ExecuteScalarAsync();
             if (partidoExists == null)
             {
-                return Results.BadRequest("El partido no existe o ya ha terminado");
+                return Results.BadRequest(new { success = false, message = "El partido no existe o ya ha terminado" });
             }
+
+            await using var capacityCommand = connection.CreateCommand();
+
+            capacityCommand.CommandText = """
+                SELECT s.capMax, COUNT(e.identificador) AS vendidas
+                FROM Sector s
+                LEFT JOIN Entrada e ON e.identificadorSector = s.identificador AND e.identificadorEstadio = s.identificadorEstadio AND e.identificadorPartido = @identificadorPartido AND e.estadoEntrada <> 'Cancelada'
+                WHERE s.identificador = @identificadorSector AND s.identificadorEstadio = @identificadorEstadio
+                GROUP BY s.capMax;
+            """;
+
+            capacityCommand.Parameters.AddWithValue("@identificadorPartido", request.Entradas[0].IdentificadorPartido);
+            capacityCommand.Parameters.AddWithValue("@identificadorSector", request.Entradas[0].IdentificadorSector);
+            capacityCommand.Parameters.AddWithValue("@identificadorEstadio", request.Entradas[0].IdentificadorEstadio);
+
+            await using var reader = await capacityCommand.ExecuteReaderAsync();
+
+            if (!await reader.ReadAsync())
+            {
+                return Results.BadRequest(new { success = false, message = "Sector inexistente" });
+            }
+
+            var capacidad = reader.GetInt32("capMax");
+            var vendidas = reader.GetInt32("vendidas");
+
+            if (vendidas + request.Entradas.Count > capacidad)
+            {
+                return Results.BadRequest(new { success = false, message = "No hay lugares suficientes en ese sector" });
+            }
+
+            await reader.CloseAsync();
 
             foreach (var entrada in request.Entradas)
             {

@@ -1,16 +1,16 @@
 const API = "http://localhost:5001";
 const PATH = "/allNoAsignados";
 
-export default async function getAllNoAsignados() {
+export default async function getAllNoAsignados(partido) {
     try {
-        const res = await fetch(`${API}${PATH}`, {
+        const res = await fetch(`${API}${PATH}/${encodeURIComponent(partido)}`, {
             method: "GET",
             credentials: "include"
         });
-        if (!res.ok) throw new Error(`GET ${PATH} -> ${res.status}`);
-        const login = await res.json();
-        return login;
+        if (!res.ok) { return []; }
+        return await res.json();
     } catch (error) {
         console.log(error.message);
+        return [];
     }
 }

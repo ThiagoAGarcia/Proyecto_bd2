@@ -99,11 +99,11 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
             });
 
             if (editarPartido?.success) {
-                toast.success('Partido creado');
+                toast.success('Partido editado correctamente');
                 await onUpdateSuccess();
                 onClose()
             } else {
-                toast.error(editarPartido?.message || 'Error al crear partido', {
+                toast.error(editarPartido?.message || 'Error al editar partido', {
                     position: 'bottom-left',
                     autoClose: 3000,
                 })

@@ -10,28 +10,29 @@ export default function ModalEliminateMatch({ open, onClose, onDeleteSuccess, id
     console.log(identificador)
 
     async function handleDeletePartido() {
-        try {
-            setIsLoading(true)
-            const deletePartido = await deletePartido(identificador)
-            if (deletePartido?.success) {
-                toast.success('Partido eliminado');
-                await onDeleteSuccess();
-                onClose()
-            } else {
-                toast.error(deletePartido?.message || 'Error al crear partido', {
-                    position: 'bottom-left',
-                    autoClose: 3000,
-                })
-            }
-        } catch (error) {
-            toast.error('Error de conexión con el servidor', {
+    try {
+        setIsLoading(true)
+        const response = await deletePartido(identificador)
+        if (response?.success) {
+            toast.success('Partido eliminado');
+            await onDeleteSuccess();
+            onClose()
+        } else {
+            toast.error(response?.message || 'Error al eliminar partido', {
                 position: 'bottom-left',
                 autoClose: 3000,
             })
-        } finally {
-            setIsLoading(false)
         }
+    } catch (error) {
+        console.log(error)
+        toast.error('Error de conexión con el servidor', {
+            position: 'bottom-left',
+            autoClose: 3000,
+        })
+    } finally {
+        setIsLoading(false)
     }
+}
 
     return (
         <Modal open={open} onClose={isLoading ? undefined : onClose}>
