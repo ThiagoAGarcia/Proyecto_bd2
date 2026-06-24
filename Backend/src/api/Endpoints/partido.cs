@@ -202,7 +202,8 @@ public static class PartidoEndpoints
 
             return Results.Ok(new
             {
-                success = true, message = "El partido ha sido eliminado correctamente."
+                success = true,
+                message = "El partido ha sido eliminado correctamente."
             });
         }).RequireAuthorization("SoloAdministrador");
 
@@ -212,6 +213,31 @@ public static class PartidoEndpoints
 
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
+
+            if (request.IdentificadorEstadio > 0)
+            {
+                await using (var checkCommand = connection.CreateCommand())
+                {
+                    checkCommand.CommandText = """
+                        SELECT COUNT(*)
+                        FROM Entrada
+                        WHERE identificadorPartido = @identificador;
+                    """;
+
+                    checkCommand.Parameters.AddWithValue("@identificador", identificador);
+
+                    var cantidadEntradas = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
+
+                    if (cantidadEntradas > 0)
+                    {
+                        return Results.BadRequest(new
+                        {
+                            success = false,
+                            message = "No es posible eliminar el partido porque existen entradas asociadas."
+                        });
+                    }
+                }
+            }
 
             if (request.EquipoLocal == request.EquipoVisitante)
             {

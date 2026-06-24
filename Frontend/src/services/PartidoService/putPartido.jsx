@@ -9,7 +9,6 @@ export default async function putPartido(identificador, BODY) {
             headers: {"Content-Type":"application/json"},
             body: JSON.stringify(BODY)
         });
-        if (!res.ok) throw new Error(`PUT ${PATH}/${identificador} -> ${res.status}`);
         return await res.json();
     } catch (error) {
         console.log(error.message);

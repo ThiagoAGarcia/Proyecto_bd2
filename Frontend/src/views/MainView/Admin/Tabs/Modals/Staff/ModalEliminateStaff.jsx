@@ -11,13 +11,14 @@ export default function ModalEliminateStaff({ open, onClose, onDeleteSuccess, id
         try {
             setIsLoading(true);
 
-            await deleteFuncionario(identificador);
-
-            toast.success("Funcionario eliminado correctamente");
-
-            await onDeleteSuccess();
-
-            onClose();
+            const eliminarFuncionario = await deleteFuncionario(identificador);
+            if (eliminarFuncionario?.success) {
+                toast.success("Funcionario eliminado correctamente");
+                await onDeleteSuccess();
+                onClose();
+            } else {
+                toast.error(eliminarFuncionario?.message || "No se pudo eliminar el funcionario");
+            }
         } catch (error) {
             console.error(error);
             toast.error("No se pudo eliminar el funcionario");

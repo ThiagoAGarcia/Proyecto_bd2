@@ -149,6 +149,20 @@ public static class FuncionarioEndpoints
                 {
                     command.Transaction = transaction;
                     command.CommandText = """
+                        UPDATE dispositivo
+                        SET mailFuncionario = NULL
+                        WHERE mailFuncionario = @mail;
+                    """;
+
+                    command.Parameters.AddWithValue("@mail", mail);
+
+                    await command.ExecuteNonQueryAsync();
+                }
+                
+                await using (var command = connection.CreateCommand())
+                {
+                    command.Transaction = transaction;
+                    command.CommandText = """
                         DELETE FROM `funcionario`
                         WHERE `MailPerfil` = @mail;
                     """;
