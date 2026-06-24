@@ -6,8 +6,8 @@ Crear un archivo `.env` dentro de la carpeta `Backend`. Cambiar los datos por lo
 - Contenido del archivo `.env`:
 
 ```
-ConnectionStrings__DefaultConnection=Server=host.docker.internal;Port=3306;Database=proyectoBD2;User=root;Password=root;
-
+ConnectionStrings__DefaultConnection=Server=host.docker.internal;Port=3306;Database=proyectoBD2;User=root;Password=987654321;
+Jwt__Key=oVObMvm-fa-80p-9P-b-Ox-Mxk7mP-3-and-cook-2026-secret-key
 Gmail__Email=mundialucu2026@gmail.com
 Gmail__Password=kebzimmwvnvkiqmm
 ```
