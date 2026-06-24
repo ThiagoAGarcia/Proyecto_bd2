@@ -5,7 +5,7 @@ import getEstadio from './../../../../../services/EstadioService/getEstadio';
 import getAllHabilita from './../../../../../services/HabilitaService/getAllHabilita';
 import postVenta from '../../../../../services/VentaService/postVenta';
 import postEntrada from '../../../../../services/EntradaService/postEntrada';
-import {Oval} from 'react-loader-spinner'
+import { Oval } from 'react-loader-spinner'
 
 const formatCardNumber = (value) =>
     value
@@ -93,6 +93,11 @@ export default function ModalBuy({ open, onClose, identificadorEstadio, identifi
             return;
         }
 
+        if (!/^[\p{L}\s]+$/u.test(cardName)) {
+            toast.error('El nombre del titular solo puede contener letras y espacios');
+            return;
+        }
+
         if (cardNumber.replace(/\s/g, '').length !== 16) {
             toast.error('Número de tarjeta inválido');
             return;
@@ -100,6 +105,21 @@ export default function ModalBuy({ open, onClose, identificadorEstadio, identifi
 
         if (!/^\d{2}\/\d{2}$/.test(cardExpiry)) {
             toast.error('Fecha de vencimiento inválida');
+            return;
+        }
+
+        const [monthStr, yearStr] = cardExpiry.split('/');
+
+        const month = parseInt(monthStr, 10);
+        const year = 2000 + parseInt(yearStr, 10);
+
+        const now = new Date();
+
+        if (
+            year < now.getFullYear() ||
+            (year === now.getFullYear() && month < now.getMonth() + 1)
+        ) {
+            toast.error('La tarjeta está vencida');
             return;
         }
 
@@ -222,7 +242,7 @@ export default function ModalBuy({ open, onClose, identificadorEstadio, identifi
                                 type="number"
                                 min="1"
                                 value={cantidadEntradas}
-                                onChange={(e) => !isLoading && setCantidadEntradas( Math.max(1, Number(e.target.value)) ) }
+                                onChange={(e) => !isLoading && setCantidadEntradas(Math.max(1, Number(e.target.value)))}
                                 disabled={isLoading}
                                 className="w-24 rounded-xl border-2 border-[#14315C]/15 px-3 py-2 text-center font-semibold text-[#14315C] focus:border-[#D4AF37] focus:outline-none"
                             />
