@@ -100,6 +100,125 @@ public static class EntradaEndpoints
                 await ticketCommand.ExecuteNonQueryAsync();
             }
 
+            await using var getPartidoDatos = connection.CreateCommand();
+
+            getPartidoDatos.CommandText = """
+                    SELECT EquipoLocal, EquipoVisitante, fase, fechaHora, precio FROM Partido WHERE identificador = @identificadorPartido
+                """;
+
+            getPartidoDatos.Parameters.AddWithValue("@identificadorPartido", request.Entradas[0].IdentificadorPartido);
+
+
+            var data = await getPartidoDatos.ExecuteReaderAsync();
+
+
+
+            var enviado = await Mail.EnviarMail(
+                config,
+                mail,
+                "Gracias por su compra en Mundial UCU 2026",
+                "Venta de entradas Mundial UCU 2026",
+                $"""
+                <!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>¡Gracias por su compra!</title>
+                </head>
+                <body style="
+                    margin:0;
+                    padding:0;
+                    background-color:#f3f4f6;
+                    font-family:Arial, Helvetica, sans-serif;
+                ">
+                    <div style="
+                        width:100%;
+                        padding:40px 0;
+                    ">
+                        <div style="
+                            max-width:600px;
+                            margin:0 auto;
+                            background:white;
+                            border-radius:16px;
+                            overflow:hidden;
+                            box-shadow:0 8px 24px rgba(0,0,0,0.1);
+                        ">
+
+                            <div style="
+                                background:linear-gradient(135deg,#2563eb,#1d4ed8);
+                                color:white;
+                                text-align:center;
+                                padding:40px 20px;
+                            ">
+                                <h1 style="
+                                    margin:0;
+                                    font-size:32px;
+                                ">
+                                    Su compra ha sido exitosa
+                                </h1>
+
+                                <p style="
+                                    margin-top:10px;
+                                    font-size:18px;
+                                    opacity:0.9;
+                                ">
+                                    {(data.Read() ? $"{data.GetString("EquipoLocal")} vs {data.GetString("EquipoVisitante")} - {data.GetDateTime("fechaHora").ToString("dd/MM/yyyy HH:mm")}" : "")}
+                                </p>
+                            </div>
+
+                            <div style="
+                                padding:40px;
+                                color:#374151;
+                            ">
+                                <h2 style="
+                                    margin-top:0;
+                                    color:#111827;
+                                ">
+                                    ¡Gracias por su compra!
+                                </h2>
+
+                                <div style="text-align:center; margin:40px 0;">
+                                    
+                                </div>
+
+                                <hr style="
+                                    margin:35px 0;
+                                    border:none;
+                                    border-top:1px solid #e5e7eb;
+                                ">
+
+                                <p style="
+                                    font-size:14px;
+                                    color:#9ca3af;
+                                    text-align:center;
+                                ">
+                                    Si no realizaste ninguna compra en Mundial UCU 2026,
+                                    contactate con tu banco para reportar la transacción y comunicate con nosotros a través de nuestro soporte soporte@ucu.edu.uy.
+                                </p>
+                            </div>
+
+                            <div style="
+                                background:#f9fafb;
+                                padding:20px;
+                                text-align:center;
+                                color:#6b7280;
+                                font-size:13px;
+                            ">
+                                © 2026 Mundial UCU · Todos los derechos reservados
+                            </div>
+
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """
+            );
+
+            if (!enviado)
+            {
+                return Results.Problem("No se pudo enviar el mail");
+            }
+
             return Results.Ok(new
             {
                 success = true,
@@ -108,38 +227,38 @@ public static class EntradaEndpoints
         }).RequireAuthorization("SoloUsuario");
 
         app.MapGet("/allEntradas", async (IConfiguration config) =>
-        {
-            var connectionString = config.GetConnectionString("DefaultConnection");
+            {
+                var connectionString = config.GetConnectionString("DefaultConnection");
 
-            await using var connection = new MySqlConnection(connectionString);
-            await connection.OpenAsync();
+                await using var connection = new MySqlConnection(connectionString);
+                await connection.OpenAsync();
 
-            await using var command = connection.CreateCommand();
-            command.CommandText = """
+                await using var command = connection.CreateCommand();
+                command.CommandText = """
                 SELECT `identificador`, `identificadorVenta`, `identificadorPartido`, `mailUsuarioTiene`, `estadoEntrada`, `identificadorSector`, `identificadorEstadio` 
                 FROM `Entrada`;
                 """;
 
-            await using var reader = await command.ExecuteReaderAsync();
+                await using var reader = await command.ExecuteReaderAsync();
 
-            var entradas = new List<object>();
+                var entradas = new List<object>();
 
-            while (await reader.ReadAsync())
-            {
-                entradas.Add(new
+                while (await reader.ReadAsync())
                 {
-                    Identificador = reader.GetInt32("identificador"),
-                    IdentificadorVenta = reader.GetInt32("identificadorVenta"),
-                    IdentificadorPartido = reader.GetInt32("identificadorPartido"),
-                    MailUsuarioTiene = reader.GetString("mailUsuarioTiene"),
-                    EstadoEntrada = reader.GetString("estadoEntrada"),
-                    IdentificadorSector = reader.GetInt32("identificadorSector"),
-                    IdentificadorEstadio = reader.GetInt32("identificadorEstadio")
-                });
-            }
+                    entradas.Add(new
+                    {
+                        Identificador = reader.GetInt32("identificador"),
+                        IdentificadorVenta = reader.GetInt32("identificadorVenta"),
+                        IdentificadorPartido = reader.GetInt32("identificadorPartido"),
+                        MailUsuarioTiene = reader.GetString("mailUsuarioTiene"),
+                        EstadoEntrada = reader.GetString("estadoEntrada"),
+                        IdentificadorSector = reader.GetInt32("identificadorSector"),
+                        IdentificadorEstadio = reader.GetInt32("identificadorEstadio")
+                    });
+                }
 
-            return Results.Ok(entradas);
-        }).RequireAuthorization();
+                return Results.Ok(entradas);
+            }).RequireAuthorization();
 
         app.MapGet("/allMyEntradas", async (IConfiguration config, HttpContext context) =>
         {
