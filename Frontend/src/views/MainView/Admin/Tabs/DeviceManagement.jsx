@@ -98,7 +98,7 @@ export default function StadiumManagement() {
 
           <button
             onClick={handleSubmit}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-lg font-medium cursor-pointer transition-all bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
+            className="inline-flex items-center gap-1.5 px-2 py-2 rounded-lg text-xl font-medium cursor-pointer transition-all font-['Inter'] border-none bg-[#c8a84b] text-[#0a1628] hover:bg-[#e0c472]">
             <i className="fa-solid fa-plus" />
             Crear nuevo dispositivo
           </button>
