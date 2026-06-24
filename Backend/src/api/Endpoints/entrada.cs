@@ -303,5 +303,48 @@ public static class EntradaEndpoints
 
             return Results.Ok(entradas);
         }).RequireAuthorization();
+        app.MapGet("/allMyEntradasRegistred", async (IConfiguration config, HttpContext context) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            var tokenMail = Normalizar.NormalizarMethod(Token.GetMailUser(context));
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT e.identificador, p.EquipoLocal, p.EquipoVisitante, el.bandera AS BanderaEquipoLocal, ev.bandera AS BanderaEquipoVisitante, p.fechaHora, e2.nombre AS NombreEstadio, s.nombre AS NombreSector
+                FROM Entrada e
+                JOIN Sector s ON e.identificadorSector = s.identificador AND e.identificadorEstadio = s.identificadorEstadio
+                JOIN Partido p ON e.identificadorPartido = p.identificador
+                JOIN Estadio e2 ON p.identificadorEstadio = e2.identificador
+                JOIN Equipo el ON p.EquipoLocal = el.nombre
+                JOIN Equipo ev ON p.EquipoVisitante = ev.nombre
+                WHERE e.mailUsuarioTiene = @mailUsuarioTiene AND e.estadoEntrada = 'Registrada';
+            """;
+
+            command.Parameters.AddWithValue("@mailUsuarioTiene", tokenMail);
+            await using var reader = await command.ExecuteReaderAsync();
+
+            var entradas = new List<object>();
+
+            while (await reader.ReadAsync())
+            {
+                entradas.Add(new
+                {
+                    Identificador = reader.GetInt32("identificador"),
+                    EquipoLocal = reader.GetString("EquipoLocal"),
+                    EquipoVisitante = reader.GetString("EquipoVisitante"),
+                    BanderaEquipoLocal = reader.GetString("BanderaEquipoLocal"),
+                    BanderaEquipoVisitante = reader.GetString("BanderaEquipoVisitante"),
+                    FechaHora = reader.GetDateTime("fechaHora"),
+                    NombreEstadio = reader.GetString("NombreEstadio"),
+                    NombreSector = reader.GetString("NombreSector")
+                });
+            }
+
+            return Results.Ok(entradas);
+        }).RequireAuthorization();
     }
 }
