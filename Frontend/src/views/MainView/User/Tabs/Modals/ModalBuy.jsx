@@ -113,6 +113,11 @@ export default function ModalBuy({ open, onClose, identificadorEstadio, identifi
         const month = parseInt(monthStr, 10);
         const year = 2000 + parseInt(yearStr, 10);
 
+        if (month > 12) {
+            toast.error('El mes no es válido');
+            return;
+        }
+
         const now = new Date();
 
         if (
