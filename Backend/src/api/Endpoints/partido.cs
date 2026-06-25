@@ -214,26 +214,52 @@ public static class PartidoEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
-            if (request.IdentificadorEstadio > 0)
+            int estadioActual;
+
+            await using (var estadioCommand = connection.CreateCommand())
+            {
+                estadioCommand.CommandText = """
+                    SELECT identificadorEstadio
+                    FROM partido
+                    WHERE identificador = @identificador;
+                """;
+
+                estadioCommand.Parameters.AddWithValue("@identificador", identificador);
+
+                var resultado = await estadioCommand.ExecuteScalarAsync();
+
+                if (resultado == null)
+                {
+                    return Results.NotFound(new
+                    {
+                        message = "El partido no existe."
+                    });
+                }
+
+                estadioActual = Convert.ToInt32(resultado);
+            }
+
+            if (estadioActual != request.IdentificadorEstadio)
             {
                 await using (var checkCommand = connection.CreateCommand())
                 {
                     checkCommand.CommandText = """
                         SELECT COUNT(*)
-                        FROM Entrada
+                        FROM entrada
                         WHERE identificadorPartido = @identificador;
                     """;
 
                     checkCommand.Parameters.AddWithValue("@identificador", identificador);
 
-                    var cantidadEntradas = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
+                    var cantidadEntradas =
+                        Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
 
                     if (cantidadEntradas > 0)
                     {
                         return Results.BadRequest(new
                         {
                             success = false,
-                            message = "No es posible eliminar el partido porque existen entradas asociadas."
+                            message = "No es posible editar el estadio de un partido que ya tiene entradas asociadas."
                         });
                     }
                 }

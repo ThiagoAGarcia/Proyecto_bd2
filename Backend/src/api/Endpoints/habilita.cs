@@ -72,6 +72,21 @@ public static class HabilitaEndpoints
                         });
                     }
                 }
+                
+                await using (var deleteAsignacionesCommand = connection.CreateCommand())
+                {
+                    deleteAsignacionesCommand.Transaction = transaction;
+
+                    deleteAsignacionesCommand.CommandText = """
+                        DELETE FROM EsAsignado
+                        WHERE identificadorEstadio = @estadio AND identificadorPartido = @partido
+                    """;
+
+                    deleteAsignacionesCommand.Parameters.AddWithValue( "@estadio", request.IdentificadorEstadio );
+                    deleteAsignacionesCommand.Parameters.AddWithValue( "@partido", request.IdentificadorPartido );
+
+                    await deleteAsignacionesCommand.ExecuteNonQueryAsync();
+                }
 
                 await using (var deleteCommand = connection.CreateCommand())
                 {

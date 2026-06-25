@@ -6,9 +6,6 @@ import { Oval } from 'react-loader-spinner';
 
 export default function ModalEliminateMatch({ open, onClose, onDeleteSuccess, identificador }) {
     const [isLoading, setIsLoading] = useState(false);
-
-    console.log(identificador)
-
     async function handleDeletePartido() {
     try {
         setIsLoading(true)

@@ -107,19 +107,26 @@ export default function StaffManagement() {
 
                                     </div>
 
-                                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-6">
+                                        {funcionario.identificador ? (
+                                            <div className="grid grid-cols-1 gap-2 mt-6">
+                                                <button onClick={() => { setIdentificador(funcionario.mailPerfil); setOpenEditar(true); }} className="cursor-pointer bg-[#0a1628] text-[#c8a84b] py-2 rounded-lg font-medium hover:bg-[#13203a] transition">
+                                                    <i className="fa-solid fa-pen mr-2" />
+                                                    Editar
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mt-6">
+                                                <button onClick={() => { setIdentificador(funcionario.mailPerfil); setOpenEditar(true); }} className="cursor-pointer bg-[#0a1628] text-[#c8a84b] py-2 rounded-lg font-medium hover:bg-[#13203a] transition">
+                                                    <i className="fa-solid fa-pen mr-2" />
+                                                    Editar
+                                                </button>
 
-                                        <button onClick={() => { setIdentificador(funcionario.mailPerfil); setOpenEditar(true); }} className="cursor-pointer bg-[#0a1628] text-[#c8a84b] py-2 rounded-lg font-medium hover:bg-[#13203a] transition">
-                                            <i className="fa-solid fa-pen mr-2" />
-                                            Editar
-                                        </button>
-
-                                        <button onClick={() => { setIdentificador(funcionario.mailPerfil); setOpenAsignar(true); }} className="cursor-pointer bg-[#c8a84b] text-[#0a1628] py-2 rounded-lg font-medium hover:bg-[#e0c472] transition">
-                                            <i className="fa-solid fa-link mr-2" />
-                                            Asignar Disp.
-                                        </button>
-
-                                    </div>
+                                                <button onClick={() => { setIdentificador(funcionario.mailPerfil); setOpenAsignar(true); }} className="cursor-pointer bg-[#c8a84b] text-[#0a1628] py-2 rounded-lg font-medium hover:bg-[#e0c472] transition">
+                                                    <i className="fa-solid fa-link mr-2" />
+                                                    Asignar Disp.
+                                                </button>
+                                            </div>
+                                        )}
 
                                     <button onClick={() => { setIdentificador(funcionario.mailPerfil); setOpenEliminar(true); }} className="cursor-pointer mt-3 w-full bg-red-50 text-red-600 py-2 rounded-lg hover:bg-red-100 transition">
                                         <i className="fa-solid fa-trash-can mr-2" />

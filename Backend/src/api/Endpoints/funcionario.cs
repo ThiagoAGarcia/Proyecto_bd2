@@ -158,7 +158,7 @@ public static class FuncionarioEndpoints
 
                     await command.ExecuteNonQueryAsync();
                 }
-                
+
                 await using (var command = connection.CreateCommand())
                 {
                     command.Transaction = transaction;
@@ -183,6 +183,19 @@ public static class FuncionarioEndpoints
                     command.Transaction = transaction;
                     command.CommandText = """
                         DELETE FROM `login`
+                        WHERE `MailPerfil` = @mail;
+                    """;
+
+                    command.Parameters.AddWithValue("@mail", mail);
+
+                    await command.ExecuteNonQueryAsync();
+                }
+
+                await using (var command = connection.CreateCommand())
+                {
+                    command.Transaction = transaction;
+                    command.CommandText = """
+                        DELETE FROM `telefono`
                         WHERE `MailPerfil` = @mail;
                     """;
 

@@ -176,26 +176,26 @@ function Register() {
             if (registerLogin?.success) {
               navigate('/')
             } else {
-              toast.error(registerLogin?.description || 'Error al registrar', {
+              toast.error(registerLogin?.message || 'Error al registrar', {
                 position: 'bottom-left',
                 autoClose: 3000,
               })
             }
           } else {
-            toast.error(registerUsuario?.description || 'Error al registrar', {
+            toast.error(registerUsuario?.message || 'Error al registrar', {
               position: 'bottom-left',
               autoClose: 3000,
             })
           }
         } else {
-          toast.error(registerTelefono?.description || 'Error al registrar', {
+          toast.error(registerTelefono?.message || 'Error al registrar', {
             position: 'bottom-left',
             autoClose: 3000,
           })
         }
 
       } else {
-        toast.error(registerPerfil?.description || 'Error al registrar', {
+        toast.error(registerPerfil?.message || 'Error al registrar', {
           position: 'bottom-left',
           autoClose: 3000,
         })

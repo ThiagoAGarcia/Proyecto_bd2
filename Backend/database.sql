@@ -225,15 +225,15 @@
     ('user3@gmail.com','argentina','dni','40123456','Argentina','Córdoba','San Martín',800,5000);
 
     INSERT INTO Login VALUES
-    ('admin1@mundial.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
-    ('admin2@mundial.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
-    ('admin3@mundial.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
-    ('func1@mundial.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
-    ('func2@mundial.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
-    ('func3@mundial.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
-    ('user1@gmail.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
-    ('user2@gmail.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06'),
-    ('user3@gmail.com','$2a$11$Iwsbt6qrxj4auhu9ZyAWTO99qdq2jCNdeC1w.EjNOwv0MocNkJH06');
+    ('admin1@mundial.com','$2a$11$Ni4TFIkVeLnPOH/wgWL2fetrRfMt2GXEf4Qy0L/ppOiNSq7FsTiSm'),
+    ('admin2@mundial.com','$2a$11$Ni4TFIkVeLnPOH/wgWL2fetrRfMt2GXEf4Qy0L/ppOiNSq7FsTiSm'),
+    ('admin3@mundial.com','$2a$11$Ni4TFIkVeLnPOH/wgWL2fetrRfMt2GXEf4Qy0L/ppOiNSq7FsTiSm'),
+    ('func1@mundial.com','$2a$11$Ni4TFIkVeLnPOH/wgWL2fetrRfMt2GXEf4Qy0L/ppOiNSq7FsTiSm'),
+    ('func2@mundial.com','$2a$11$Ni4TFIkVeLnPOH/wgWL2fetrRfMt2GXEf4Qy0L/ppOiNSq7FsTiSm'),
+    ('func3@mundial.com','$2a$11$Ni4TFIkVeLnPOH/wgWL2fetrRfMt2GXEf4Qy0L/ppOiNSq7FsTiSm'),
+    ('user1@gmail.com','$2a$11$Ni4TFIkVeLnPOH/wgWL2fetrRfMt2GXEf4Qy0L/ppOiNSq7FsTiSm'),
+    ('user2@gmail.com','$2a$11$Ni4TFIkVeLnPOH/wgWL2fetrRfMt2GXEf4Qy0L/ppOiNSq7FsTiSm'),
+    ('user3@gmail.com','$2a$11$Ni4TFIkVeLnPOH/wgWL2fetrRfMt2GXEf4Qy0L/ppOiNSq7FsTiSm');
 
     INSERT INTO Administrador VALUES
     ('admin1@mundial.com','2026-01-01','mexico'),
@@ -484,14 +484,16 @@
     INSERT INTO Habilita VALUES
     (1, 1, 1),
     (1, 2, 1),
+    (5, 2, 2),
+    (6, 3, 3),
     (2, 2, 2),
-    (3, 3, 3);
+    (3,3, 3);
 
     INSERT INTO EsAsignado ( identificadorDispositivo, identificadorEstadio, identificadorPartido, identificadorSector) VALUES
     (1, 1, 1, 1),
     (2, 1, 1, 2),
-    (1, 2, 2, 2),
-    (2, 3, 3, 3);
+    (1, 2, 5, 2),
+    (2, 3, 6, 3);
 
     INSERT INTO Venta (porcentajeComision, montoTotal, mailUsuarioComprado) VALUES
     (5, 1100, 'user1@gmail.com'),
@@ -509,3 +511,5 @@
     (4, 3, 'user1@gmail.com', 'No registrada', 3, 3),
     (4, 3, 'user1@gmail.com', 'No registrada', 3, 3),
     (5, 1, 'user3@gmail.com', 'Cancelada', 1, 1);
+
+SELECT * FROM Login
