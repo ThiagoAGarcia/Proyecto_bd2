@@ -73,7 +73,7 @@ Leer el código QR expuesto en la terminal, el cual nos va a redirigir a la apli
 3. Dentro de la carpeta `/Funcionario/api`, colocar nuestra dirección IPv4 en las cadenas `response` que se encuentran en ambos endpoints: `qrChecks.ts` y `login.ts`. De modo que las cadenas lean: `http://[NUESTRA DIRECCIÓN IPV4]:5001/qr/token?token=${...}&mailPerfil=${...)}`
 ---
 ### Cosas a tener en cuenta
-- Algunos de los usuarios creados son los siguientes, los demás funcionarios y usuarios tienen la misma contarseña que todos los demás perfiles (123456789):
+- Algunos de los usuarios creados son los siguientes, el tercer usuario se encuentra ingresado mas no verificado, por ende, no se puede utilizar:
   
 | Usuario            	| Contraseña 	| Notas           	|
 |--------------------	|------------	|-----------------	|
