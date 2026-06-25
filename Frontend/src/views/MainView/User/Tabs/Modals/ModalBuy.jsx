@@ -118,9 +118,6 @@ export default function ModalBuy({ open, onClose, identificadorEstadio, identifi
             return;
         }
 
-        console.log(month);
-        console.log(year);
-
         const now = new Date();
 
         if (
