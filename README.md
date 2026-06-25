@@ -81,6 +81,9 @@ Leer el código QR expuesto en la terminal, el cual nos va a redirigir a la apli
 | admin2@mundial.com 	| 123456789  	| Gestiona EE.UU  	|
 | admin3@mundial.com 	| 123456789  	| Gestiona Canadá 	|
 | func1@mundial.com  	| 123456789  	|                 	|
+| func2@mundial.com  	| 123456789  	|                 	|
+| func3@mundial.com  	| 123456789  	|                 	|
 | user1@gmail.com    	| 123456789  	|                 	|
+| user2@gmail.com    	| 123456789  	|                 	|
 
 - En caso de que quiera crear una nueva cuenta, procurar hacerlo con un correo electrónico real y activo, ya que necesitará validar su identidad por medio del mismo. Un correo le llegará a su bandeja de entrada a la brevedad.
