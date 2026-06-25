@@ -131,50 +131,60 @@ public static class DispositivoEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
-            await using var checkCommand = connection.CreateCommand();
-            checkCommand.CommandText = """
-                SELECT COUNT(*)
-                FROM EsAsignado
-                WHERE identificadorDispositivo = @identificador;
-            """;
+            await using var transaction = await connection.BeginTransactionAsync();
 
-            checkCommand.Parameters.AddWithValue("@identificador", identificador);
-
-            var asignaciones = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
-
-            if (asignaciones > 0)
+            try
             {
-                return Results.BadRequest(new
+                await using (var deleteAsignadosCommand = connection.CreateCommand())
                 {
-                    success = false,
-                    description = "El dispositivo está asignado a un sector y partido. Debe desasignarlo antes de eliminarlo."
+                    deleteAsignadosCommand.Transaction = transaction;
+                    deleteAsignadosCommand.CommandText = """
+                        DELETE FROM EsAsignado
+                        WHERE identificadorDispositivo = @identificador;
+                    """;
+
+                    deleteAsignadosCommand.Parameters.AddWithValue("@identificador", identificador);
+
+                    await deleteAsignadosCommand.ExecuteNonQueryAsync();
+                }
+
+                await using (var deleteDispositivoCommand = connection.CreateCommand())
+                {
+                    deleteDispositivoCommand.Transaction = transaction;
+                    deleteDispositivoCommand.CommandText = """
+                        DELETE FROM Dispositivo
+                        WHERE identificador = @identificador;
+                    """;
+
+                    deleteDispositivoCommand.Parameters.AddWithValue("@identificador", identificador);
+
+                    var rowsAffected = await deleteDispositivoCommand.ExecuteNonQueryAsync();
+
+                    if (rowsAffected == 0)
+                    {
+                        await transaction.RollbackAsync();
+
+                        return Results.NotFound(new
+                        {
+                            success = false,
+                            description = "Dispositivo no encontrado"
+                        });
+                    }
+                }
+
+                await transaction.CommitAsync();
+
+                return Results.Ok(new
+                {
+                    success = true,
+                    description = "El dispositivo ha sido eliminado correctamente"
                 });
             }
-
-            await using var deleteCommand = connection.CreateCommand();
-            deleteCommand.CommandText = """
-                DELETE FROM Dispositivo
-                WHERE identificador = @identificador;
-            """;
-
-            deleteCommand.Parameters.AddWithValue("@identificador", identificador);
-
-            var rowsAffected = await deleteCommand.ExecuteNonQueryAsync();
-
-            if (rowsAffected == 0)
+            catch
             {
-                return Results.NotFound(new
-                {
-                    success = false,
-                    description = "Dispositivo no encontrado"
-                });
+                await transaction.RollbackAsync();
+                throw;
             }
-
-            return Results.Ok(new
-            {
-                success = true,
-                description = "El dispositivo ha sido eliminado correctamente"
-            });
         }).RequireAuthorization("SoloAdministrador");
 
         app.MapPut("/updateDispositivo/{dispositivo}/{mail}", async (int dispositivo, string mail, IConfiguration config) =>

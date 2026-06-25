@@ -511,5 +511,3 @@
     (4, 3, 'user1@gmail.com', 'No registrada', 3, 3),
     (4, 3, 'user1@gmail.com', 'No registrada', 3, 3),
     (5, 1, 'user3@gmail.com', 'Cancelada', 1, 1);
-
-SELECT * FROM Login

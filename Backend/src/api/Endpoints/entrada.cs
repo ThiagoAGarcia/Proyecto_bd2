@@ -278,7 +278,7 @@ public static class EntradaEndpoints
                 JOIN Estadio e2 ON p.identificadorEstadio = e2.identificador
                 JOIN Equipo el ON p.EquipoLocal = el.nombre
                 JOIN Equipo ev ON p.EquipoVisitante = ev.nombre
-                WHERE e.mailUsuarioTiene = @mailUsuarioTiene AND e.estadoEntrada = 'No registrada';
+                WHERE e.mailUsuarioTiene = @mailUsuarioTiene AND e.estadoEntrada = 'No registrada' AND p.fechaHora > CURRENT_TIMESTAMP();
             """;
 
             command.Parameters.AddWithValue("@mailUsuarioTiene", tokenMail);

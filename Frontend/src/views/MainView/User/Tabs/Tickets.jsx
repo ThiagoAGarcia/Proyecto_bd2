@@ -41,7 +41,7 @@ export default function Tickets() {
         <div className="flex flex-col gap-2.5">
           {entradas.length === 0 ? (
             <p className="px-7 py-12 text-base text-[#8A93A6] text-center">
-              No tenés entradas compradas.
+              No tenés entradas compradas para proximamente.
             </p>
           ) : (
             entradas.map((entrada) => {

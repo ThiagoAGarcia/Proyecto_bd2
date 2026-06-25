@@ -19,26 +19,10 @@ export default function MainUser() {
         <div className="w-full flex justify-start overflow-x-auto overflow-y-hidden mx-0">
           {[
             {id: 'Mis entradas', label: 'Mis entradas', icon: 'fa-ticket'},
-            {
-              id: 'Entradas registradas',
-              label: 'Entradas registradas',
-              icon: 'fa-ticket',
-            },
-            {
-              id: 'Partidos disponibles',
-              label: 'Partidos Disponibles',
-              icon: 'fa-futbol',
-            },
-            {
-              id: 'Historial de compras',
-              label: 'Historial de compras',
-              icon: 'fa-receipt',
-            },
-            {
-              id: 'Transferencias',
-              label: 'Transferencias',
-              icon: 'fa-arrow-right-arrow-left',
-            },
+            {id: 'Entradas registradas', label: 'Entradas registradas', icon: 'fa-ticket-simple'},
+            {id: 'Partidos disponibles', label: 'Partidos Disponibles', icon: 'fa-futbol'},
+            {id: 'Historial de compras', label: 'Historial de compras', icon: 'fa-receipt'},
+            {id: 'Transferencias', label: 'Transferencias', icon: 'fa-arrow-right-arrow-left'},
           ].map((tab) => (
             <button
               key={tab.id}
