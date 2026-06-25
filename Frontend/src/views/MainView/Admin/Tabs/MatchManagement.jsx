@@ -1,6 +1,7 @@
-import {useEffect, useState} from 'react'
+import { useEffect, useState } from 'react'
 import getMyPartidos from '../../../../services/PartidoService/getMyPartidos'
 import getMyPartidosSectores from '../../../../services/PartidoService/getMyPartidosSectores'
+import deleteAsignado from '../../../../services/EsAsignadoService/deleteAsignado'
 import ModalEditMatch from './Modals/Match/ModalEditMatch'
 import ModalCreateMatch from './Modals/Match/ModalCreateMatch'
 import ModalSectorMatch from './Modals/Match/ModalSectorMatch'
@@ -12,29 +13,27 @@ export default function MatchManagement() {
   const [dataSectores, setDataSectores] = useState([])
   const [busqueda, setBusqueda] = useState('')
   const [filtroFecha, setFiltroFecha] = useState('todos')
-  const partidosFiltrados = data
-    .filter((partido) => {
-      const texto =
-        `${partido.equipoLocal} ${partido.equipoVisitante}`.toLowerCase()
+  const partidosFiltrados = data.filter((partido) => {
 
-      const coincideBusqueda = texto.includes(busqueda.toLowerCase())
+    const texto = `${partido.equipoLocal} ${partido.equipoVisitante}`.toLowerCase()
 
-      const fechaPartido = new Date(partido.fechaHora)
-      const ahora = new Date()
+    const coincideBusqueda = texto.includes(busqueda.toLowerCase())
 
-      let coincideFecha = true
+    const fechaPartido = new Date(partido.fechaHora)
+    const ahora = new Date()
 
-      if (filtroFecha === 'proximos') {
-        coincideFecha = fechaPartido > ahora
-      }
+    let coincideFecha = true
 
-      if (filtroFecha === 'finalizados') {
-        coincideFecha = fechaPartido < ahora
-      }
+    if (filtroFecha === 'proximos') {
+      coincideFecha = fechaPartido > ahora
+    }
 
-      return coincideBusqueda && coincideFecha
-    })
-    .sort((a, b) => new Date(a.fechaHora) - new Date(b.fechaHora))
+    if (filtroFecha === 'finalizados') {
+      coincideFecha = fechaPartido < ahora
+    }
+
+    return coincideBusqueda && coincideFecha
+  }).sort((a, b) => new Date(a.fechaHora) - new Date(b.fechaHora))
 
   const [open, setOpen] = useState(false)
   const [identificadorSector, setIdentificadorSector] = useState(null)
@@ -198,40 +197,37 @@ export default function MatchManagement() {
                           <div className="flex-1">
                             <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
                               {sectoresPartido.map((sector, index) => (
-                                <div
-                                  key={index}
-                                  className="bg-[#f8fafc] border border-[#e4e8ef] rounded-xl p-3 flex items-center justify-between">
-                                  <div>
-                                    <div className="font-semibold text-[#0a1628]">
-                                      {sector.nombreSector}
-                                    </div>
-
-                                    {sector.mailFuncionario ? (
-                                      <div className="text-sm text-[#5f6f86] mt-1 font-bold">
-                                        <i className="fa-solid fa-user-gear text-[#c8a84b] mr-1" />
-                                        {sector.mailFuncionario}
+                                <div key={index} className="bg-[#f8fafc] border border-[#e4e8ef] rounded-xl p-3 flex items-center justify-between">
+                                  {sector.mailFuncionario ? (
+                                    <>
+                                      <div>
+                                        <div className="font-semibold text-[#0a1628]">
+                                          {sector.nombreSector}
+                                        </div>
+                                        <div className="text-sm text-[#5f6f86] mt-1 font-bold break-all">
+                                          <i className="fa-solid fa-user-gear text-[#c8a84b] mr-1" />
+                                          {sector.mailFuncionario}
+                                        </div>
                                       </div>
-                                    ) : (
-                                      <div className="text-base text-[#5f6f86] mt-1">
-                                        No hay funcionario asignado
+                                      <button onClick={async () => { await deleteAsignado(partido.identificadorEstadio, sector.identificadorSector, partido.identificador); await loadPartidos()}} className="cursor-pointer ml-4 px-3 py-1 rounded-2xl transition-all bg-transparent border border-[#60a5fa] text-[#60a5fa] hover:bg-[#eff6ff]">
+                                        Desasignar
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div>
+                                        <div className="font-semibold text-[#0a1628]">
+                                          {sector.nombreSector}
+                                        </div>
+                                        <div className="text-base text-[#5f6f86] mt-1">
+                                          No hay funcionario asignado
+                                        </div>
                                       </div>
-                                    )}
-                                  </div>
-
-                                  <button
-                                    onClick={() => {
-                                      setIdentificadorSector(
-                                        sector.identificadorSector,
-                                      )
-                                      setIdentificadorPartido(
-                                        partido.identificador,
-                                      )
-                                      setEstadio(partido.identificadorEstadio)
-                                      setOpenAsignar(true)
-                                    }}
-                                    className="cursor-pointer ml-4 px-3 py-1 bg-[#c8a84b] text-[#0a1628] rounded-lg hover:opacity-90 transition">
-                                    Asignar
-                                  </button>
+                                      <button onClick={() => { setIdentificadorSector(sector.identificadorSector); setIdentificadorPartido(partido.identificador); setEstadio(partido.identificadorEstadio); setOpenAsignar(true) }} className="cursor-pointer ml-4 px-3 py-1 bg-[#c8a84b] text-[#0a1628] rounded-lg hover:opacity-90 transition">
+                                        Asignar
+                                      </button>
+                                    </>
+                                  )}
                                 </div>
                               ))}
                             </div>

@@ -179,5 +179,42 @@ public static class EsAsignadoEndpoints
                 message = "La asignación ha sido eliminada correctamente"
             });
         }).RequireAuthorization("SoloAdministrador");
+
+        app.MapDelete("/deleteAsignado/{identificadorEstadio}/{identificadorSector}/{identificadorPartido}", async (int identificadorEstadio, int identificadorSector, int identificadorPartido, IConfiguration config) =>
+        {
+            var connectionString = config.GetConnectionString("DefaultConnection");
+
+            await using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                DELETE FROM EsAsignado
+                WHERE identificadorEstadio = @identificadorEstadio AND identificadorSector = @identificadorSector AND identificadorPartido = @identificadorPartido;
+            """;
+
+            command.Parameters.AddWithValue("@identificadorEstadio", identificadorEstadio);
+            command.Parameters.AddWithValue("@identificadorSector", identificadorSector);
+            command.Parameters.AddWithValue("@identificadorPartido", identificadorPartido);
+
+            try
+            {
+                await command.ExecuteNonQueryAsync();
+            }
+            catch (MySqlException)
+            {
+                return Results.Conflict(new
+                {
+                    success = false
+                });
+            }
+
+            return Results.Ok(new
+            {
+                success = true,
+                message = "Las asignaciones han sido eliminadas correctamente"
+            });
+            
+        }).RequireAuthorization("SoloAdministrador");
     }
 }

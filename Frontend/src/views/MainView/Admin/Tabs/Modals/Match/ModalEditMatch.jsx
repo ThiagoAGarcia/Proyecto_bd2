@@ -21,7 +21,7 @@ export default function ModalEditMatch({ open, onClose, identificador, onUpdateS
     const [estadio, setEstadio] = useState(null);
 
     useEffect(() => {
-        if (!open) return;
+        if (!open || identificador == null) return;
 
         async function loadData() {
             try {
