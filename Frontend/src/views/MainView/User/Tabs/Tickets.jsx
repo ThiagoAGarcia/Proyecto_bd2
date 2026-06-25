@@ -168,7 +168,7 @@ export default function Tickets() {
       />
       <ModalQr
         open={openQr}
-        onClose={() => setOpenQr(false)}
+        onClose={() => { setOpenQr(false); loadEntradas() }}
         partido={{
           nombre: entradaSeleccionada
             ? `${capitalize(entradaSeleccionada.equipoLocal)} vs ${capitalize(entradaSeleccionada.equipoVisitante)}`

@@ -203,11 +203,31 @@ public static class EstadioEndpoints
             await using var connection = new MySqlConnection(connectionString);
             await connection.OpenAsync();
 
+            await using var checkCommand = connection.CreateCommand();
+            checkCommand.CommandText = """
+                SELECT COUNT(*)
+                FROM Partido
+                WHERE identificadorEstadio = @identificador
+            """;
+
+            checkCommand.Parameters.AddWithValue("@identificador", identificador);
+
+            var cantidadPartidos = Convert.ToInt32(await checkCommand.ExecuteScalarAsync());
+
+            if (cantidadPartidos > 0)
+            {
+                return Results.BadRequest(new
+                {
+                    success = false,
+                    message = "No se puede eliminar el estadio porque está asignado a uno o más partidos."
+                });
+            }
+
             await using var command = connection.CreateCommand();
             command.CommandText = """
-                DELETE FROM `estadio`
-                WHERE `Identificador` = @identificador
-                """;
+                DELETE FROM Estadio
+                WHERE Identificador = @identificador
+            """;
 
             command.Parameters.AddWithValue("@identificador", identificador);
 

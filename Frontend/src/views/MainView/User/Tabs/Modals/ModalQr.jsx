@@ -65,7 +65,7 @@ export default function ModalQr({ open, onClose, partido, entrada }) {
 
           <div className="flex flex-col items-center bg-white p-5">
             {loading ? (
-              <div className="flex h-[200px] items-center justify-center">
+              <div className="flex h-50 items-center justify-center">
                 <p className="text-[#14315C]/70">Generando QR...</p>
               </div>
             ) : (

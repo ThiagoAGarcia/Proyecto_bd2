@@ -65,7 +65,6 @@ export default function ModalUpdateStadium({ open, onClose, onUpdateSuccess, ide
         try {
             setIsLoading(true)
             const editarEstadio = await putEstadio(identificador, BODY)
-            console.log(editarEstadio);
             if (editarEstadio?.success) {
                 toast.success('Estadio actualizado');
                 await onUpdateSuccess();

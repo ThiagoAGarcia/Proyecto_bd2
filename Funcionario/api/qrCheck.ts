@@ -1,6 +1,6 @@
 export async function qrCheck(token: string, mailPerfil: string) {
   const response = await fetch(
-    `http://172.20.10.2:5001/qr/token?token=${encodeURIComponent(token)}&mailPerfil=${encodeURIComponent(mailPerfil)}`,
+    `http://10.55.24.199:5001/qr/token?token=${encodeURIComponent(token)}&mailPerfil=${encodeURIComponent(mailPerfil)}`,
     {
       method: 'GET',
       credentials: 'include',

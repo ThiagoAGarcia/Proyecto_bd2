@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage'
 export async function login(email: string, password: string) {
   const response = await fetch(
-    `http://172.20.10.2:5001/loginCheckFuncionario`,
+    `http://10.55.24.199:5001/loginCheckFuncionario`,
     {
       method: 'POST',
       headers: {

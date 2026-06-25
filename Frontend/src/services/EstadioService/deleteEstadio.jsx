@@ -7,7 +7,6 @@ export default async function deleteEstadio(identificador) {
             method: "DELETE",
             credentials: "include"
         });
-        if (!res.ok) throw new Error(`DELETE ${PATH}/${identificador} -> ${res.status}`);
         return await res.json();
     } catch (error) {
         console.log(error.message);

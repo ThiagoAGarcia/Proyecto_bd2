@@ -11,15 +11,20 @@ export default function ModalEliminateStadium({ open, onClose, onCreateSuccess, 
         try {
             setIsLoading(true);
 
-            await deleteEstadio(identificador);
+            const eliminarEstadio = await deleteEstadio(identificador);
 
-            toast.success("Estadio eliminado correctamente");
+            if (eliminarEstadio?.success) {
+                toast.success("Estadio eliminado correctamente");
+                await onCreateSuccess();
+                onClose();
 
-            await onCreateSuccess();
-
-            onClose();
+            } else {
+                toast.error(eliminarEstadio?.message || 'Error al eliminar', {
+                    position: 'bottom-left',
+                    autoClose: 3000,
+                })
+            }
         } catch (error) {
-            console.error(error);
             toast.error("No se pudo eliminar el estadio");
         } finally {
             setIsLoading(false);

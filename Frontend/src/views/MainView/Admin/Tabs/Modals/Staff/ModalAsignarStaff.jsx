@@ -93,7 +93,7 @@ export default function ModalAsignarStaff({ open, onClose, onAsignarSuccess, mai
                     <div className="flex-1 h-px bg-[#045694]/20" />
                 </div>
 
-                <div className="max-h-[420px] overflow-y-auto rounded-2xl border border-gray-200 bg-gray-50 p-3 space-y-3">
+                <div className="max-h-105 overflow-y-auto rounded-2xl border border-gray-200 bg-gray-50 p-3 space-y-3">
 
                     {data.length === 0 && (
                         <div className="flex h-40 items-center justify-center text-gray-500">
